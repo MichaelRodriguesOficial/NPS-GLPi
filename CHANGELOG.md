@@ -10,7 +10,12 @@ As versões mais recentes ficam no topo.
   - Ela nasce **inativa**, com link público novo e sem datas de envio. Uma mensagem avisa para revisar e ativar.
 - **Página pública no celular:** o campo do telefone ficava espremido ao lado do país. Em tela estreita, agora um fica embaixo do outro.
 - **Aviso do clique no e-mail** ("Sua resposta para … foi registrada"): no tema do GLPI, cada trecho do texto virava uma coluna. Agora fica num bloco só, ao lado do ícone.
-- **README** refeito, com o passo a passo de uso, capturas de tela e GIFs (`docs/img/`).
+- **README em inglês**, no mesmo padrão do Chatwoot for GLPI:
+  - logo, destaques, telas organizadas por assunto (incluindo o **self-service**) e 5 GIFs;
+  - "como funciona", instalação, configuração, segurança e solução de problemas;
+  - opções de apoio (GitHub Sponsors e Pix).
+- **Guia de uso / FAQ** em inglês em `docs/FAQ.md`, com o passo a passo de cada tarefa.
+- Imagens em `screenshots/` (fora do ZIP do plugin), QR code do Pix em `docs/pix-qrcode.png` e `logo.png` na raiz.
 
 ## v0.64.1 — correções encontradas no teste completo num GLPI 11.0.11
 

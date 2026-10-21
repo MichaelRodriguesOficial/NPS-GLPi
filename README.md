@@ -1,261 +1,473 @@
-# NPSphere — Pesquisas de satisfação e NPS para o GLPI 11
+<p align="center">
+  <img src="logo.png" alt="NPSphere" width="110">
+</p>
 
-![GLPI](https://img.shields.io/badge/GLPI-11.x-1f6feb) ![PHP](https://img.shields.io/badge/PHP-8.1%2B-777bb4) ![Versão](https://img.shields.io/badge/vers%C3%A3o-0.64.2-2ea44f) ![Licença](https://img.shields.io/badge/licen%C3%A7a-GPL%20v3%2B-blue)
-
-O NPSphere é um plugin do **GLPI 11** para criar, enviar e medir pesquisas de satisfação: **NPS**, estrelas, emoji e outras perguntas. Ele funciona em três cenários:
-
-- **pesquisas de chamado**, no lugar da pesquisa de satisfação nativa do GLPI;
-- **pesquisas internas**, para usuários do GLPI;
-- **pesquisas externas**, para quem não tem login.
-
-A pessoa responde **com um clique, direto do e-mail**. Os resultados ficam num painel consolidado, e os gestores recebem relatório diário e aviso de nota baixa.
+<h1 align="center">NPSphere for GLPI</h1>
 
 <p align="center">
-  <img src="docs/img/gif-email.gif" width="760" alt="Resposta com um clique a partir do e-mail">
-  <br><em>Do e-mail à resposta registrada: clica na nota, completa o resto e pronto.</em>
+  <b>Satisfaction and NPS surveys for GLPI 11, answered with one click from the email.</b><br>
+  Ask after every ticket, survey your staff or your customers, and follow the results in one dashboard.
+</p>
+
+<p align="center">
+  <a href="https://github.com/MichaelRodriguesOficial/NPS-GLPi/releases/latest"><img src="https://img.shields.io/github/v/release/MichaelRodriguesOficial/NPS-GLPi?label=release&color=1f93ff" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/GLPI-11.x-2c9e6f" alt="GLPI 11.x">
+  <img src="https://img.shields.io/badge/PHP-8.1%2B-777bb4" alt="PHP 8.1+">
+  <img src="https://img.shields.io/badge/UI-pt__BR-informational" alt="Interface language">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv3%2B-blue" alt="License"></a>
+  <a href="https://github.com/sponsors/MichaelRodriguesOficial"><img src="https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2?logo=githubsponsors" alt="Sponsor"></a>
+</p>
+
+<p align="center">
+  <a href="#screenshots">Screenshots</a> ·
+  <a href="#installation">Installation</a> ·
+  <a href="#configuration">Configuration</a> ·
+  <a href="docs/FAQ.md"><b>User guide &amp; FAQ</b></a> ·
+  <a href="#troubleshooting">Troubleshooting</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="#support">Support ☕</a>
+</p>
+
+<p align="center">
+  <img src="screenshots/demo-email-one-click.gif" width="760" alt="Answering from the email with one click">
+  <br><sub>From the email to a recorded answer: click the score, finish the rest, done. No login needed.</sub>
 </p>
 
 ---
 
-## Sumário
+## ✨ Highlights
 
-- [Funcionalidades](#funcionalidades)
-- [Como usar](#como-usar)
-  1. [Criar a pesquisa](#1-criar-a-pesquisa)
-  2. [Adicionar as perguntas](#2-adicionar-as-perguntas)
-  3. [Conferir como fica](#3-conferir-como-fica)
-  4. [Definir quem responde](#4-definir-quem-responde)
-  5. [Configurar os e-mails (aba Template)](#5-configurar-os-e-mails-aba-template)
-  6. [A pessoa responde](#6-a-pessoa-responde)
-  7. [Acompanhar os resultados](#7-acompanhar-os-resultados)
-  8. [Duplicar uma pesquisa](#8-duplicar-uma-pesquisa)
-- [Requisitos](#requisitos)
-- [Instalação](#instalação)
-- [Pesquisa vinculada a chamado](#pesquisa-vinculada-a-chamado)
-- [Estrutura do projeto](#estrutura-do-projeto)
-- [Roadmap](#roadmap)
-- [Licença e autor](#licença)
+<table>
+<tr>
+<td width="50%" valign="top">
 
----
+### 🎫 After every ticket
+Replaces GLPI's native satisfaction survey. The survey shows up **inside the closed ticket**, and the
+email only goes out if the requester hasn't answered there (15 minutes by default). The score is
+also written to GLPI's own `glpi_ticketsatisfactions`, and GLPI's native email is cancelled, so
+nobody gets asked twice.
 
-## Funcionalidades
+</td>
+<td width="50%" valign="top">
+
+### 📨 One click from the email
+The invitation shows the NPS question with clickable scores. The click **records the answer right
+away**, without logging in, through a personal signed link. Clicking again changes the answer
+instead of duplicating it. Reminders go to whoever hasn't answered yet.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 👥 Staff and customers too
+**Internal** surveys for GLPI users (by entity, profile, group, user or everyone), shown in
+**My surveys** and, optionally, as a **mandatory** pop-up after login. **External** surveys for people
+without an account, by public link or by an email list (CSV import).
+
+</td>
+<td width="50%" valign="top">
+
+### 📊 Results that lead to action
+NPS, average score, monthly trend and breakdowns by survey, entity, requester, technician, group and
+category. Managers get a **daily report** and an **immediate low-score alert**, so they can call the
+customer the same day.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🧩 7 question types, with logic
+NPS (0–10), emoticons, stars, yes/no, single choice, multiple choice and free text. **Conditional
+questions** appear only for some answers (e.g. "What can we improve?" only for scores up to 6).
+
+</td>
+<td width="50%" valign="top">
+
+### ✉️ Emails you can edit
+Invitation, reminder, report and alert each have their own template: subject and HTML body, a
+**live preview**, ready-made variables and a button to restore the default. Everything goes through
+GLPI's own mail queue.
+
+</td>
+</tr>
+</table>
+
+<a id="screenshots"></a>
+
+## 📸 Screenshots
+
+> The plugin's interface is currently in **Brazilian Portuguese**. The screenshots come from a demo
+> GLPI 11.0.11 with made-up data.
+
+### Building a survey
+
+| Survey list | Survey settings |
+|---|---|
+| ![Survey list](screenshots/survey-list.png) | ![Survey settings](screenshots/survey-form.png) |
+| **Questions**: drag to reorder, edit, duplicate | **Preview**: exactly what respondents see, nothing is recorded |
+| ![Questions](screenshots/questions.png) | ![Preview](screenshots/preview.png) |
+
+<details>
+<summary><b>▶ Adding a question (animated)</b></summary>
+<br>
+<p align="center"><img src="screenshots/demo-add-question.gif" width="880" alt="Adding a question"></p>
+</details>
+
+### Emails (Template tab)
+
+| Invitation, with live preview | Daily report for managers |
+|---|---|
+| ![Invitation template](screenshots/template-invite.png) | ![Daily report template](screenshots/template-report.png) |
+| **Low-score alert** | **Help**: how each email works, automatic actions and variables |
+| ![Alert template](screenshots/template-alert.png) | ![Help tab](screenshots/template-help.png) |
+
+<details>
+<summary><b>▶ Tour of the Template tab (animated)</b></summary>
+<br>
+<p align="center"><img src="screenshots/demo-template.gif" width="880" alt="Template tab tour"></p>
+</details>
+
+### Answering
+
+| The invitation email | Inside the closed ticket | On a phone (public link) |
+|---|---|---|
+| ![Invitation email](screenshots/invite-email.png) | ![Survey inside the ticket](screenshots/ticket-survey.png) | <img src="screenshots/mobile-public.png" width="260" alt="Public survey on a phone"> |
+
+### Self-service portal
+
+Users of the **simplified interface** (Self-Service profile) answer without ever leaving it. Internal
+surveys are listed under **Plug-ins › My surveys** ("Minhas pesquisas"). A **mandatory** survey pops
+up right after login: it can be postponed until the last day, then it must be answered. Ticket
+surveys appear inside the requester's own ticket.
+
+| Mandatory survey after login | "My surveys" in the Plug-ins menu |
+|---|---|
+| ![Mandatory survey pop-up](screenshots/selfservice-mandatory.png) | ![Plug-ins menu](screenshots/selfservice-menu.png) ![My surveys](screenshots/selfservice-my-surveys.png) |
+
+<details>
+<summary><b>▶ Login → mandatory survey → answered (animated)</b></summary>
+<br>
+<p align="center"><img src="screenshots/demo-selfservice.gif" width="880" alt="Self-service mandatory survey"></p>
+</details>
+
+### Results
+
+| Survey results | Satisfaction dashboard |
+|---|---|
+| ![Results](screenshots/results.png) | ![Dashboard](screenshots/dashboard.png) |
+
+<details>
+<summary><b>▶ Clicking a row filters the dashboard (animated)</b></summary>
+<br>
+<p align="center"><img src="screenshots/demo-dashboard.gif" width="880" alt="Filtering the dashboard"></p>
+</details>
+
+## 🧭 How it works
+
+The ticket flow, which is the most common one:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor T as Technician
+    participant G as GLPI
+    participant N as NPSphere
+    actor R as Requester
+    actor M as Manager
+    T->>G: Closes the ticket
+    G->>N: Satisfaction created (entity set to "external survey")
+    N-->>R: Survey shown inside the ticket
+    Note over N: Waits 15 min (configurable)
+    alt Requester already answered in the ticket
+        N->>N: No email
+    else Not answered yet
+        N->>R: Invitation email (GLPI's native one is cancelled)
+        R->>N: Clicks a score in the email (no login)
+    end
+    N->>G: Score saved in glpi_ticketsatisfactions
+    N->>M: Low-score alert (minutes later) and daily report
+```
+
+1. When a ticket is closed, GLPI creates its satisfaction survey. With the entity set to **external
+   survey** pointing to NPSphere, the survey is shown **inside the ticket**.
+2. NPSphere waits a few minutes. If the requester answers in the ticket, no email is sent.
+   Otherwise the invitation goes out, in place of GLPI's native notification.
+3. The requester clicks a score in the email. The signed link records the answer without login and
+   opens the rest of the survey.
+4. The score is saved in NPSphere and in GLPI's own satisfaction table. Managers are alerted about
+   low scores and get a daily summary.
+
+<a id="installation"></a>
+
+## 📦 Installation
+
+**Requirements**
 
 | | |
 |---|---|
-| **7 tipos de pergunta** | NPS (0–10), Emoticons (3 ou 5 níveis), Estrelas (3, 5 ou 10), Sim/Não, Escolha única, Múltiplas opções e Texto |
-| **Regras condicionais** | Uma pergunta só aparece conforme a resposta de outra (ex.: "O que podemos melhorar?" só para nota até 6) |
-| **3 tipos de pesquisa** | De chamado (no lugar da nativa do GLPI), interna (usuários do GLPI) e externa (sem login, por link ou lista de e-mails) |
-| **Resposta com um clique** | A nota clicada no e-mail já é gravada, sem login, com um link pessoal e assinado |
-| **Convite com espera** | No chamado, o e-mail só sai se o requerente não avaliar no próprio chamado (padrão 15 min) |
-| **Lembrete automático** | Para quem não respondeu, com intervalo e máximo configuráveis |
-| **Relatório diário** | Para os gestores, no horário escolhido: notas baixas primeiro, depois todas as respostas por pessoa |
-| **Aviso de nota baixa** | E-mail alguns minutos depois de uma resposta com nota baixa |
-| **Modelos editáveis** | Assunto e mensagem em HTML, com prévia ao vivo e variáveis |
-| **Resultados e painel** | NPS, nota média, evolução mensal, recortes por pesquisa, entidade, requerente, técnico, grupo e categoria, exportação CSV e impressão |
-| **Segurança** | Cada pessoa gerencia as pesquisas que criou; tokens de 256 bits; links assinados; CSRF no padrão do GLPI 11 |
+| **GLPI** | 11.x |
+| **PHP** | 8.1+ |
+| **Outgoing email** | Configured in GLPI (**Setup › Notifications**) |
+| **Automatic actions** | Running, preferably in **CLI** mode (server cron) so schedules are met even when nobody is using GLPI |
 
----
+**Steps**
 
-## Como usar
-
-### 1. Criar a pesquisa
-
-Em **Administração › Pesquisas de satisfação**, clique em **Adicionar**. Dê um nome, escolha o **tipo** (interna, externa ou vinculada a chamado), o período e como ela será respondida.
-
-<p align="center"><img src="docs/img/01-lista.png" width="880" alt="Lista de pesquisas"></p>
-<p align="center"><img src="docs/img/02-pesquisa.png" width="880" alt="Formulário da pesquisa"></p>
-
-### 2. Adicionar as perguntas
-
-Na aba **Perguntas**, clique em **Adicionar pergunta**, escreva o texto e escolha o tipo. Arraste pelas alças (⠿) para mudar a ordem. Em **Exibição condicional** dá para mostrar a pergunta só para quem respondeu algo específico.
-
-<p align="center"><img src="docs/img/gif-pergunta.gif" width="880" alt="Adicionando uma pergunta"></p>
-<p align="center"><img src="docs/img/03-perguntas.png" width="880" alt="Lista de perguntas"></p>
-
-### 3. Conferir como fica
-
-A aba **Visualizar** mostra a pesquisa exatamente como quem responde vai ver. Nada do que é respondido ali é gravado.
-
-<p align="center"><img src="docs/img/04-visualizar.png" width="880" alt="Aba Visualizar"></p>
-
-### 4. Definir quem responde
-
-| Tipo | Onde configurar |
-|---|---|
-| **Interna** | Aba **Público-alvo**: entidades, perfis, grupos, usuários ou todos. Quem está no público vê a pesquisa em **Minhas pesquisas** e pode receber o convite por e-mail. |
-| **Externa** | Aba **Template › Convite › Destinatários**: um a um ou por CSV (`email;nome`). Também há o **link público**, para divulgar onde quiser. |
-| **Chamado** | Na **entidade** (Assistência › Pesquisa de satisfação), com "Pesquisa externa" apontando para o NPSphere (veja [abaixo](#pesquisa-vinculada-a-chamado)). |
-
-### 5. Configurar os e-mails (aba Template)
-
-A aba **Template** tem cinco sub-abas:
-
-- **Convite**: o e-mail que leva a pesquisa.
-- **Lembrete**: o e-mail para quem ainda não respondeu.
-- **Relatório**: o resumo diário dos gestores.
-- **Aviso**: o e-mail imediato de nota baixa.
-- **Ajuda**: as regras de cada e-mail e a lista de variáveis.
-
-Cada e-mail tem **prévia ao vivo**, editor de código e botão para voltar ao modelo padrão. A ajuda de cada campo fica no ícone **ⓘ**, e o link **Como funciona** abre a Ajuda no assunto certo.
-
-<p align="center"><img src="docs/img/gif-template.gif" width="880" alt="Navegando pela aba Template"></p>
+1. Download `npsphere-x.y.z.zip` from the [latest release](https://github.com/MichaelRodriguesOficial/NPS-GLPi/releases/latest).
+2. Extract it into GLPI's `marketplace/` (or `plugins/`) folder. The zip contains an `npsphere/` directory.
+3. Go to **Setup › Plugins**, then install and enable **NPSphere**.
+4. Give the rights to the profiles (next section).
 
 <details>
-<summary><strong>Ver as telas da aba Template</strong></summary>
+<summary><b>Installing from Git</b></summary>
 
-**Convite** (pesquisa de chamado):
-<p align="center"><img src="docs/img/05-template-convite.png" width="880" alt="Template › Convite"></p>
+The folder must be named `npsphere`:
 
-**Relatório diário**, com quem recebe, quem recebe os links e a prévia com respostas reais:
-<p align="center"><img src="docs/img/06-template-relatorio.png" width="880" alt="Template › Relatório"></p>
+```bash
+cd /path/to/glpi/marketplace        # or /path/to/glpi/plugins
+git clone https://github.com/MichaelRodriguesOficial/NPS-GLPi.git npsphere
+```
+</details>
 
-**Aviso de nota baixa**:
-<p align="center"><img src="docs/img/07-template-aviso.png" width="880" alt="Template › Aviso"></p>
+<details>
+<summary><b>Updating to a new version</b></summary>
 
-**Ajuda**, com "Como funciona" por assunto, a tabela das ações automáticas e as variáveis:
-<p align="center"><img src="docs/img/08-ajuda.png" width="880" alt="Template › Ajuda"></p>
+Replace the folder in one step, so GLPI never sees it half-copied:
+
+```bash
+cd /path/to/glpi                         # the folder that contains marketplace/
+unzip -q npsphere-x.y.z.zip -d ../npsphere-new
+mv marketplace/npsphere ../npsphere-old && mv ../npsphere-new/npsphere marketplace/npsphere
+rm -rf ../npsphere-old ../npsphere-new
+```
+
+Then open **Setup › Plugins** and click **Update**. Database migrations run by themselves. Upgrades
+have been tested from 0.50.0 onwards: the resulting database is identical to a fresh install.
 
 </details>
 
-### 6. A pessoa responde
+<a id="configuration"></a>
 
-**Pelo e-mail**: o convite mostra a pergunta de nota com as opções para clicar. O clique já registra a resposta, sem login, e abre a pesquisa para completar o resto.
+## ⚙️ Configuration
 
-<p align="center"><img src="docs/img/12-email-convite.png" width="560" alt="E-mail do convite"></p>
+**1. Rights** (**Administration › Profiles**, NPSphere section)
 
-**No próprio chamado**: a pesquisa aparece dentro do chamado encerrado, para o requerente.
+| Right | What it allows |
+|---|---|
+| **Pesquisas de satisfação** (`plugin_npsphere_survey`) | Create and manage surveys. Each person manages the surveys they created; general administrators manage all of them. |
+| **Painel de satisfação** (`plugin_npsphere_dashboard`) | See the consolidated dashboard (**Management › Painel de satisfação**). |
+| **Minhas pesquisas** (`plugin_npsphere_answer`) | Answer internal surveys (**My surveys**). |
 
-<p align="center"><img src="docs/img/11-chamado.png" width="880" alt="Pesquisa dentro do chamado"></p>
+**2. Automatic actions** (**Setup › Automatic actions**)
 
-**No celular**: o link público funciona em qualquer tela.
+| Automatic action | What it does | When it runs |
+|---|---|---|
+| `npsphereConvite` | Sends the ticket invitation after the wait | Every minute |
+| `npsphereLembrete` | Sends the reminders | Hourly, 8 a.m. to 6 p.m. |
+| `npsphereRelatorio` | Sends the daily report | Hourly |
+| `npsphereAviso` | Sends the low-score alert | Every 5 minutes |
+| `queuednotification` *(GLPI)* | Delivers the mail queue (every email above goes through it) | Set in GLPI |
 
-<p align="center"><img src="docs/img/13-celular.png" width="300" alt="Pesquisa externa no celular"></p>
+**3. Ticket surveys only:** in the entity, **Assistance › Satisfaction survey**, choose **External
+survey** and paste the URL shown in the survey's own tab:
 
-### 7. Acompanhar os resultados
-
-A aba **Resultados** de cada pesquisa traz:
-- o NPS, a nota média e a distribuição;
-- a lista de quem respondeu, com o detalhe de cada resposta;
-- a exportação CSV e a impressão.
-
-<p align="center"><img src="docs/img/09-resultados.png" width="880" alt="Aba Resultados"></p>
-
-O **Painel de satisfação** (em **Gestão**) junta todas as pesquisas, com evolução mensal, comparação com o período anterior e recortes por pesquisa, entidade, requerente, técnico, grupo técnico e categoria. **Clicar numa linha** filtra o painel por ela.
-
-<p align="center"><img src="docs/img/gif-painel.gif" width="880" alt="Filtrando o painel por técnico"></p>
-<p align="center"><img src="docs/img/10-painel.png" width="880" alt="Painel de satisfação"></p>
-
-### 8. Duplicar uma pesquisa
-
-Na tela da pesquisa, o botão **Duplicar** cria uma cópia.
-
-- **A cópia leva:** as perguntas (com as regras condicionais) e os modelos de e-mail.
-- **A cópia não leva:** o público-alvo, as respostas e os envios.
-- Ela nasce **inativa**: revise, defina quem responde e ative quando estiver pronta.
-
----
-
-## Requisitos
-
-- GLPI **11.x**
-- PHP **8.1** ou superior
-- E-mail de saída configurado no GLPI (Configurar › Notificações), para convites, lembretes, relatório e aviso
-- Ações automáticas do GLPI rodando. Recomenda-se o modo **CLI**, pelo cron do servidor, para os horários serem cumpridos mesmo sem ninguém usando o GLPI.
-
----
-
-## Instalação
-
-A pasta do plugin precisa se chamar **`npsphere`**.
-
-**Pelo Git:**
-```bash
-cd /caminho/do/glpi/marketplace      # ou /caminho/do/glpi/plugins
-git clone https://github.com/MichaelRodriguesOficial/NPS-GLPi.git npsphere
+```
+https://YOUR-GLPI/marketplace/npsphere/front/ticket.php?tickets_id=[TICKET_ID]&surveys_id=N
 ```
 
-**Pelo ZIP:** extraia o pacote `npsphere-X.Y.Z.zip` dentro de `marketplace/` (ou `plugins/`).
+The delay, the share of tickets that get a survey and the survey duration remain GLPI's own entity
+settings.
 
-Depois:
+<details>
+<summary><b>All survey options</b></summary>
 
-1. Em **Configurar › Plugins**, clique em **Instalar** e depois em **Ativar** no NPSphere.
-2. Em **Administração › Perfis**, dê os direitos aos perfis:
-   - **Pesquisas de satisfação** (`plugin_npsphere_survey`): criar e gerenciar pesquisas;
-   - **Painel de satisfação** (`plugin_npsphere_dashboard`): ver o painel consolidado;
-   - **Minhas pesquisas** (`plugin_npsphere_answer`): responder pesquisas internas.
-3. Confira em **Configurar › Ações automáticas** se estas estão ativas:
-
-| Ação automática | O que faz | Frequência |
+| Where | Option | Default |
 |---|---|---|
-| `npsphereConvite` | Envia o convite do chamado depois da espera | A cada minuto |
-| `npsphereLembrete` | Envia os lembretes | De hora em hora, das 8h às 18h |
-| `npsphereRelatorio` | Envia o relatório diário | De hora em hora |
-| `npsphereAviso` | Envia o aviso de nota baixa | A cada 5 minutos |
-| `queuednotification` *(GLPI)* | Manda a fila de e-mails | Configurada no GLPI |
+| **Survey** | Type: internal, external or ticket | internal |
+| | Active, start and end dates | inactive, no dates |
+| | One page or one question per step | one page |
+| | Allow several answers per person | no |
+| | Mandatory (internal: pop-up after login) | no |
+| | Anonymous (external: same link for everyone) | no |
+| **Template › Invitation** | Wait for the in-ticket answer before emailing (0, 5, 10, 15, 30, 60 min) | 15 min |
+| | Subject and HTML body | built-in template |
+| **Template › Reminder** | On/off, every N days without an answer, at most N reminders | off, 3 days, 2 |
+| **Template › Report** | On/off, sending hour, low-score cut-off, users and groups | off, 6 p.m., up to 6 |
+| **Template › Alert** | On/off, wait (5–60 min), low-score cut-off, users and groups | off, 10 min, up to 6 |
 
-**Atualizar:** substitua os arquivos (ou `git pull`) e clique em **Atualizar** em Configurar › Plugins. As migrações do banco rodam sozinhas. A atualização foi testada a partir da 0.50.0.
+</details>
 
----
+## 📖 User guide & FAQ
 
-## Pesquisa vinculada a chamado
+Step-by-step instructions for every task live in **[docs/FAQ.md](docs/FAQ.md)**, including:
 
-1. Crie a pesquisa com o tipo **Vinculada a chamado** e ative-a.
-2. Na entidade, em **Assistência › Pesquisa de satisfação**, escolha **Pesquisa externa** e use a URL mostrada pelo plugin na aba da pesquisa:
-   ```
-   https://SEU-GLPI/marketplace/npsphere/front/ticket.php?tickets_id=[TICKET_ID]&surveys_id=N
-   ```
-3. O atraso, a porcentagem de chamados e a duração da pesquisa continuam sendo os da entidade, no padrão do GLPI.
+- [Create a survey and its questions](docs/FAQ.md#how-do-i-create-a-survey)
+- [Survey people after every ticket](docs/FAQ.md#how-do-i-survey-requesters-after-every-ticket)
+- [Survey staff, and make it mandatory](docs/FAQ.md#how-do-i-survey-my-staff)
+- [Survey customers who have no GLPI account](docs/FAQ.md#how-do-i-survey-customers-without-a-glpi-account)
+- [Customize the emails and use variables](docs/FAQ.md#how-do-i-customize-the-emails)
+- [Reminders, daily report and low-score alert](docs/FAQ.md#how-do-reminders-work)
+- [Read the results and export them](docs/FAQ.md#where-do-i-see-the-results)
 
-Ao encerrar o chamado, a pesquisa aparece no próprio chamado.
-- O e-mail sai depois da espera configurada, e só se o requerente ainda não tiver avaliado.
-- A notificação de satisfação nativa do GLPI é cancelada, então a pessoa não recebe dois e-mails.
-- A nota também é gravada em `glpi_ticketsatisfactions`.
+## 🔐 Security
 
----
+| Concern | How it's handled |
+|---|---|
+| **Who manages what** | Each person sees and edits only the surveys they created (listing, form, questions, results, exports, previews). General administrators see all of them. |
+| **Answering without login** | Every email link is personal and **signed** (survey + person or ticket). A tampered link is rejected. Opening a link records nothing: the answer is saved by a script in the respondent's browser, so email security scanners that open links don't create fake answers. |
+| **Public link** | 256-bit token, compared in constant time, with a limit on invalid attempts. |
+| **CSRF** | Every POST carries a fresh GLPI CSRF token, including the session-less answer pages. |
+| **Anonymous surveys** | No identity is stored, and there are no reminders (finding out who answered would break anonymity). |
+| **Links to results** | In reports and alerts, "View answer" and "Open results" go only to recipients who can open the survey in GLPI. Everyone else gets the same email without those links. |
+| **Ticket answers** | Only the requester can rate a ticket, once per ticket. |
+| **Uninstall** | Plugin tables, automatic actions, templates and settings are removed. Scores already written to GLPI's own satisfaction table stay. |
 
-## Estrutura do projeto
+<a id="troubleshooting"></a>
+
+## 🛠️ Troubleshooting
+
+<details>
+<summary><b>Ticket invitations are not sent</b></summary>
+
+Check the entity (**Assistance › Satisfaction survey**). It must be set to **External survey** with the
+NPSphere URL; with "Internal survey", GLPI sends its own email instead. With a wait configured, the
+`npsphereConvite` automatic action must be enabled. The survey's **Template › Invitation** tab shows a
+warning when any of this is wrong.
+</details>
+
+<details>
+<summary><b>Emails stay in the queue</b></summary>
+
+They are delivered by GLPI's `queuednotification` automatic action, using GLPI's mail settings. Check
+**Setup › Notifications › Queued notifications** and run automatic actions in **CLI** mode.
+</details>
+
+<details>
+<summary><b>Links in the email point to the wrong address</b></summary>
+
+Links are built from GLPI's **URL of the application** (**Setup › General**, or the entity's own
+URL). Set it to the address people use to reach GLPI.
+</details>
+
+<details>
+<summary><b>The daily report didn't arrive</b></summary>
+
+It is sent on the first run of `npsphereRelatorio` after the chosen hour, and **only on days with
+answers**. Check that the recipients are active and have an email address. The "last sent" field only
+changes when an email is actually sent.
+</details>
+
+<details>
+<summary><b>The low-score alert didn't arrive</b></summary>
+
+Only answers given **after** the alert was turned on count. The alert arrives between the chosen wait
+and 5 minutes after it. Each answer triggers at most one alert.
+</details>
+
+<details>
+<summary><b>"We couldn't record your answer automatically"</b></summary>
+
+Update to 0.64.1 or later. In earlier versions, people who weren't logged in could lose the click
+from the second answer on in the same browser.
+</details>
+
+<details>
+<summary><b>Where are the errors logged?</b></summary>
+
+In GLPI's `files/_log/` folder (`php-errors.log` and `npsphere.log`). Each automatic action also logs
+what it did in **Setup › Automatic actions › (action) › Logs**.
+</details>
+
+<details>
+<summary><b>Why GLPI 11 only?</b></summary>
+
+GLPI 11 changed the plugin bootstrap, routing and firewall (needed for the session-less answer
+pages). Supporting GLPI 10 too would mean two plugin architectures, so installation requires 11.0.0
+or later.
+</details>
+
+## 🧪 Development
+
+<details>
+<summary><b>File structure</b></summary>
 
 ```
 npsphere/
-├── setup.php           # registro do plugin, hooks, versão
-├── hook.php            # instalação, migrações e desinstalação
-├── src/                # classes (namespace GlpiPlugin\Npsphere)
-│   └── QuestionType/   # um arquivo por tipo de pergunta
-├── front/              # páginas (formulários, painel, resposta pública)
-├── ajax/               # endpoints AJAX (prévias, envio, exportação…)
-├── templates/          # Twig
-├── public/             # CSS e JavaScript
-├── locales/            # traduções (.pot)
-├── vendor/             # autoload do Composer (sem dependências externas)
-├── docs/               # status do projeto e imagens deste README
-└── CHANGELOG.md        # histórico de versões
+├── setup.php           Plugin metadata, hooks, public (session-less) routes
+├── hook.php            Install, migrations, uninstall
+├── src/                Classes (namespace GlpiPlugin\Npsphere)
+│   └── QuestionType/   One class per question type
+├── front/              Pages: forms, dashboard, answer pages
+├── ajax/               Previews, sending, exports, one-click answers
+├── templates/          Twig
+├── public/             CSS and JavaScript
+├── locales/            Translations (.pot)
+├── vendor/             Composer autoload (no external dependencies)
+├── docs/               User guide, project status, Pix QR code
+└── screenshots/        Images used in this README (not in the release zip)
 ```
 
-**Tabelas:**
-- `glpi_plugin_npsphere_surveys`, `_questions`, `_answers`, `_answervalues`, `_targets`, `_completions`, `_invites`, `_deliveries`;
-- além da gravação em `glpi_ticketsatisfactions`, que é do GLPI.
+Database tables: `glpi_plugin_npsphere_surveys`, `_questions`, `_answers`, `_answervalues`,
+`_targets`, `_completions`, `_invites`, `_deliveries`, plus the score written to GLPI's
+`glpi_ticketsatisfactions`.
 
----
+</details>
 
-## Roadmap
+The project status, decisions and roadmap are in [docs/NPSPHERE-STATUS.md](docs/NPSPHERE-STATUS.md)
+(in Portuguese). Next on the roadmap: ODS/XLSX export, exclusions in the target audience, an audit
+history, rate limiting on the public link and a full translation.
 
-| Fase | Status |
-|---|---|
-| 1–8. Fundação, perguntas, respostas, métricas, regras condicionais, pesquisa externa, interna e de chamado | ✅ |
-| 9. Notificações e convites por e-mail | ✅ |
-| 10. Painel consolidado | ✅ |
-| 11. Acabamentos: exportação ODS/XLSX, exclusões no público-alvo, auditoria, limite de requisições, tradução | ⏳ |
+<a id="support"></a>
 
-O detalhamento está em [`docs/NPSPHERE-STATUS.md`](docs/NPSPHERE-STATUS.md), e o histórico de cada versão, em [`CHANGELOG.md`](CHANGELOG.md).
+## ☕ Support the project
 
-> As telas deste README são de um GLPI 11.0.11 de demonstração, com dados fictícios.
+<div align="center">
 
----
+**Enjoying the plugin?** It's an independent, open-source project, built and maintained with care so
+that IT teams can hear from the people they serve without leaving GLPI. If it saves your team time,
+you can buy me a coffee: it helps keep the plugin up to date with new GLPI versions. It's completely
+optional. A ⭐ on the repository, a bug report, an idea or a pull request help just as much.
 
-## Licença
+**Curtiu o plugin?** É um projeto independente e de código aberto. Se ele facilita o dia a dia da sua
+equipe, você pode me pagar um café 💚. Isso ajuda a manter o plugin atualizado com as novas versões
+do GLPI. É totalmente opcional: uma ⭐ no repositório, um relato de bug, uma ideia ou um PR ajudam
+tanto quanto.
 
-Distribuído sob a **GNU General Public License v3.0 ou posterior**. Veja [`LICENSE`](LICENSE).
+<table>
+<tr>
+<th width="50%">🌎 From anywhere</th>
+<th width="50%">🇧🇷 Do Brasil, via Pix</th>
+</tr>
+<tr>
+<td align="center" valign="middle">
 
-## Autor
+<a href="https://github.com/sponsors/MichaelRodriguesOficial"><img src="https://img.shields.io/badge/Sponsor%20on%20GitHub-%E2%9D%A4-db61a2?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub"></a>
 
-**Michael Rodrigues** — [@MichaelRodriguesOficial](https://github.com/MichaelRodriguesOficial)
+<sub>One-time or monthly, any amount.<br>GitHub charges no fees on personal sponsorships.</sub>
+
+</td>
+<td align="center" valign="middle">
+
+<img src="docs/pix-qrcode.png" alt="QR code Pix" width="180"><br>
+<sub>Aponte a câmera do app do seu banco</sub>
+
+<details>
+<summary><sub>Pix copia e cola</sub></summary>
+
+```
+00020126890014br.gov.bcb.pix01363d43ffaa-4b56-45ed-b038-ba7407c0a9750227Cafe para o plugin NPSphere5204000053039865802BR5917MICHAEL G R SILVA6009SAO PAULO62070503***6304201C
+```
+
+</details>
+
+</td>
+</tr>
+</table>
+
+</div>
+
+## 📄 License
+
+[GPL-3.0-or-later](LICENSE). Made by **Michael Rodrigues** ·
+[github.com/MichaelRodriguesOficial](https://github.com/MichaelRodriguesOficial)

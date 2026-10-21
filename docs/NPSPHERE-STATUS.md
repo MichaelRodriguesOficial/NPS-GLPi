@@ -387,7 +387,10 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
   - a cópia nasce **inativa**.
 - **Prévia do convite em tela estreita** (linha 0–10 cortada só na prévia): OK como está.
 - **Modelo padrão do convite de chamado** com a 1ª pergunta no e-mail: explicado ao Michael; aguardando decisão.
-- **README** refeito com passo a passo, 13 telas e 4 GIFs (`docs/img/`).
+- **README em inglês**, no padrão do Chatwoot for GLPI:
+  - logo, destaques, telas por assunto (incluindo self-service) e 5 GIFs;
+  - segurança, solução de problemas e doações (Sponsors + Pix com descrição "Cafe para o plugin NPSphere").
+- **docs/FAQ.md**: guia de uso completo, em inglês.
 - Também corrigidos na 0.64.2:
   - telefone espremido na página pública no celular;
   - texto do aviso do clique no e-mail quebrado em colunas.
