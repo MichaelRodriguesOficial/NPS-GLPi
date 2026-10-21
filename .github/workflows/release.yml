@@ -1,10 +1,14 @@
 name: Release
 
-# Ao enviar uma tag vX.Y.Z, monta o ZIP do plugin (pasta npsphere/) e
-# publica a release com ele anexado.
+# Publica a release quando a versão do setup.php muda na main: monta o
+# ZIP do plugin (pasta npsphere/), cria a tag vX.Y.Z e anexa o ZIP. Se a
+# release dessa versão já existe, não faz nada. Também pode ser disparado
+# à mão (Actions › Release › Run workflow).
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: ['setup.php', '.github/workflows/release.yml', '.github/release-notes/**']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,29 +19,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Read the version
+        id: versao
+        run: |
+          VERSAO=$(grep -oP "PLUGIN_NPSPHERE_VERSION', '\K[0-9.]+" setup.php)
+          echo "versao=$VERSAO" >> "$GITHUB_OUTPUT"
+          echo "Versão: $VERSAO"
+
+      - name: Skip if this version is already released
+        id: existe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "v${{ steps.versao.outputs.versao }}" >/dev/null 2>&1; then
+            echo "pular=1" >> "$GITHUB_OUTPUT"; echo "Release já existe."
+          fi
+
       - name: Lint every PHP file
+        if: steps.existe.outputs.pular != '1'
         run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
 
-      - name: Version matches the tag
-        run: |
-          VERSAO="${GITHUB_REF_NAME#v}"
-          grep -q "PLUGIN_NPSPHERE_VERSION', '${VERSAO}'" setup.php \
-            || { echo "setup.php não está na versão ${VERSAO}"; exit 1; }
-
       - name: Build npsphere-X.Y.Z.zip
+        if: steps.existe.outputs.pular != '1'
         run: |
-          VERSAO="${GITHUB_REF_NAME#v}"
+          VERSAO="${{ steps.versao.outputs.versao }}"
           mkdir -p /tmp/pacote/npsphere
           rsync -a --exclude '.git' --exclude '.github' --exclude 'docs' --exclude 'screenshots' ./ /tmp/pacote/npsphere/
           (cd /tmp/pacote && zip -qr "$GITHUB_WORKSPACE/npsphere-${VERSAO}.zip" npsphere)
           unzip -l "npsphere-${VERSAO}.zip" | tail -1
 
       - name: Publish the release
+        if: steps.existe.outputs.pular != '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VERSAO="${GITHUB_REF_NAME#v}"
-          NOTAS=".github/release-notes/${GITHUB_REF_NAME}.md"
+          VERSAO="${{ steps.versao.outputs.versao }}"
+          NOTAS=".github/release-notes/v${VERSAO}.md"
           if [ -f "$NOTAS" ]; then ARG=(--notes-file "$NOTAS"); else ARG=(--generate-notes); fi
-          gh release create "$GITHUB_REF_NAME" "npsphere-${VERSAO}.zip" \
-            --title "NPSphere ${VERSAO}" "${ARG[@]}" --latest
+          gh release create "v${VERSAO}" "npsphere-${VERSAO}.zip" \
+            --target "$GITHUB_SHA" --title "NPSphere ${VERSAO}" "${ARG[@]}" --latest
