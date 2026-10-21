@@ -391,6 +391,10 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
   - logo, destaques, telas por assunto (incluindo self-service) e 5 GIFs;
   - segurança, solução de problemas e doações (Sponsors + Pix com descrição "Cafe para o plugin NPSphere").
 - **docs/FAQ.md**: guia de uso completo, em inglês.
+- **Releases no GitHub:**
+  - a release v0.64.2 já tem o ZIP anexado;
+  - o workflow `.github/workflows/release.yml` publica uma release nova sozinho sempre que a versão do `setup.php` muda na main (notas em `.github/release-notes/vX.Y.Z.md`);
+  - descrição e tópicos do repositório agora em inglês.
 - Também corrigidos na 0.64.2:
   - telefone espremido na página pública no celular;
   - texto do aviso do clique no e-mail quebrado em colunas.
