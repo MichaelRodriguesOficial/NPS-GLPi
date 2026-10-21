@@ -1,7 +1,7 @@
 # NPSphere — Status do Projeto
 
 **Plugin de pesquisas de satisfação para GLPI 11**
-Versão: **0.64.1** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
+Versão: **0.64.2** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 
 ---
 
@@ -339,7 +339,7 @@ Cada um custou várias rodadas:
 
 ## Onde estamos agora
 
-**Fase 9: entregue e testada de ponta a ponta (0.64.1).** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
+**Fase 9: entregue e testada de ponta a ponta (0.64.1; 0.64.2 com o botão Duplicar e o README com telas).** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
 
 ### Teste completo de 21/10 — GLPI 11.0.11 + MariaDB 10.11 + PHP 8.3
 
@@ -378,15 +378,24 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
 - pesquisa nova vindo com "várias respostas: Sim" e "anônima: Sim";
 - balões ⓘ cortados pelo menu de abas.
 
-### Pontos em aberto (decisão do Michael)
+### Decisões de 21/10
 
-- **Duplicar pesquisa:** não há botão na tela (só o código do POST), e a cópia sai **sem perguntas e sem público-alvo**.
-- **Prévia do convite em tela estreita** (~1400 px): o e-mail tem largura fixa e a linha de notas 0–10 fica cortada na prévia. O e-mail enviado não é afetado.
-- **Modelo padrão do convite de chamado** já traz a variável da 1ª pergunta. Com 2+ perguntas, o aviso "Perguntas dentro do e-mail" aparece logo de saída.
+- **Duplicar pesquisa:**
+  - ✅ botão criado na 0.64.2;
+  - copia a configuração, as perguntas (com as regras condicionais) e os modelos;
+  - **não** copia o público-alvo (nem "todos os usuários" ou a lista de destinatários da externa);
+  - a cópia nasce **inativa**.
+- **Prévia do convite em tela estreita** (linha 0–10 cortada só na prévia): OK como está.
+- **Modelo padrão do convite de chamado** com a 1ª pergunta no e-mail: explicado ao Michael; aguardando decisão.
+- **README** refeito com passo a passo, 13 telas e 4 GIFs (`docs/img/`).
+- Também corrigidos na 0.64.2:
+  - telefone espremido na página pública no celular;
+  - texto do aviso do clique no e-mail quebrado em colunas.
 
 ### Falta testar no ambiente real
 
 - **Template limpo (0.64.0/0.64.1):** conferir visualmente no seu GLPI.
+- **Botão Duplicar (0.64.2):** duplicar uma pesquisa e conferir perguntas, inativa e sem público-alvo.
 - Relatório com muitas respostas (acima de ~60/dia o Gmail corta o e-mail) e ações automáticas no modo CLI.
 
 ### Pontos encontrados na revisão — corrigidos na 0.62.1 (validados em 21/10)

@@ -300,6 +300,84 @@ class Survey extends CommonDBTM
      * A satisfação nativa do GLPI (glpi_ticketsatisfactions) é do chamado
      * e fica como está.
      */
+    /**
+     * Cria uma cópia desta pesquisa e devolve o ID da nova (0 em falha).
+     * v0.64.2.
+     *
+     * Vai junto: a configuração da pesquisa, as perguntas (com as regras
+     * condicionais apontando para as perguntas da CÓPIA) e os modelos de
+     * e-mail, lembrete, relatório e aviso.
+     *
+     * Não vai: o público-alvo (Público-alvo da interna, "todos os
+     * usuários" e a lista de destinatários da externa), as respostas, os
+     * convites e os envios. A cópia nasce INATIVA, com link público novo
+     * e sem datas de envio: nada sai dela até alguém revisar e ativar.
+     */
+    public function duplicar(): int
+    {
+        global $DB;
+
+        $origem = (int) $this->getID();
+        if ($origem <= 0) {
+            return 0;
+        }
+
+        $input = $this->fields;
+        // creator_id sai: a cópia pertence a quem duplicou (com a
+        // restrição por criador, mantê-lo a esconderia de quem a criou).
+        unset(
+            $input['id'], $input['date_creation'], $input['date_mod'],
+            $input['public_token'], $input['creator_id'],
+            $input['date_last_report'], $input['date_report_sent'], $input['date_last_alert']
+        );
+        $input['name']            = sprintf(__('%s (cópia)', 'npsphere'), $input['name']);
+        $input['is_active']       = 0;
+        $input['is_deleted']      = 0;
+        $input['target_all']      = 0;
+        $input['mail_recipients'] = '';
+        // Contagem do aviso a partir da criação da cópia (se ligado).
+        $input['alert_since'] = !empty($input['alert_active'])
+            ? ($_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s'))
+            : null;
+
+        $copia = new self();
+        $novo  = (int) $copia->add($input);
+        if ($novo <= 0) {
+            return 0;
+        }
+
+        // Perguntas: gravadas como estão (configuração já validada na
+        // original). As condições são remapeadas para os novos IDs.
+        $agora = $_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s');
+        $mapa  = [];
+        $com_condicao = [];
+        foreach ($DB->request([
+            'FROM'  => Question::getTable(),
+            'WHERE' => ['surveys_id' => $origem],
+            'ORDER' => ['position ASC', 'id ASC'],
+        ]) as $q) {
+            $antiga = (int) $q['id'];
+            unset($q['id']);
+            $q['surveys_id']    = $novo;
+            $q['date_creation'] = $agora;
+            $q['date_mod']      = $agora;
+            $DB->insert(Question::getTable(), $q);
+            $mapa[$antiga] = (int) $DB->insertId();
+            if ((int) ($q['condition_questions_id'] ?? 0) > 0) {
+                $com_condicao[$mapa[$antiga]] = (int) $q['condition_questions_id'];
+            }
+        }
+        foreach ($com_condicao as $nova_q => $alvo_antigo) {
+            $DB->update(
+                Question::getTable(),
+                ['condition_questions_id' => $mapa[$alvo_antigo] ?? 0],
+                ['id' => $nova_q]
+            );
+        }
+
+        return $novo;
+    }
+
     public function cleanDBonPurge()
     {
         global $DB;

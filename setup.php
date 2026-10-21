@@ -17,7 +17,7 @@ if (!defined('GLPI_ROOT')) {
     die('Sorry. You can not access directly to this file');
 }
 
-define('PLUGIN_NPSPHERE_VERSION', '0.64.1');
+define('PLUGIN_NPSPHERE_VERSION', '0.64.2');
 
 // Versão mínima do GLPI suportada (inclusive)
 define('PLUGIN_NPSPHERE_MIN_GLPI_VERSION', '11.0.0');

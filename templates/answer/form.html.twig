@@ -164,6 +164,13 @@
         // A confirmação final não usa .alert: no tema do GLPI o .alert é
         // flex em linha, e ícone, título e textos ficavam lado a lado.
         aviso.className = 'npsphere-um-clique ' + (classe === 'npsphere-um-clique-ok' ? classe : 'alert ' + classe);
+        // Nos avisos (.alert, que é flex), o texto vai num bloco só ao lado
+        // do ícone: solto, cada trecho virava uma coluna (v0.64.2).
+        if (classe !== 'npsphere-um-clique-ok') {
+            html = html.replace(/^\s*(<i[^>]*><\/i>)?\s*/, function (m, icone) {
+                return (icone || '') + '<div class="npsphere-um-clique-texto">';
+            }) + '</div>';
+        }
         aviso.innerHTML = html;
         aviso.hidden = false;
     }

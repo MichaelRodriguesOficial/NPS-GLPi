@@ -716,6 +716,14 @@
 }
 .npsphere-phone-group { display: flex; gap: .5rem; }
 .npsphere-phone-country { max-width: 13rem; flex-shrink: 0; }
+.npsphere-phone-group > input { flex: 1 1 8rem; min-width: 0; }
+/* v0.64.2: no celular o país ocupava quase toda a linha e o campo do
+   número ficava com poucos pixels. Em tela estreita, um embaixo do outro. */
+@media (max-width: 576px) {
+    .npsphere-phone-group { flex-wrap: wrap; }
+    .npsphere-phone-country { max-width: none; flex: 1 1 100%; }
+    .npsphere-phone-group > input { flex: 1 1 100%; }
+}
 .npsphere-phone-warn { color: #d63939; font-size: .75rem; }
 
 /* Blocos de informação ao lado dos campos (aproveitam o espaço vazio
@@ -2348,3 +2356,7 @@ body.npsphere-embed .npsphere-answer-card.text-center { padding: 1.5rem 0; }
 
 .npsphere-mail-marcadores > .npsphere-dica { margin-left: .1rem; }
 .npsphere-template-acoes > .npsphere-dica { align-self: center; }
+
+/* v0.64.2: texto do aviso do clique no e-mail num bloco só, ao lado do ícone. */
+.npsphere-um-clique.alert { align-items: flex-start; gap: .5rem; }
+.npsphere-um-clique-texto { flex: 1 1 auto; min-width: 0; }

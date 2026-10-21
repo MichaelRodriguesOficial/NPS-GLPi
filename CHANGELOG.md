@@ -2,6 +2,16 @@
 
 As versões mais recentes ficam no topo.
 
+## v0.64.2 — botão Duplicar e README com telas
+
+- **Botão "Duplicar"** na tela da pesquisa, ao lado de Salvar. Antes não havia botão, só o código por trás, e a cópia saía sem perguntas.
+  - **A cópia leva:** a configuração, as perguntas (com as regras condicionais apontando para as perguntas da cópia) e os modelos de convite, lembrete, relatório e aviso.
+  - **A cópia não leva:** o público-alvo (Público-alvo da interna, "todos os usuários" e a lista de destinatários da externa), as respostas, os convites e os envios.
+  - Ela nasce **inativa**, com link público novo e sem datas de envio. Uma mensagem avisa para revisar e ativar.
+- **Página pública no celular:** o campo do telefone ficava espremido ao lado do país. Em tela estreita, agora um fica embaixo do outro.
+- **Aviso do clique no e-mail** ("Sua resposta para … foi registrada"): no tema do GLPI, cada trecho do texto virava uma coluna. Agora fica num bloco só, ao lado do ícone.
+- **README** refeito, com o passo a passo de uso, capturas de tela e GIFs (`docs/img/`).
+
 ## v0.64.1 — correções encontradas no teste completo num GLPI 11.0.11
 
 Testado de ponta a ponta num GLPI 11.0.11 com MariaDB:

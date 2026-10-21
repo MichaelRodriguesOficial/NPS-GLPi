@@ -42,24 +42,19 @@ if (isset($_POST['add'])) {
     // inteira, e não pode servir de atalho para copiar a de outra pessoa.
     Survey::exigirGestaoNaPagina((int) $_POST['id']);
 
-    if ($survey->getFromDB($_POST['id'])) {
-        $input = $survey->fields;
-        // creator_id também sai: a cópia pertence a quem duplicou.
-        // Mantê-lo faria a cópia continuar sendo do dono original -- e,
-        // com a restrição por criador, sumir da lista de quem a criou.
-        unset($input['id'], $input['date_creation'], $input['date_mod'],
-              $input['public_token'], $input['creator_id']);
-
-        // Datas de envio são da ORIGINAL: a cópia nasce como pesquisa nova
-        // (sem isso, ela pulava o relatório do dia e o aviso contava a
-        // partir da data da original). v0.62.1.
-        unset($input['date_last_report'], $input['date_report_sent'], $input['date_last_alert']);
-        $input['alert_since'] = !empty($input['alert_active'])
-            ? ($_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s'))
-            : null;
-        $input['name'] = sprintf(__('%s (cópia)', 'npsphere'), $input['name']);
-        $newID = $survey->add($input);
-        Html::redirect(Survey::getFormURL() . '?id=' . $newID);
+    // A cópia leva a configuração e as perguntas, nasce INATIVA e sem
+    // público-alvo (Survey::duplicar, v0.64.2).
+    if ($survey->getFromDB((int) $_POST['id'])) {
+        $newID = $survey->duplicar();
+        if ($newID > 0) {
+            Session::addMessageAfterRedirect(
+                __('Cópia criada, inativa e sem público-alvo. Revise, defina quem responde e ative quando estiver pronta.', 'npsphere'),
+                false,
+                INFO
+            );
+            Html::redirect(Survey::getFormURL() . '?id=' . $newID);
+        }
+        Session::addMessageAfterRedirect(__('Não foi possível duplicar a pesquisa.', 'npsphere'), false, ERROR);
     }
     Html::back();
 } elseif (isset($_POST['delete'])) {
