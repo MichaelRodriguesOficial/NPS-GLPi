@@ -44,8 +44,9 @@
 ### 🎫 After every ticket
 Replaces GLPI's native satisfaction survey. The survey shows up **inside the closed ticket**, and the
 email only goes out if the requester hasn't answered there (15 minutes by default). The score is
-also written to GLPI's own `glpi_ticketsatisfactions`, and GLPI's native email is cancelled, so
-nobody gets asked twice.
+also written to GLPI's own `glpi_ticketsatisfactions`, so it keeps feeding **GLPI's own
+Statistics** (satisfaction average and stars per technician, group, category…). GLPI's native email
+is cancelled, so nobody gets asked twice.
 
 </td>
 <td width="50%" valign="top">
@@ -124,7 +125,7 @@ browser. Dates and numbers use GLPI's own formats. Other languages can be added 
 | Daily report and immediate low-score alert for managers | — | ✅ |
 | NPS, monthly trend and breakdowns by technician, group, category… | average score in Statistics | ✅ |
 | Export every answer to Excel, LibreOffice and CSV | score and comment from the ticket list | ✅ |
-| Score kept in GLPI's own satisfaction table | ✅ | ✅ also written there |
+| Scores in GLPI's own Statistics (average, stars per technician…) | ✅ | ✅ written to the same table |
 
 <a id="screenshots"></a>
 
@@ -197,6 +198,8 @@ surveys appear inside the requester's own ticket.
 | Survey results | Satisfaction dashboard |
 |---|---|
 | ![Results](screenshots/results.png) | ![Dashboard](screenshots/dashboard.png) |
+| **GLPI's own Statistics** keep working (ticket surveys): surveys opened vs answered, average satisfaction | **…and the stars per technician** in Statistics › Tickets › By ticket |
+| ![GLPI statistics: satisfaction charts](screenshots/glpi-stats-satisfaction.png) | ![GLPI statistics: satisfaction per technician](screenshots/glpi-stats-technician.png) |
 
 <details>
 <summary><b>▶ Clicking a row filters the dashboard (animated)</b></summary>
@@ -266,8 +269,8 @@ sequenceDiagram
    Otherwise the invitation goes out, in place of GLPI's native notification.
 3. The requester clicks a score in the email. The signed link records the answer without login and
    opens the rest of the survey.
-4. The score is saved in NPSphere and in GLPI's own satisfaction table. Managers are alerted about
-   low scores and get a daily summary.
+4. The score is saved in NPSphere and in GLPI's own satisfaction table, so it also shows up in
+   GLPI's Statistics. Managers are alerted about low scores and get a daily summary.
 
 <a id="installation"></a>
 

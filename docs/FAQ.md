@@ -32,6 +32,7 @@ so each step gives the label you'll see on screen *(in italics)*.
 - [Where do I see the results?](#where-do-i-see-the-results)
 - [How are the NPS and the score calculated?](#how-are-the-nps-and-the-score-calculated)
 - [How do I export the answers?](#how-do-i-export-the-answers)
+- [Do ticket answers show up in GLPI's own statistics?](#do-ticket-answers-show-up-in-glpis-own-statistics)
 - [Where do I see what changed in a survey?](#where-do-i-see-what-changed-in-a-survey)
 
 **Other questions**
@@ -325,6 +326,27 @@ to every format:
 
 The **Satisfaction dashboard** has the same Excel, LibreOffice and CSV options, with the dashboard's
 filters.
+
+### Do ticket answers show up in GLPI's own statistics?
+
+Yes. For **ticket surveys**, each answer is also written to GLPI's own satisfaction table
+(`glpi_ticketsatisfactions`), with the comment. So everything GLPI already shows about satisfaction
+keeps working, with NPSphere's answers in it:
+
+- **Assistance › Statistics › Tickets › Global** *(Estatísticas › Chamados › Global)*: the
+  **Satisfaction survey** chart (surveys opened vs answered) and the **Satisfaction** chart (average).
+- **Assistance › Statistics › Tickets › By ticket**: the satisfaction average, as stars, **per
+  technician**, group, category, requester and so on.
+
+The score is the same one as the "Nota" column in Results (0 to 10). GLPI's statistics work on a 0–5
+scale, so it's converted the way GLPI itself does it: a **8** becomes **4 stars**.
+
+Internal and external surveys have no ticket, so they only appear in NPSphere's own Results and
+dashboard. When the plugin is uninstalled, the scores already written to GLPI stay.
+
+| Satisfaction charts | Satisfaction per technician |
+|---|---|
+| ![GLPI statistics: satisfaction charts](../screenshots/glpi-stats-satisfaction.png) | ![GLPI statistics: satisfaction per technician](../screenshots/glpi-stats-technician.png) |
 
 ### Where do I see what changed in a survey?
 
