@@ -56,7 +56,7 @@ Versão: **0.65.0** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | Filtros por data, nota e **entidade** | 🟢 |
 | Ordenação, paginação, resposta individual com os widgets reais | 🟢 |
 | Exportação **CSV** respeitando o filtro ativo | 🟢 |
-| Exportação **Excel (.xlsx)** e **LibreOffice (.ods)** — abas Visão geral e Respostas *(0.65.0)* | 🟡 *aguardando validação* |
+| Exportação **Excel (.xlsx)** e **LibreOffice (.ods)** — abas Visão geral e Respostas *(0.65.0)* | 🟢 |
 | Impressão/PDF com escopo e cabeçalho | 🟢 |
 | Exportação ODS / XLSX | ⚪ |
 
@@ -76,7 +76,7 @@ Versão: **0.65.0** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | Acesso anônimo por token (`STRATEGY_NO_CHECK`) | 🟢 |
 | Token de 256 bits, comparação em tempo constante | 🟢 |
 | Bloqueio após 10 tentativas inválidas (por sessão) | 🟢 |
-| **Limite por IP** nas rotas sem login (Symfony RateLimiter + cache do GLPI); falhas bloqueiam o IP por 10 min *(0.65.0)* | 🟡 *aguardando validação* |
+| **Limite por IP** nas rotas sem login (Symfony RateLimiter + cache do GLPI); falhas bloqueiam o IP por 10 min *(0.65.0)* | 🟢 |
 | Identificação (nome, e-mail, telefone internacional) | 🟢 |
 | Validação de e-mail rigorosa (navegador + servidor) | 🟢 |
 | Anti-duplicidade por e-mail/telefone | 🟢 |
@@ -86,7 +86,7 @@ Versão: **0.65.0** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | Item | |
 |---|---|
 | Público-alvo: entidade, perfil, grupo, usuário, "todos" | 🟢 |
-| **Exceções** no público-alvo ("grupo X exceto fulano"), valem também para o convite e o aviso obrigatório *(0.65.0)* | 🟡 *aguardando validação* |
+| **Exceções** no público-alvo ("grupo X exceto fulano"), valem também para o convite e o aviso obrigatório *(0.65.0)* | 🟢 |
 | Recursividade de entidades respeitada | 🟢 |
 | Tela **Minhas pesquisas** (pendentes + respondidas) | 🟢 |
 | Direito próprio **"Minhas pesquisas"** | 🟢 |
@@ -130,7 +130,7 @@ Versão: **0.65.0** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | **Clicar na linha** filtra o painel por ela | 🟢 |
 | "Por pesquisa" abre a pesquisa **direto na aba Resultados** | 🟢 |
 | **Exportação CSV** e impressão, com os mesmos filtros | 🟢 |
-| Exportação **Excel / ODS** (uma aba por quadro) *(0.65.0)* | 🟡 *aguardando validação* |
+| Exportação **Excel / ODS** (uma aba por quadro) *(0.65.0)* | 🟢 |
 | Escopo: cada pessoa vê as pesquisas que criou | 🟢 |
 
 ### Decisões de cálculo registradas
@@ -227,30 +227,32 @@ resposta, sem duplicar.
 | Item | |
 |---|---|
 | **Lembrete** para quem não respondeu — sub-aba "Lembrete" (interna, externa identificada e chamado), ação automática `npsphereLembrete` — 0.58.0 | 🟢 *validado em 15/10 (lembrete da pesquisa interna recebido no Outlook; respondido pelo próprio lembrete)* |
-| Modelo de notificação próprio **"NPSphere — Lembrete de pesquisa"** — 0.58.1 | 🟡 *em teste* |
-| Lembrete do chamado limitado pela **Duração da pesquisa** da entidade (padrão do GLPI; o núcleo não tem lembrete próprio) — 0.58.0 | 🟡 *em teste* |
+| Modelo de notificação próprio **"NPSphere — Lembrete de pesquisa"** — 0.58.1 | 🟢 *validado em 21/10* |
+| Lembrete do chamado limitado pela **Duração da pesquisa** da entidade (padrão do GLPI; o núcleo não tem lembrete próprio) — 0.58.0 | 🟢 *validado em 21/10* |
 | Lembrete na **externa anônima** | ⛔ *não se aplica: link único, não há como saber quem respondeu* |
 | Aviso ao gestor em nota baixa → virou **relatório diário** (decisão de 14/10): todas as respostas do dia por pessoa, notas baixas primeiro; nota de corte configurável sobre a **nota da resposta** (a mesma da aba Resultados, 0 a 10); usuários e grupos do GLPI; horário por pesquisa; ação `npsphereRelatorio` — 0.59.0, layout refeito na 0.59.1 | 🟢 *validado em 14/10 (e-mail recebido)*; histórico: *em teste — 0.59.0 achado confuso e com nota divergente dos Resultados, corrigido na 0.59.1; links só para quem abre a pesquisa no GLPI na 0.59.2* |
-| **Aviso imediato de nota baixa** (espera configurável, padrão 10 min; mesmos destinatários e nota de corte do relatório; ação `npsphereAviso` a cada 5 min) — 0.60.0 | 🟡 *em teste — prévia do aviso OK; prévia do relatório falhava com as duas prévias juntas (tokens CSRF em paralelo), corrigido na 0.60.1; prévias dentro de cada quadro e só com o interruptor ligado na 0.60.2; **e-mail de aviso recebido em 14/10*** |
+| **Aviso imediato de nota baixa** (espera configurável, padrão 10 min; mesmos destinatários e nota de corte do relatório; ação `npsphereAviso` a cada 5 min) — 0.60.0 | 🟢 *validado (e-mail de aviso recebido em 14/10)* |
 | **Aviso independente**: nota baixa, usuários/grupos, links e último envio próprios — 0.62.0 | 🟢 *validado em 14/10 (configuração copiada, só a lista do aviso recebe, nota separada, último envio, não repete, respostas antigas não disparam)* |
 | **Convite do chamado com espera** (padrão 15 min): só sai se o requerente não avaliar no próprio chamado; ação `npsphereConvite` — 0.63.0 | 🟢 *validado no teste automatizado de 21/10 (avaliado no chamado → sem e-mail; sem avaliar → e-mail; reaberto → nada)* |
 | Aba Template com **5 sub-abas** (Convite, Lembrete, Relatório, Aviso, Variáveis) — 0.61.5 | 🟢 *validado em 14/10* |
-| **Aba Template mais limpa**: ajuda dos campos em ícones ⓘ, link "Como funciona" em cada quadro, avisos só quando há problema; sub-aba **Variáveis → Ajuda** (Como funciona por assunto + Ações automáticas + Variáveis) — 0.64.0 | 🟡 *em teste* |
+| **Aba Template mais limpa**: ajuda dos campos em ícones ⓘ, link "Como funciona" em cada quadro, avisos só quando há problema; sub-aba **Variáveis → Ajuda** (Como funciona por assunto + Ações automáticas + Variáveis) — 0.64.0 | 🟢 *validado em 21/10* |
 | Relatório e aviso: quadros recolhidos quando desligados; **modelo de e-mail editável** (assunto, HTML5 + código, restaurar padrão, variáveis com descrição) — 0.61.0 | 🟢 *validado em 14/10* |
 | Sub-aba Variáveis: "Variáveis do modelo e lembrete" + novo quadro "Variáveis do relatório e aviso" — 0.61.2; colunas alinhadas e tabelas recolhidas — 0.61.3; observações dentro de cada grupo — 0.61.4 | 🟢 *validado em 14/10* |
 | `{{link}}` completo na prévia/Variáveis da pesquisa de chamado — 0.61.1 | 🟢 *validado em 14/10* |
 | URL completa da pesquisa de chamado na aba Pesquisa de satisfação (regressão da 0.51.0) — 0.59.2 | 🟢 *validado em 14/10* |
 
-## FASE 11 — Acabamentos 🟡 **ENTREGUE (0.65.0), AGUARDANDO VALIDAÇÃO**
+## FASE 11 — Acabamentos 🟢 **CONCLUÍDA**
+
+Entregue na 0.65.0; validada pelo Michael em 21/10/2026.
 
 | Item | |
 |---|---|
-| Exportação ODS / XLSX (Resultados e Painel), com os filtros da tela | 🟡 *testado aqui; falta o Michael* |
-| Exceções no público-alvo ("grupo X exceto fulano"): coluna `targets.is_excluded`, quadro próprio na aba | 🟡 *testado aqui; falta o Michael* |
-| Histórico de alterações na aba Histórico do GLPI (pesquisa, modelos, perguntas, ordem, público-alvo) | 🟡 *testado aqui; falta o Michael* |
-| Limite de requisições por IP nas rotas sem login (`NPSPHERE_LIMITE_PAGINA/ENVIO/FALHA`) | 🟡 *testado aqui; falta o Michael* |
-| Tradução completa: `.pot` com 816 textos, `en_GB`/`en_US` traduzidos, `pt_BR`/`pt_PT` de origem, JS traduzido via `<meta name="npsphere-i18n">` | 🟡 *testado aqui; falta o Michael* |
-| Datas e números no formato das Preferências do GLPI | 🟡 *testado aqui; falta o Michael* |
+| Exportação ODS / XLSX (Resultados e Painel), com os filtros da tela | 🟢 |
+| Exceções no público-alvo ("grupo X exceto fulano"): coluna `targets.is_excluded`, quadro próprio na aba | 🟢 |
+| Histórico de alterações na aba Histórico do GLPI (pesquisa, modelos, perguntas, ordem, público-alvo) | 🟢 |
+| Limite de requisições por IP nas rotas sem login (`NPSPHERE_LIMITE_PAGINA/ENVIO/FALHA`) | 🟢 |
+| Tradução completa: `.pot` com 816 textos, `en_GB`/`en_US` traduzidos, `pt_BR`/`pt_PT` de origem, JS traduzido via `<meta name="npsphere-i18n">` | 🟢 |
+| Datas e números no formato das Preferências do GLPI | 🟢 |
 
 Ideias registradas para depois: relatório agrupado por técnico; comparação com a média dos últimos 30 dias; e-mails no idioma de cada destinatário; outros idiomas (ex.: `es_ES`).
 
@@ -270,9 +272,9 @@ Ideias registradas para depois: relatório agrupado por técnico; comparação c
 | 8. Vinculada a chamado | 🟢 |
 | 9. Notificações e convites | 🟢 |
 | **10. Painel consolidado** | **🟢** |
-| 11. Acabamentos | 🟡 **entregue, aguardando validação** |
+| 11. Acabamentos | 🟢 |
 
-**10 de 11 fases finalizadas; a 11 foi entregue na 0.65.0 e aguarda validação.**
+**11 de 11 fases finalizadas.** Primeira release pública: **v0.65.0** (as releases anteriores foram removidas do GitHub a pedido do Michael; o histórico completo segue no CHANGELOG).
 
 ---
 
@@ -346,7 +348,7 @@ Cada um custou várias rodadas:
 
 ## Onde estamos agora
 
-**Fase 9 concluída (validada em 21/10). Fase 11 entregue na 0.65.0, aguardando validação.** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
+**Todas as fases concluídas. 0.65.0 validada em 21/10 e publicada como a primeira release do GitHub.** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
 
 ### Teste completo de 21/10 — GLPI 11.0.11 + MariaDB 10.11 + PHP 8.3
 
@@ -441,4 +443,4 @@ Decisões:
 - Os e-mails com o modelo padrão saem no idioma de quem monta o envio (ação automática = idioma padrão do GLPI). E-mail no idioma de cada destinatário ficou como ideia.
 - Datas seguem Configurar › Geral › Valores padrão (ou as preferências do usuário). Com o padrão do GLPI (AAAA-MM-DD), o relatório passa a mostrar 2026-10-21 em vez de 21/10.
 
-Falta o Michael validar: exportar xlsx/ods; criar uma exceção; abrir a aba Histórico; trocar o idioma do usuário para English e passear; conferir o formato das datas.
+✅ **Validado pelo Michael em 21/10** → Fase 11 concluída.
