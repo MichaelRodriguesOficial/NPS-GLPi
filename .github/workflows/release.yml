@@ -1,0 +1,43 @@
+name: Release
+
+# Ao enviar uma tag vX.Y.Z, monta o ZIP do plugin (pasta npsphere/) e
+# publica a release com ele anexado.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint every PHP file
+        run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Version matches the tag
+        run: |
+          VERSAO="${GITHUB_REF_NAME#v}"
+          grep -q "PLUGIN_NPSPHERE_VERSION', '${VERSAO}'" setup.php \
+            || { echo "setup.php não está na versão ${VERSAO}"; exit 1; }
+
+      - name: Build npsphere-X.Y.Z.zip
+        run: |
+          VERSAO="${GITHUB_REF_NAME#v}"
+          mkdir -p /tmp/pacote/npsphere
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'docs' --exclude 'screenshots' ./ /tmp/pacote/npsphere/
+          (cd /tmp/pacote && zip -qr "$GITHUB_WORKSPACE/npsphere-${VERSAO}.zip" npsphere)
+          unzip -l "npsphere-${VERSAO}.zip" | tail -1
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSAO="${GITHUB_REF_NAME#v}"
+          NOTAS=".github/release-notes/${GITHUB_REF_NAME}.md"
+          if [ -f "$NOTAS" ]; then ARG=(--notes-file "$NOTAS"); else ARG=(--generate-notes); fi
+          gh release create "$GITHUB_REF_NAME" "npsphere-${VERSAO}.zip" \
+            --title "NPSphere ${VERSAO}" "${ARG[@]}" --latest
