@@ -2360,3 +2360,44 @@ body.npsphere-embed .npsphere-answer-card.text-center { padding: 1.5rem 0; }
 /* v0.64.2: texto do aviso do clique no e-mail num bloco só, ao lado do ícone. */
 .npsphere-um-clique.alert { align-items: flex-start; gap: .5rem; }
 .npsphere-um-clique-texto { flex: 1 1 auto; min-width: 0; }
+
+/* ------------------------------------------- v0.64.3: páginas de resposta no celular */
+/* Revisão feita a 390px de largura (iPhone/Android comuns). */
+@media (max-width: 576px) {
+    /* NPS: as caixas eram quadradas e, divididas em 11, ficavam com
+       ~22px -- pequenas demais para o dedo. Agora ocupam a largura toda,
+       com altura fixa confortável. */
+    .npsphere-nps-scale { gap: .2rem; }
+    .npsphere-nps-option span {
+        aspect-ratio: auto;
+        min-height: 2.5rem;
+        max-width: none;
+        font-size: .875rem;
+        border-radius: .375rem;
+    }
+    .npsphere-nps-visual-segment { min-width: 0; }
+
+    /* Emoji: os 5 numa linha só, em vez de 3 + 2. */
+    .npsphere-emoticon-scale { flex-wrap: nowrap; gap: .25rem; }
+    .npsphere-emoticon-option { flex: 1 1 0; min-width: 0; padding: .375rem .125rem; }
+    .npsphere-emoji-label { font-size: .6875rem; line-height: 1.2; }
+
+    /* Menos margem e preenchimento em volta: o conteúdo ganha largura. */
+    .npsphere-public-page { margin: 1rem auto; padding: 0 .75rem; }
+    .npsphere-public-card { padding: 1.25rem 1rem; }
+    .npsphere-public-card h1 { font-size: 1.25rem; }
+    .npsphere-identity { padding: .75rem .875rem 1rem; }
+    .npsphere-answer-card > .card-body { padding: 1rem; }
+    body.npsphere-embed #npsphere-embed-root { padding: 0; }
+    body.npsphere-embed .npsphere-answer-card > .card-body { padding: 1rem; }
+
+    /* Pesquisa obrigatória (aviso após o login): menos borda em volta. */
+    .npsphere-gate { padding: .5rem; }
+    .npsphere-gate-box { padding: 1.25rem 1rem; max-height: calc(100vh - 1rem); }
+
+    /* Estrelas maiores, para acertar com o dedo. */
+    .npsphere-star-option i { font-size: 2rem; }
+
+    /* Botão de enviar na largura toda, fácil de alcançar com o polegar. */
+    .npsphere-submit-btn { width: 100%; justify-content: center; }
+}

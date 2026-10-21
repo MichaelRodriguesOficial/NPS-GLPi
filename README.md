@@ -106,7 +106,7 @@ GLPI's own mail queue.
 | Survey list | Survey settings |
 |---|---|
 | ![Survey list](screenshots/survey-list.png) | ![Survey settings](screenshots/survey-form.png) |
-| **Questions**: drag to reorder, edit, duplicate | **Preview**: exactly what respondents see, nothing is recorded |
+| **Questions**: drag to reorder, edit, duplicate a question | **Preview**: exactly what respondents see, nothing is recorded |
 | ![Questions](screenshots/questions.png) | ![Preview](screenshots/preview.png) |
 
 <details>

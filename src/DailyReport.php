@@ -620,11 +620,11 @@ class DailyReport
     private static function envelope(string $conteudo, int $largura = 680, string $topo = ''): string
     {
         return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#f5f7fb;">'
-            . '<tr><td align="center" style="padding:24px 12px;">'
+            . '<tr><td align="center" class="nps-fora" style="padding:24px 12px;">'
             . '<table role="presentation" width="' . $largura . '" cellpadding="0" cellspacing="0" border="0"'
             . ' style="width:100%;max-width:' . $largura . 'px;margin:0 auto;background:#ffffff;border:1px solid #e6e7e9;'
             . ($topo !== '' ? 'border-top:4px solid ' . $topo . ';' : '') . 'border-radius:8px;text-align:left;">'
-            . '<tr><td style="padding:24px 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#1d273b;">'
+            . '<tr><td class="nps-cartao" style="padding:24px 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.45;color:#1d273b;">'
             . $conteudo
             . '</td></tr></table></td></tr></table>';
     }

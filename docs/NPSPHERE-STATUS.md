@@ -1,7 +1,7 @@
 # NPSphere — Status do Projeto
 
 **Plugin de pesquisas de satisfação para GLPI 11**
-Versão: **0.64.2** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
+Versão: **0.64.3** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 
 ---
 
@@ -399,10 +399,18 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
   - telefone espremido na página pública no celular;
   - texto do aviso do clique no e-mail quebrado em colunas.
 
+### Validação do Michael (21/10)
+
+- ✅ **Resposta pelo e-mail sem login** (0.64.1): no chamado e pelo e-mail numa janela anônima.
+- ✅ **Aba Template** (0.64.0/0.64.1).
+- 🔁 **Duplicar** (0.64.2) funcionou, mas o Michael pediu o padrão do GLPI → **0.64.3**: Clonar pela ação em massa (lista e Ações da pesquisa); botão removido.
+- 🔁 **Celular:** o telefone ficou certo, mas as outras páginas não estavam boas → **0.64.3**: revisão a 390 px de todas as páginas de resposta e dos 4 e-mails.
+
 ### Falta testar no ambiente real
 
 - **Template limpo (0.64.0/0.64.1):** conferir visualmente no seu GLPI.
-- **Botão Duplicar (0.64.2):** duplicar uma pesquisa e conferir perguntas, inativa e sem público-alvo.
+- **Clonar (0.64.3):** Ações › Clonar na lista e dentro da pesquisa; cópia inativa, com perguntas e sem público-alvo.
+- **Celular (0.64.3):** abrir no celular um convite, a resposta pelo link, a pesquisa pública e o aviso de pesquisa obrigatória.
 - Relatório com muitas respostas (acima de ~60/dia o Gmail corta o e-mail) e ações automáticas no modo CLI.
 
 ### Pontos encontrados na revisão — corrigidos na 0.62.1 (validados em 21/10)

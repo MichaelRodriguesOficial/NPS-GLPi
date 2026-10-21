@@ -1005,7 +1005,8 @@ class SurveyMailer
             case 'stars':
                 $max = (int) ($cfg['max'] ?? 5);
                 for ($i = 1; $i <= $max; $i++) {
-                    $opcoes[] = [(string) $i, str_repeat('★', $i), '#f59f00'];
+                    // Estrelas menores e juntas: 5 delas cabem na fração da linha no celular.
+                    $opcoes[] = [(string) $i, '<span style="font-size:12px;letter-spacing:-1px;">' . str_repeat('★', $i) . '</span>', '#f59f00'];
                 }
                 break;
 
@@ -1049,25 +1050,35 @@ class SurveyMailer
                 . __('Responder esta pergunta', 'npsphere') . '</a></p>';
         }
 
-        $html .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0">' . ($vertical ? '' : '<tr>');
-
-        foreach ($opcoes as [$valor, $rotulo, $cor]) {
-            $botao = self::botaoBlindado(
-                $base . '&valor=' . rawurlencode($valor),
-                $rotulo,
-                $cor,
-                $vertical ? 0 : 34,
-                '9px 10px',
-                4,
-                true
-            );
-
-            $html .= $vertical
-                ? '<tr><td style="padding:0 0 6px 0;">' . $botao . '</td></tr>'
-                : '<td style="padding:0 4px 6px 0;">' . $botao . '</td>';
+        if ($vertical) {
+            $html .= '<table role="presentation" cellpadding="0" cellspacing="0" border="0">';
+            foreach ($opcoes as [$valor, $rotulo, $cor]) {
+                $html .= '<tr><td style="padding:0 0 6px 0;">'
+                    . self::botaoBlindado($base . '&valor=' . rawurlencode($valor), $rotulo, $cor, 0, '9px 10px', 4, true)
+                    . '</td></tr>';
+            }
+            return $html . '</table>';
         }
 
-        return $html . ($vertical ? '' : '</tr>') . '</table>';
+        // v0.64.3: linha FLUIDA -- cada opção é uma fração igual da largura
+        // (table-layout fixo + largura em %). Antes cada botão tinha 34px
+        // fixos e a linha de 0 a 10 passava da tela do celular (~520px),
+        // obrigando a rolar de lado. Poucas opções (Sim/Não, estrelas,
+        // emoji) têm largura máxima, para não virarem faixas enormes.
+        $total   = count($opcoes);
+        $maximo  = $total >= 6 ? '100%' : ($total * ($total <= 3 ? 110 : 84)) . 'px';
+        $largura = floor(10000 / $total) / 100;
+
+        $html .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"'
+            . ' style="width:100%;max-width:' . $maximo . ';table-layout:fixed;"><tr>';
+        foreach ($opcoes as $i => [$valor, $rotulo, $cor]) {
+            $html .= '<td width="' . $largura . '%" class="nps-opcao" style="width:' . $largura . '%;padding:0 '
+                . ($i === $total - 1 ? '0' : '3px') . ' 6px 0;">'
+                . self::botaoFluido($base . '&valor=' . rawurlencode($valor), $rotulo, $cor)
+                . '</td>';
+        }
+
+        return $html . '</tr></table>';
     }
 
     private static function montarBotao(string $url): string
@@ -1116,6 +1127,25 @@ class SurveyMailer
     }
 
     /**
+     * Botão de uma opção na linha fluida: ocupa a célula inteira. Mesma
+     * blindagem para o Outlook do botaoBlindado() (cor e espaçamento na
+     * célula), sem largura fixa.
+     *
+     * @param string $rotulo já escapado para HTML
+     */
+    private static function botaoFluido(string $url, string $rotulo, string $cor): string
+    {
+        return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;"><tr>'
+            . '<td align="center" bgcolor="' . $cor . '" style="background:' . $cor . ';border-radius:4px;mso-padding-alt:9px 0;">'
+            . '<a href="' . htmlspecialchars($url) . '" target="_blank"'
+            . ' style="display:block;padding:9px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:18px;'
+            . 'font-weight:bold;color:#ffffff;text-decoration:none;text-align:center;border-radius:4px;'
+            . 'white-space:nowrap;overflow:hidden;">'
+            . $rotulo . '</a>'
+            . '</td></tr></table>';
+    }
+
+    /**
      * Cor da opção conforme a posição na escala.
      *
      * Fixas de propósito: o e-mail é lido fora do GLPI, onde as
@@ -1149,14 +1179,14 @@ class SurveyMailer
 
         return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"'
             . ' style="width:100%;background:#f5f7fb;">'
-            . '<tr><td align="center" style="padding:32px 16px;text-align:center;">'
+            . '<tr><td align="center" class="nps-fora" style="padding:32px 16px;text-align:center;">'
             . '<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0"'
             . ' style="width:100%;max-width:560px;margin:0 auto;background:#ffffff;'
             . 'border:1px solid #e6e7e9;border-radius:8px;text-align:left;">'
-            . '<tr><td style="padding:28px 32px 6px 32px;' . $fonte
+            . '<tr><td class="nps-cartao" style="padding:28px 32px 6px 32px;' . $fonte
             . 'font-size:18px;font-weight:bold;color:#206bc4;">'
             . htmlspecialchars($titulo) . '</td></tr>'
-            . '<tr><td style="padding:6px 32px 28px 32px;' . $fonte
+            . '<tr><td class="nps-cartao" style="padding:6px 32px 28px 32px;' . $fonte
             . 'font-size:14px;line-height:1.5;color:#333333;">' . $corpo . '</td></tr>'
             . '</table></td></tr></table>';
     }
@@ -1318,6 +1348,16 @@ class SurveyMailer
             . "<meta charset=\"UTF-8\">\n"
             . "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
             . '<title>' . htmlspecialchars($titulo) . "</title>\n"
+            // v0.64.3: no celular, menos margem em volta do cartão e botões
+            // de opção mais compactos. Quem ignora <style> fica com o
+            // layout fluido, que já cabe na tela.
+            . "<style>\n"
+            . "@media only screen and (max-width:480px){"
+            . ".nps-fora{padding:12px 6px !important;}"
+            . ".nps-cartao{padding-left:16px !important;padding-right:16px !important;}"
+            . ".nps-opcao a{font-size:13px !important;padding:10px 0 !important;}"
+            . "}\n"
+            . "</style>\n"
             . "</head>\n"
             . "<body>\n"
             . $fragmento . "\n"

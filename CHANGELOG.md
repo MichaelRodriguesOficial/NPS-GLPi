@@ -2,6 +2,22 @@
 
 As versões mais recentes ficam no topo.
 
+## v0.64.3 — Clonar no padrão do GLPI e páginas de resposta no celular
+
+- **Clonar no lugar do botão Duplicar.** A pesquisa passou a usar o recurso de clonagem do próprio GLPI (`Glpi\Features\Clonable`).
+  - **Onde fica:** na lista, selecione a pesquisa e use **Ações › Clonar**. Dentro da pesquisa, use **Ações › Clonar**.
+  - **Nome:** o GLPI dá o sufixo "(cópia)" e garante que o nome não se repete.
+  - **O que vai na cópia** é o mesmo da 0.64.2: configuração, perguntas (com as regras condicionais remapeadas) e modelos.
+  - **O que não vai:** público-alvo, respostas e envios. A cópia nasce inativa.
+  - O botão "Duplicar" dentro da pesquisa saiu.
+- **Celular (revisão a 390 px)** das páginas de quem responde:
+  - **E-mails** (convite, lembrete, relatório e aviso): a linha de notas de 0 a 10 tinha largura fixa (~520 px) e obrigava a rolar de lado. Agora as opções dividem a largura disponível, e um estilo para tela pequena reduz as margens. Isso também resolve a linha de notas cortada na prévia do convite em telas estreitas.
+  - **Notas de 0 a 10:** as caixas tinham ~22 px no celular. Agora ocupam a largura toda, com 40 px de altura.
+  - **Emoji:** os 5 ficam numa linha só, em vez de 3 + 2.
+  - **Estrelas:** maiores, mais fáceis de tocar.
+  - **Margens:** menores na página pública, nas páginas do link do e-mail, na pesquisa dentro do chamado e no aviso de pesquisa obrigatória.
+  - **Botão "Enviar avaliação":** na largura toda.
+
 ## v0.64.2 — botão Duplicar e README com telas
 
 - **Botão "Duplicar"** na tela da pesquisa, ao lado de Salvar. Antes não havia botão, só o código por trás, e a cópia saía sem perguntas.

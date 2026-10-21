@@ -34,7 +34,7 @@ so each step gives the label you'll see on screen *(in italics)*.
 - [How do I export the answers?](#how-do-i-export-the-answers)
 
 **Other questions**
-- [How do I duplicate a survey?](#how-do-i-duplicate-a-survey)
+- [How do I clone (duplicate) a survey?](#how-do-i-clone-duplicate-a-survey)
 - [Can a person answer more than once?](#can-a-person-answer-more-than-once)
 - [What happens when a ticket is reopened?](#what-happens-when-a-ticket-is-reopened)
 - [Can I have different ticket surveys per entity?](#can-i-have-different-ticket-surveys-per-entity)
@@ -316,13 +316,17 @@ has its own export with the same filters.
 
 ## Other questions
 
-### How do I duplicate a survey?
+### How do I clone (duplicate) a survey?
 
-Open the survey and click **Duplicate** *(Duplicar)*, next to Save.
+The same way as anything else in GLPI:
 
-- **The copy gets:** the settings, the questions (with their conditional rules) and the email
-  templates.
-- **The copy doesn't get:** the target audience, the answers, the invitations and the sending history.
+- **From the list:** tick the survey in **Administration › Satisfaction surveys**, click **Actions**
+  *(Ações)*, choose **Clone** *(Clonar)* and confirm.
+- **From the survey itself:** click **Actions** *(Ações)* at the top of the survey and choose **Clone**.
+
+The copy is named "*… (cópia)*".
+- **It gets:** the settings, the questions (with their conditional rules) and the email templates.
+- **It doesn't get:** the target audience, the answers, the invitations and the sending history.
 - It starts **inactive** with a new public link. Review it, set who answers, and activate it.
 
 ### Can a person answer more than once?

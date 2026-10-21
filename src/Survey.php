@@ -4,6 +4,7 @@ namespace GlpiPlugin\Npsphere;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\Features\Clonable;
 use Log;
 use Notepad;
 use Session;
@@ -17,6 +18,10 @@ use Session;
  */
 class Survey extends CommonDBTM
 {
+    // v0.64.3: "Clonar" no padrão do GLPI (ação em massa na lista e no
+    // botão Ações da pesquisa), no lugar do botão Duplicar da 0.64.2.
+    use Clonable;
+
     /** Nome do direito usado pelo sistema de permissões do GLPI */
     public static $rightname = 'plugin_npsphere_survey';
 
@@ -301,53 +306,53 @@ class Survey extends CommonDBTM
      * e fica como está.
      */
     /**
-     * Cria uma cópia desta pesquisa e devolve o ID da nova (0 em falha).
-     * v0.64.2.
-     *
-     * Vai junto: a configuração da pesquisa, as perguntas (com as regras
-     * condicionais apontando para as perguntas da CÓPIA) e os modelos de
-     * e-mail, lembrete, relatório e aviso.
-     *
-     * Não vai: o público-alvo (Público-alvo da interna, "todos os
-     * usuários" e a lista de destinatários da externa), as respostas, os
-     * convites e os envios. A cópia nasce INATIVA, com link público novo
-     * e sem datas de envio: nada sai dela até alguém revisar e ativar.
+     * Clonar (Glpi\Features\Clonable). As perguntas não são
+     * CommonDBConnexity, então são copiadas em post_clone().
      */
-    public function duplicar(): int
+    public function getCloneRelations(): array
     {
-        global $DB;
+        return [];
+    }
 
-        $origem = (int) $this->getID();
-        if ($origem <= 0) {
-            return 0;
-        }
-
-        $input = $this->fields;
-        // creator_id sai: a cópia pertence a quem duplicou (com a
-        // restrição por criador, mantê-lo a esconderia de quem a criou).
+    /**
+     * O que a cópia NÃO leva (v0.64.3):
+     *  - o público-alvo: "todos os usuários" e a lista de destinatários da
+     *    externa (as linhas do Público-alvo não são copiadas);
+     *  - datas de envio, link público e dono (a cópia é de quem clonou).
+     * E ela nasce INATIVA: nada sai dela até alguém revisar e ativar.
+     * O nome ganha o sufixo de cópia do próprio GLPI.
+     */
+    public function prepareInputForClone($input)
+    {
         unset(
-            $input['id'], $input['date_creation'], $input['date_mod'],
             $input['public_token'], $input['creator_id'],
             $input['date_last_report'], $input['date_report_sent'], $input['date_last_alert']
         );
-        $input['name']            = sprintf(__('%s (cópia)', 'npsphere'), $input['name']);
         $input['is_active']       = 0;
         $input['is_deleted']      = 0;
         $input['target_all']      = 0;
         $input['mail_recipients'] = '';
-        // Contagem do aviso a partir da criação da cópia (se ligado).
-        $input['alert_since'] = !empty($input['alert_active'])
+        $input['alert_since']     = !empty($input['alert_active'])
             ? ($_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s'))
             : null;
 
-        $copia = new self();
-        $novo  = (int) $copia->add($input);
-        if ($novo <= 0) {
-            return 0;
+        return $input;
+    }
+
+    /**
+     * Copia as perguntas da original, com as regras condicionais
+     * apontando para as perguntas da CÓPIA.
+     */
+    public function post_clone($source, $history)
+    {
+        global $DB;
+
+        $origem = (int) $source->getID();
+        $novo   = (int) $this->getID();
+        if ($origem <= 0 || $novo <= 0) {
+            return;
         }
 
-        // Perguntas: gravadas como estão (configuração já validada na
-        // original). As condições são remapeadas para os novos IDs.
         $agora = $_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s');
         $mapa  = [];
         $com_condicao = [];
@@ -374,8 +379,6 @@ class Survey extends CommonDBTM
                 ['id' => $nova_q]
             );
         }
-
-        return $novo;
     }
 
     public function cleanDBonPurge()

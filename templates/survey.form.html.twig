@@ -398,37 +398,4 @@
         }
     </script>
 
-    {# v0.64.2 -- botão "Duplicar": vai para a barra de botões do GLPI
-       (Salvar / Colocar na lixeira). Sem JavaScript, fica aqui mesmo. #}
-    {% if item.getID() > 0 and not item.isDeleted() and has_profile_right('plugin_npsphere_survey', constant('CREATE')) %}
-        <div class="col-12 npsphere-duplicar-lugar">
-            <button type="submit" name="duplicate" value="1" id="npsphere-duplicar"
-                    class="btn btn-outline-secondary me-2"
-                    title="{{ __('Cria uma cópia com as perguntas e os modelos de e-mail, inativa e sem público-alvo.', 'npsphere') }}"
-                    onclick="return confirm('{{ __('Criar uma cópia desta pesquisa? A cópia leva as perguntas e os modelos de e-mail, nasce inativa e sem público-alvo. Alterações não salvas nesta tela não vão para a cópia.', 'npsphere')|e('js') }}');">
-                <i class="ti ti-copy"></i>
-                <span>{{ __('Duplicar', 'npsphere') }}</span>
-            </button>
-        </div>
-        <script>
-            (function () {
-                // A barra de botões é desenhada DEPOIS deste bloco: espera
-                // o resto do formulário existir.
-                function mover() {
-                    var botao = document.getElementById('npsphere-duplicar');
-                    var form  = botao ? botao.closest('form') : null;
-                    var barra = form ? form.querySelector('.form-button-separator') : null;
-                    if (!barra) { return false; }
-                    barra.appendChild(botao);
-                    var lugar = document.querySelector('.npsphere-duplicar-lugar');
-                    if (lugar) { lugar.remove(); }
-                    return true;
-                }
-                if (!mover()) {
-                    setTimeout(mover, 0);
-                    document.addEventListener('DOMContentLoaded', mover);
-                }
-            })();
-        </script>
-    {% endif %}
 {% endblock %}
