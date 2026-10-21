@@ -350,7 +350,7 @@ msgstr "Category"
 msgid "Promotor"
 msgstr "Promoter"
 
-#: ajax/results.export.php:170 src/QuestionType/Emoticon.php:34 templates/answer_detail.html.twig:31
+#: ajax/results.export.php:170 templates/answer_detail.html.twig:31
 msgid "Neutro"
 msgstr "Passive"
 
@@ -1097,6 +1097,11 @@ msgstr "Very dissatisfied"
 #: src/QuestionType/Emoticon.php:33
 msgid "Insatisfeito"
 msgstr "Dissatisfied"
+
+#: src/QuestionType/Emoticon.php:34
+msgctxt "emoticon"
+msgid "Neutro"
+msgstr "Neutral"
 
 #: src/QuestionType/Emoticon.php:35
 msgid "Satisfeito"

@@ -27,11 +27,13 @@ As versões mais recentes ficam no topo.
   - Os textos montados pelo JavaScript (botões Anterior/Próxima, "Pergunta 1 de 4", aviso de pesquisa obrigatória, confirmações) também são traduzidos.
   - Nomes dos países do telefone, nome do arquivo exportado e o atributo de idioma das páginas e e-mails também seguem o idioma.
   - Textos genéricos ("Sim", "Não", "Nome", "Descrição", "Editar"…) passaram a usar os do próprio GLPI.
+  - O nível do meio do emoji ("Neutro") tem tradução própria: "Neutral" em inglês, e não "Passive" como a classificação do NPS.
   - Ferramenta `tools/locales.py` para extrair, atualizar e compilar as traduções (fora do ZIP). Para outro idioma, basta copiar o `en_GB.po`.
 - **Datas e números no formato das Preferências do GLPI** (Formato de data e Formato dos números), como no resto do GLPI. Antes o plugin fixava 21/10/2026 e vírgula decimal.
   - Afeta as telas, o aviso de pesquisa obrigatória e o relatório diário por e-mail.
   - O relatório sai pela ação automática, sem usuário: usa o formato de Configurar › Geral › Valores padrão. Se preferir 21-10-2026 a 2026-10-21, troque o "Formato de data" ali (ou nas preferências de cada usuário).
 - **Correção:** o campo de busca da lista de respostas mostrava `{% if is_ticket %}` no texto de exemplo.
+- **README:** telas e GIFs em inglês (as de português ficam num bloco próprio), GIF de abertura com o ciclo completo e comparação com a pesquisa nativa do GLPI.
 
 ## v0.64.3 — Clonar no padrão do GLPI e páginas de resposta no celular
 

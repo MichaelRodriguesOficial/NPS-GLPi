@@ -130,7 +130,7 @@ automatic action is disabled.
      wins: that person doesn't see the survey, isn't asked by the mandatory pop-up and doesn't get the
      invitation email.
 3. Activate it. Users with the **My surveys** right *(Minhas pesquisas)* see it under **Tools › My
-   surveys**, or **Plug-ins › My surveys** in the self-service portal.
+   surveys**, or **Plugins › My surveys** in the self-service portal.
 4. To also email them, go to **Template › Invitation** and click **Send invitations** *(Enviar
    convites)*. The card at the top shows who will receive it, who already answered and who has no email
    address.
@@ -165,7 +165,7 @@ The answer page works on phones too.
 
 Yes. Users with the simplified interface can do everything a respondent needs:
 
-- **Internal surveys** are listed under **Plug-ins › My surveys** *(Minhas pesquisas)*, with the
+- **Internal surveys** are listed under **Plugins › My surveys** *(Minhas pesquisas)*, with the
   deadline of each one.
 - **Mandatory surveys** pop up after login (see above).
 - **Ticket surveys** appear inside the requester's own ticket.
@@ -174,9 +174,9 @@ Yes. Users with the simplified interface can do everything a respondent needs:
 Managing surveys needs the central interface: the self-service profile can only be given the right
 to *answer*.
 
-| Plug-ins menu | My surveys |
+| Plugins menu | My surveys |
 |---|---|
-| ![Plug-ins menu](../screenshots/selfservice-menu.png) | ![My surveys](../screenshots/selfservice-my-surveys.png) |
+| ![Plugins menu](../screenshots/selfservice-menu.png) | ![My surveys](../screenshots/selfservice-my-surveys.png) |
 
 ![Login, mandatory survey, answered](../screenshots/demo-selfservice.gif)
 

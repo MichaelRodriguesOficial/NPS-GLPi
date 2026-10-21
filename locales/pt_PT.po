@@ -345,7 +345,7 @@ msgstr ""
 msgid "Promotor"
 msgstr ""
 
-#: ajax/results.export.php:170 src/QuestionType/Emoticon.php:34 templates/answer_detail.html.twig:31
+#: ajax/results.export.php:170 templates/answer_detail.html.twig:31
 msgid "Neutro"
 msgstr ""
 
@@ -1071,6 +1071,11 @@ msgstr ""
 
 #: src/QuestionType/Emoticon.php:33
 msgid "Insatisfeito"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:34
+msgctxt "emoticon"
+msgid "Neutro"
 msgstr ""
 
 #: src/QuestionType/Emoticon.php:35

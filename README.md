@@ -29,8 +29,8 @@
 </p>
 
 <p align="center">
-  <img src="screenshots/demo-email-one-click.gif" width="760" alt="Answering from the email with one click">
-  <br><sub>From the email to a recorded answer: click the score, finish the rest, done. No login needed.</sub>
+  <img src="screenshots/demo-overview.gif" width="880" alt="NPSphere overview: create a survey, send it, answer from the email, follow the results">
+  <br><sub>The whole cycle in under a minute: create the survey, send the invitation, answer with one click from the email (no login), then follow the results and the dashboard.</sub>
 </p>
 
 ---
@@ -93,14 +93,45 @@ GLPI's own mail queue.
 
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🧰 Works the GLPI way
+Rights per profile, **Actions › Clone**, the **Historical** tab, GLPI's mail queue and automatic
+actions, entities and sub-entities. Nothing new to learn for whoever already runs GLPI.
+
+</td>
+<td width="50%" valign="top">
+
+### 🌍 English and Portuguese
+The interface follows each user's language in GLPI, and the public link follows the visitor's
+browser. Dates and numbers use GLPI's own formats. Other languages can be added with a `.po` file.
+
+</td>
+</tr>
 </table>
+
+### Why not GLPI's native satisfaction survey?
+
+| | GLPI native | NPSphere |
+|---|:---:|:---:|
+| Survey after a ticket is closed | ✅ | ✅ shown inside the ticket |
+| Answer straight from the email, without logging in | — | ✅ one click |
+| Your own questions (NPS, stars, emoticons, choices, text) and conditions | stars + comment | ✅ 7 types |
+| Surveys for staff (internal) and for customers without an account (external) | — | ✅ |
+| Mandatory survey after login | — | ✅ |
+| Reminders for those who haven't answered | — | ✅ |
+| Daily report and immediate low-score alert for managers | — | ✅ |
+| NPS, monthly trend and breakdowns by technician, group, category… | average score in Statistics | ✅ |
+| Export every answer to Excel, LibreOffice and CSV | score and comment from the ticket list | ✅ |
+| Score kept in GLPI's own satisfaction table | ✅ | ✅ also written there |
 
 <a id="screenshots"></a>
 
 ## 📸 Screenshots
 
-> The screenshots show the **Brazilian Portuguese** interface; **English** is included too and follows
-> each user's language in GLPI. They come from a demo GLPI 11.0.11 with made-up data.
+> From a demo GLPI 11.0.11 with made-up data. The interface is also available in **Brazilian
+> Portuguese** ([screenshots below](#screenshots-pt-br)).
 
 ### Building a survey
 
@@ -109,6 +140,8 @@ GLPI's own mail queue.
 | ![Survey list](screenshots/survey-list.png) | ![Survey settings](screenshots/survey-form.png) |
 | **Questions**: drag to reorder, edit, duplicate a question | **Preview**: exactly what respondents see, nothing is recorded |
 | ![Questions](screenshots/questions.png) | ![Preview](screenshots/preview.png) |
+| **Target audience**: who answers, with exceptions | |
+| ![Target audience](screenshots/target-audience.png) | |
 
 <details>
 <summary><b>▶ Adding a question (animated)</b></summary>
@@ -136,16 +169,22 @@ GLPI's own mail queue.
 |---|---|---|
 | ![Invitation email](screenshots/invite-email.png) | ![Survey inside the ticket](screenshots/ticket-survey.png) | <img src="screenshots/mobile-public.png" width="260" alt="Public survey on a phone"> |
 
+<details>
+<summary><b>▶ One click in the email (animated)</b></summary>
+<br>
+<p align="center"><img src="screenshots/demo-email-one-click.gif" width="880" alt="Answering from the email with one click"></p>
+</details>
+
 ### Self-service portal
 
 Users of the **simplified interface** (Self-Service profile) answer without ever leaving it. Internal
-surveys are listed under **Plug-ins › My surveys** ("Minhas pesquisas"). A **mandatory** survey pops
+surveys are listed under **Plugins › My surveys**. A **mandatory** survey pops
 up right after login: it can be postponed until the last day, then it must be answered. Ticket
 surveys appear inside the requester's own ticket.
 
-| Mandatory survey after login | "My surveys" in the Plug-ins menu |
+| Mandatory survey after login | "My surveys" in the Plugins menu |
 |---|---|
-| ![Mandatory survey pop-up](screenshots/selfservice-mandatory.png) | ![Plug-ins menu](screenshots/selfservice-menu.png) ![My surveys](screenshots/selfservice-my-surveys.png) |
+| ![Mandatory survey pop-up](screenshots/selfservice-mandatory.png) | ![Plugins menu](screenshots/selfservice-menu.png) ![My surveys](screenshots/selfservice-my-surveys.png) |
 
 <details>
 <summary><b>▶ Login → mandatory survey → answered (animated)</b></summary>
@@ -163,6 +202,36 @@ surveys appear inside the requester's own ticket.
 <summary><b>▶ Clicking a row filters the dashboard (animated)</b></summary>
 <br>
 <p align="center"><img src="screenshots/demo-dashboard.gif" width="880" alt="Filtering the dashboard"></p>
+</details>
+
+<a id="screenshots-pt-br"></a>
+
+<details>
+<summary><b>🇧🇷 Interface em português (Brazilian Portuguese screenshots)</b></summary>
+<br>
+
+| Lista de pesquisas | Configuração da pesquisa |
+|---|---|
+| ![Lista](screenshots/pt-br/survey-list.png) | ![Pesquisa](screenshots/pt-br/survey-form.png) |
+| **Perguntas** | **Visualizar** |
+| ![Perguntas](screenshots/pt-br/questions.png) | ![Visualizar](screenshots/pt-br/preview.png) |
+| **Template › Convite** | **Template › Relatório** |
+| ![Convite](screenshots/pt-br/template-invite.png) | ![Relatório](screenshots/pt-br/template-report.png) |
+| **Template › Aviso** | **Template › Ajuda** |
+| ![Aviso](screenshots/pt-br/template-alert.png) | ![Ajuda](screenshots/pt-br/template-help.png) |
+| **E-mail do convite** | **Dentro do chamado** |
+| ![E-mail](screenshots/pt-br/invite-email.png) | ![Chamado](screenshots/pt-br/ticket-survey.png) |
+| **Resultados** | **Painel de satisfação** |
+| ![Resultados](screenshots/pt-br/results.png) | ![Painel](screenshots/pt-br/dashboard.png) |
+| **Pesquisa obrigatória (autoatendimento)** | **Minhas pesquisas** |
+| ![Obrigatória](screenshots/pt-br/selfservice-mandatory.png) | ![Minhas pesquisas](screenshots/pt-br/selfservice-my-surveys.png) |
+
+Animações: [resposta pelo e-mail](screenshots/pt-br/demo-email-one-click.gif) ·
+[nova pergunta](screenshots/pt-br/demo-add-question.gif) ·
+[aba Template](screenshots/pt-br/demo-template.gif) ·
+[painel](screenshots/pt-br/demo-dashboard.gif) ·
+[autoatendimento](screenshots/pt-br/demo-selfservice.gif)
+
 </details>
 
 ## 🧭 How it works
@@ -243,8 +312,8 @@ mv marketplace/npsphere ../npsphere-old && mv ../npsphere-new/npsphere marketpla
 rm -rf ../npsphere-old ../npsphere-new
 ```
 
-Then open **Setup › Plugins** and click **Update**. Database migrations run by themselves. Upgrades
-have been tested from 0.50.0 onwards: the resulting database is identical to a fresh install.
+Then open **Setup › Plugins** and click **Update**. Database migrations run by themselves, and the
+result is the same database as a fresh install.
 
 </details>
 
@@ -256,9 +325,9 @@ have been tested from 0.50.0 onwards: the resulting database is identical to a f
 
 | Right | What it allows |
 |---|---|
-| **Pesquisas de satisfação** (`plugin_npsphere_survey`) | Create and manage surveys. Each person manages the surveys they created; general administrators manage all of them. |
-| **Painel de satisfação** (`plugin_npsphere_dashboard`) | See the consolidated dashboard (**Management › Painel de satisfação**). |
-| **Minhas pesquisas** (`plugin_npsphere_answer`) | Answer internal surveys (**My surveys**). |
+| **Satisfaction surveys** *(Pesquisas de satisfação)* | Create and manage surveys. Each person manages the surveys they created; general administrators manage all of them. |
+| **Satisfaction dashboard** *(Painel de satisfação)* | See the consolidated dashboard (**Management › Satisfaction dashboard**). |
+| **My surveys** *(Minhas pesquisas)* | Answer internal surveys (**Tools › My surveys**, or **Plugins › My surveys** in the self-service portal). |
 
 **2. Automatic actions** (**Setup › Automatic actions**)
 
@@ -337,7 +406,7 @@ Step-by-step instructions for every task live in **[docs/FAQ.md](docs/FAQ.md)**,
 | **Who manages what** | Each person sees and edits only the surveys they created (listing, form, questions, results, exports, previews). General administrators see all of them. |
 | **Answering without login** | Every email link is personal and **signed** (survey + person or ticket). A tampered link is rejected. Opening a link records nothing: the answer is saved by a script in the respondent's browser, so email security scanners that open links don't create fake answers. |
 | **Public link** | 256-bit token, compared in constant time. |
-| **Rate limiting** | Every page that opens without login (public link and email links) has a per-IP limit, using the same Symfony RateLimiter GLPI uses for two-factor codes, stored in GLPI's cache. Invalid links, keys or tokens count separately: after 20 in 10 minutes the IP is blocked on all those pages until the window passes. Clearing cookies doesn't reset it. Limits can be changed in `config/local_define.php` (see [Configuration](#configuration)). |
+| **Rate limiting** | Per-IP limits on every page that opens without login; 20 invalid links in 10 minutes block the IP for a while, even with new cookies. [Adjustable](#configuration). |
 | **History** | Survey, question and target audience changes are recorded in GLPI's own **Historical** tab. |
 | **CSRF** | Every POST carries a fresh GLPI CSRF token, including the session-less answer pages. |
 | **Anonymous surveys** | No identity is stored, and there are no reminders (finding out who answered would break anonymity). |
@@ -388,10 +457,19 @@ and 5 minutes after it. Each answer triggers at most one alert.
 </details>
 
 <details>
-<summary><b>"We couldn't record your answer automatically"</b></summary>
+<summary><b>The plugin shows up in the wrong language</b></summary>
 
-Update to 0.64.1 or later. In earlier versions, people who weren't logged in could lose the click
-from the second answer on in the same browser.
+It follows the language in each user's preferences (**My settings › Language**). Pages opened without
+login (public link and email links) follow the browser's language. Emails that use the built-in
+template are written in GLPI's default language when an automatic action sends them.
+</details>
+
+<details>
+<summary><b>"Please wait a moment" on the survey page</b></summary>
+
+Too many requests or invalid links came from the same IP in a short time. It clears by itself after a
+few minutes. If everybody reaches GLPI through one proxy IP, raise the limits (see **Rate limits** in
+[Configuration](#configuration)).
 </details>
 
 <details>

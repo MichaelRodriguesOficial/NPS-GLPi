@@ -31,7 +31,7 @@ class Emoticon extends AbstractQuestionType
         return [
             ['emoji' => '😡', 'label' => __('Muito insatisfeito', 'npsphere')],
             ['emoji' => '🙁', 'label' => __('Insatisfeito', 'npsphere')],
-            ['emoji' => '😐', 'label' => __('Neutro', 'npsphere')],
+            ['emoji' => '😐', 'label' => _x('emoticon', 'Neutro', 'npsphere')],
             ['emoji' => '🙂', 'label' => __('Satisfeito', 'npsphere')],
             ['emoji' => '😍', 'label' => __('Muito satisfeito', 'npsphere')],
         ];
