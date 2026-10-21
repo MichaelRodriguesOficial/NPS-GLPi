@@ -1,0 +1,10 @@
+<div class="npsphere-question-manager"
+     data-surveys-id="{{ survey.getID() }}"
+     data-list-url="{{ list_url }}">
+
+    <div id="npsphere-question-list-panel">
+        {% include '@npsphere/question/list_table.html.twig' %}
+    </div>
+
+    <div id="npsphere-question-form-panel" style="display:none"></div>
+</div>

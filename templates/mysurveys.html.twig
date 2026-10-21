@@ -1,0 +1,32 @@
+<div class="npsphere-mysurveys">
+    {% if surveys is empty %}
+        <div class="npsphere-empty">
+            <i class="ti ti-clipboard-check"></i>
+            <h3>{{ __('Nenhuma pesquisa pendente', 'npsphere') }}</h3>
+            <p>{{ __('Quando houver uma pesquisa aguardando sua resposta, ela aparecerá aqui.', 'npsphere') }}</p>
+        </div>
+    {% else %}
+        <p class="npsphere-mysurveys-intro">
+            {{ __('Estas pesquisas estão aguardando sua resposta:', 'npsphere') }}
+        </p>
+
+        {% for survey in surveys %}
+            <a class="npsphere-survey-card" href="{{ answer_url }}?surveys_id={{ survey.getID() }}">
+                <span class="npsphere-survey-icon"><i class="ti ti-mood-smile-beam"></i></span>
+                <span class="npsphere-survey-info">
+                    <strong>{{ survey.fields['name'] }}</strong>
+                    {% if survey.fields['description'] %}
+                        <small>{{ survey.fields['description'] }}</small>
+                    {% endif %}
+                    {% if survey.fields['date_end'] %}
+                        <small class="npsphere-survey-deadline">
+                            <i class="ti ti-clock"></i>
+                            {{ __('Responda até', 'npsphere') }} {{ survey.fields['date_end']|date('d/m/Y') }}
+                        </small>
+                    {% endif %}
+                </span>
+                <span class="npsphere-survey-go"><i class="ti ti-arrow-right"></i></span>
+            </a>
+        {% endfor %}
+    {% endif %}
+</div>

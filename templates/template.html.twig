@@ -1,0 +1,1704 @@
+{# Aba "Template": edição do e-mail do convite.
+
+   O formulário POSTA para a tela principal da pesquisa, com os mesmos
+   nomes de campo (mail_subject, mail_body, mail_recipients). Assim o
+   update() do GLPI grava sem nenhum tratamento especial, e a aba fica
+   responsável só pela edição.
+
+   Sub-abas: "Convite", "Lembrete", "Relatório", "Aviso" e "Ajuda". Os
+   painéis ficam DENTRO do mesmo <form>: trocar de sub-aba não descarta
+   o que foi digitado.
+
+   v0.64.0: as sub-abas de configuração mostram só o essencial (título,
+   uma linha, campos, números, prévias e avisos quando há problema). A
+   ajuda de cada campo fica no ícone ⓘ (macro info) e as regras e
+   detalhes, na sub-aba "Ajuda" (data-panel continua "variaveis"). #}
+{% import _self as npsphere_m %}
+{% set externa = item.fields['type'] == 'external' %}
+
+<form method="post" action="{{ form_url }}" id="npsphere-template-form" class="npsphere-template-root"
+      data-csrf-url="{{ csrf_url }}">
+    <input type="hidden" name="id" value="{{ item.getID() }}">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+
+    <nav class="npsphere-subtabs" role="tablist">
+        <button type="button" class="npsphere-subtab is-active" data-panel="modelo" role="tab">
+            <i class="ti ti-mail"></i> {{ __('Convite', 'npsphere') }}
+        </button>
+        <button type="button" class="npsphere-subtab" data-panel="lembrete" role="tab">
+            <i class="ti ti-bell-ringing"></i> {{ __('Lembrete', 'npsphere') }}
+            {% if lembrete.aceita and lembrete.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}
+        </button>
+        <button type="button" class="npsphere-subtab" data-panel="relatorio" role="tab">
+            <i class="ti ti-report-analytics"></i> {{ __('Relatório', 'npsphere') }}
+            {% if relatorio.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}
+        </button>
+        <button type="button" class="npsphere-subtab" data-panel="aviso" role="tab">
+            <i class="ti ti-bell-exclamation"></i> {{ __('Aviso', 'npsphere') }}
+            {% if relatorio.aviso.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}
+        </button>
+        <button type="button" class="npsphere-subtab" data-panel="variaveis" role="tab">
+            <i class="ti ti-help-circle"></i> {{ __('Ajuda', 'npsphere') }}
+        </button>
+    </nav>
+
+    {# ============================ CONVITE =========================== #}
+    {# (data-panel continua "modelo": só o rótulo mudou.) #}
+    <div class="npsphere-panel" data-panel="modelo">
+        <div class="npsphere-template">
+
+            {# Destinatários primeiro: na pesquisa externa, sem lista não há
+               para quem enviar -- é o primeiro passo, não o último. #}
+            {% if externa %}
+                <section class="npsphere-card">
+                    {# Botões do CSV no canto oposto do título, dentro do cartão. #}
+                    <header class="npsphere-card-head">
+                        <span class="npsphere-card-icon"><i class="ti ti-users"></i></span>
+                        <div>
+                            <h3>{{ __('Destinatários', 'npsphere') }} {{ npsphere_m.ajuda('ajuda-convite') }}</h3>
+                            <p>{{ __('Adicione um a um ou importe um CSV.', 'npsphere') }}</p>
+                        </div>
+                        <div class="npsphere-csv-barra">
+                            <a href="{{ csv_modelo_url }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-file-download"></i> {{ __('Baixar modelo CSV', 'npsphere') }}
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="npsphere-csv-importar"
+                                    data-url="{{ csv_import_url }}" data-surveys-id="{{ item.getID() }}">
+                                <i class="ti ti-file-upload"></i> {{ __('Importar CSV', 'npsphere') }}
+                            </button>
+                            <input type="file" id="npsphere-csv-arquivo" accept=".csv,text/csv" hidden>
+                        </div>
+                    </header>
+
+                    <div class="npsphere-csv-resultado"></div>
+
+                    {# Nome + E-mail + [+]. A lista abaixo é editável; o que vai
+                       para o banco continua no campo mail_recipients
+                       (email;nome por linha), mantido em dia pelo script. #}
+                    <div class="npsphere-dest" data-inicial="{{ destinatarios|json_encode|e('html_attr') }}">
+                        <div class="npsphere-dest-novo">
+                            <input type="text" class="form-control" id="npsphere-dest-nome"
+                                   placeholder="{{ __('Nome', 'npsphere') }}" aria-label="{{ __('Nome', 'npsphere') }}" autocomplete="off">
+                            <input type="email" class="form-control" id="npsphere-dest-email"
+                                   placeholder="{{ __('E-mail', 'npsphere') }}" aria-label="{{ __('E-mail', 'npsphere') }}" autocomplete="off">
+                            <button type="button" class="btn btn-primary npsphere-dest-mais" id="npsphere-dest-adicionar"
+                                    title="{{ __('Adicionar destinatário', 'npsphere') }}" aria-label="{{ __('Adicionar destinatário', 'npsphere') }}">
+                                <i class="ti ti-plus"></i>
+                            </button>
+                        </div>
+                        <div class="npsphere-dest-aviso" role="alert"></div>
+
+                        <div class="npsphere-dest-caixa">
+                            <table class="table table-sm table-vcenter npsphere-dest-tabela">
+                                <thead>
+                                    <tr>
+                                        <th class="npsphere-dest-n">#</th>
+                                        <th>{{ __('Nome', 'npsphere') }}</th>
+                                        <th>{{ __('E-mail', 'npsphere') }}</th>
+                                        <th class="npsphere-dest-acao"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="npsphere-dest-lista"></tbody>
+                            </table>
+                            <div class="npsphere-dest-vazio">
+                                {{ __('Nenhum destinatário ainda. Preencha nome e e-mail acima e clique em + — ou importe um CSV.', 'npsphere') }}
+                            </div>
+                        </div>
+
+                        <textarea name="mail_recipients" id="npsphere-mail-recipients" hidden>{{ item.fields['mail_recipients'] }}</textarea>
+
+                        <small class="npsphere-dest-rodape">
+                            <span class="npsphere-csv-total"></span>
+                            {{ npsphere_m.info(__('CSV separado por ponto e vírgula (;), colunas email e nome. Os importados são somados aos da lista; e-mails repetidos são ignorados.', 'npsphere')) }}
+                        </small>
+                    </div>
+                </section>
+            {% endif %}
+
+            {# Pesquisa INTERNA: quem recebe vem do Público-alvo. Em vez de
+               uma lista para digitar, o resumo de para quem o convite vai
+               -- e quem fica de fora, e por quê. #}
+            {% if publico %}
+                <section class="npsphere-card">
+                    <header class="npsphere-card-head">
+                        <span class="npsphere-card-icon"><i class="ti ti-users-group"></i></span>
+                        <div>
+                            <h3>{{ __('Quem recebe o convite', 'npsphere') }} {{ npsphere_m.ajuda('ajuda-convite') }}</h3>
+                            <p>{{ __('Os usuários do Público-alvo com e-mail no GLPI.', 'npsphere') }}</p>
+                        </div>
+                        <div class="npsphere-csv-barra">
+                            <a href="{{ publico_url }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-adjustments"></i> {{ __('Editar público-alvo', 'npsphere') }}
+                            </a>
+                        </div>
+                    </header>
+
+                    <div class="npsphere-publico-numeros">
+                        <div class="npsphere-publico-numero is-recebe">
+                            <strong>{{ publico.recebem }}</strong>
+                            <span>{{ __('vão receber', 'npsphere') }}</span>
+                        </div>
+                        {% if not publico.multiplas %}
+                            <div class="npsphere-publico-numero is-respondeu">
+                                <strong>{{ publico.responderam }}</strong>
+                                <span>{{ __('já responderam (ficam de fora)', 'npsphere') }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="npsphere-publico-numero is-sem-email">
+                            <strong>{{ publico.sem_email }}</strong>
+                            <span>{{ __('sem e-mail no cadastro', 'npsphere') }}</span>
+                        </div>
+                    </div>
+
+                    {% if publico.pessoas is empty %}
+                        <div class="npsphere-dest-vazio">
+                            {{ __('Ninguém no público-alvo ainda. Defina quem deve responder na aba Público-alvo.', 'npsphere') }}
+                        </div>
+                    {% else %}
+                        <div class="npsphere-dest-caixa">
+                            <table class="table table-sm table-vcenter npsphere-dest-tabela">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Nome', 'npsphere') }}</th>
+                                        <th>{{ __('E-mail', 'npsphere') }}</th>
+                                        <th>{{ __('Situação', 'npsphere') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in publico.pessoas %}
+                                        <tr class="npsphere-publico-{{ p.situacao }}">
+                                            <td>{{ p.nome }}</td>
+                                            <td>{{ p.email ?: '—' }}</td>
+                                            <td>
+                                                {% if p.situacao == 'recebe' %}
+                                                    <span class="npsphere-situacao is-recebe"><i class="ti ti-send"></i> {{ __('Vai receber', 'npsphere') }}</span>
+                                                {% elseif p.situacao == 'respondeu' %}
+                                                    <span class="npsphere-situacao is-respondeu"><i class="ti ti-circle-check"></i> {{ __('Já respondeu', 'npsphere') }}</span>
+                                                {% else %}
+                                                    <span class="npsphere-situacao is-sem-email"><i class="ti ti-mail-off"></i> {{ __('Sem e-mail', 'npsphere') }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </section>
+            {% endif %}
+
+            {# Pesquisa de CHAMADO: não há botão de envio -- o convite sai
+               sozinho no encerramento. O quadro diz quando e para quem, a
+               partir da configuração da entidade no GLPI. #}
+            {% if chamado %}
+                <section class="npsphere-card">
+                    <header class="npsphere-card-head">
+                        <span class="npsphere-card-icon"><i class="ti ti-clock-check"></i></span>
+                        <div>
+                            <h3>{{ __('Quando o convite sai', 'npsphere') }} {{ npsphere_m.ajuda('ajuda-convite') }}</h3>
+                            <p>
+                                {{ __('Automático, no encerramento do chamado.', 'npsphere') }}
+                                {% if chamado.config %}{{ __('Entidade:', 'npsphere') }} <strong>{{ chamado.config.entidade }}</strong>{% endif %}
+                            </p>
+                        </div>
+                        {% if chamado.entidade_url %}
+                            <div class="npsphere-csv-barra">
+                                <a href="{{ chamado.entidade_url }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="ti ti-adjustments"></i> {{ __('Configurar na entidade', 'npsphere') }}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </header>
+
+                    {% if chamado.config is null %}
+                        <div class="npsphere-note npsphere-note-aviso">
+                            <i class="ti ti-alert-triangle"></i>
+                            <span>{{ __('Não foi possível ler a configuração de pesquisa de satisfação da entidade.', 'npsphere') }}</span>
+                        </div>
+                    {% elseif not chamado.config.externa %}
+                        <div class="npsphere-note npsphere-note-aviso">
+                            <i class="ti ti-alert-triangle"></i>
+                            <span>
+                                {{ __('Este convite NÃO sai: a entidade está com "Pesquisa interna" do GLPI. Configure "Pesquisa externa" apontando para o NPSphere (Entidade › Assistência).', 'npsphere') }}
+                            </span>
+                        </div>
+                    {% else %}
+                        {% if chamado.em_uso %}
+                            <div class="npsphere-note npsphere-note-aviso">
+                                <i class="ti ti-alert-triangle"></i>
+                                <span>
+                                    {{ __('Os chamados desta entidade usam outra pesquisa:', 'npsphere') }}
+                                    <a href="{{ chamado.em_uso.url }}">{{ chamado.em_uso.nome }} (#{{ chamado.em_uso.id }})</a>.
+                                    {{ __('O convite DESTA pesquisa não sai. Para usar esta, aponte a URL da entidade para ela (&surveys_id=', 'npsphere') }}{{ item.getID() }}).
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="npsphere-publico-numeros">
+                            <div class="npsphere-publico-numero is-recebe">
+                                <strong>{{ __('Requerente', 'npsphere') }}</strong>
+                                <span>{{ __('do chamado recebe o convite', 'npsphere') }}</span>
+                            </div>
+                            <div class="npsphere-publico-numero">
+                                <strong>
+                                    {% if chamado.config.atraso > 0 %}
+                                        {{ chamado.config.atraso }} {{ chamado.config.atraso == 1 ? __('dia', 'npsphere') : __('dias', 'npsphere') }}
+                                    {% else %}
+                                        {{ __('Na hora', 'npsphere') }}
+                                    {% endif %}
+                                </strong>
+                                <span>
+                                    {% if chamado.config.atraso > 0 %}
+                                        {{ __('depois do encerramento, a pesquisa aparece no chamado', 'npsphere') }}
+                                    {% else %}
+                                        {{ __('do encerramento, a pesquisa aparece no chamado', 'npsphere') }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="npsphere-publico-numero">
+                                <strong>
+                                    {% if chamado.espera > 0 %}
+                                        + {{ chamado.espera }} {{ __('min', 'npsphere') }}
+                                    {% else %}
+                                        {{ __('Na hora', 'npsphere') }}
+                                    {% endif %}
+                                </strong>
+                                <span>{{ __('o e-mail sai, se ainda não avaliou', 'npsphere') }}</span>
+                            </div>
+                            <div class="npsphere-publico-numero">
+                                <strong>{{ chamado.config.percentual }}%</strong>
+                                <span>{{ __('dos chamados encerrados recebem', 'npsphere') }}</span>
+                            </div>
+                        </div>
+                        {# v0.63.0: espera do e-mail. A avaliação no próprio chamado
+                           vem primeiro; o e-mail é a segunda chance. #}
+                        <div class="npsphere-field npsphere-convite-espera">
+                            <label for="npsphere-convite-espera">
+                                {{ __('Esperar a avaliação no chamado antes de mandar o e-mail', 'npsphere') }}
+                                {{ npsphere_m.info(__('A pesquisa já aparece na tela do chamado. Se o requerente avaliar ali dentro desse tempo, o e-mail não sai (nem os lembretes).', 'npsphere')) }}
+                            </label>
+                            <select class="form-select" name="invite_delay" id="npsphere-convite-espera">
+                                {% for m in chamado.esperas %}
+                                    <option value="{{ m }}" {{ m == chamado.espera ? 'selected' : '' }}>
+                                        {% if m == 0 %}{{ __('Não esperar (enviar na hora)', 'npsphere') }}{% else %}{{ m }} {{ __('minutos', 'npsphere') }}{{ m == 15 ? ' (' ~ __('padrão', 'npsphere') ~ ')' : '' }}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if chamado.espera > 0 %}
+                            {% if chamado.acao_convite is null %}
+                                <div class="npsphere-note npsphere-note-aviso">
+                                    <i class="ti ti-alert-triangle"></i>
+                                    <span>{{ __('A ação automática do convite com espera não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la.', 'npsphere') }}</span>
+                                </div>
+                            {% elseif not chamado.acao_convite.ativa %}
+                                <div class="npsphere-note npsphere-note-aviso">
+                                    <i class="ti ti-alert-triangle"></i>
+                                    <span>
+                                        {{ __('A ação automática "npsphereConvite" está DESATIVADA: com espera, nenhum convite de chamado sai enquanto ela não for ativada.', 'npsphere') }}
+                                        <a href="{{ chamado.acao_convite.url }}">{{ __('Ativar', 'npsphere') }}</a>
+                                    </span>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </section>
+            {% endif %}
+
+            <section class="npsphere-card">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-mail"></i></span>
+                    <div>
+                        <h3>{{ __('E-mail do convite', 'npsphere') }}</h3>
+                        <p class="npsphere-mail-quando">
+                            {% if item.fields['type'] == 'ticket' %}
+                                {{ __('Sai no lugar da notificação de satisfação do GLPI.', 'npsphere') }}
+                            {% else %}
+                                {{ __('Sai quando você clicar em "Enviar convites".', 'npsphere') }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </header>
+
+                <div class="npsphere-field">
+                    <label>{{ __('Assunto', 'npsphere') }} {{ npsphere_m.info(__('Em branco, usa o assunto padrão (o texto em cinza).', 'npsphere')) }}</label>
+                    <input type="text" name="mail_subject" class="form-control"
+                           value="{{ item.fields['mail_subject'] }}"
+                           placeholder="{{ mail_padrao.assunto }}">
+                </div>
+
+                {% set nota_previa %}
+                    {% if chamado %}
+                        {% if chamado.exemplo %}
+                            {{ __('Prévia com o chamado', 'npsphere') }}
+                            <a href="{{ chamado.exemplo_url }}" target="_blank" rel="noopener">#{{ chamado.exemplo.id }} — {{ chamado.exemplo.titulo }}</a>
+                        {% else %}
+                            {{ __('Nenhum chamado encerrado ainda: a prévia mostra os campos entre colchetes.', 'npsphere') }}
+                        {% endif %}
+                    {% else %}
+                        {{ __('Prévia com o primeiro destinatário da lista.', 'npsphere') }}
+                    {% endif %}
+                {% endset %}
+
+                {{ npsphere_m.editor({
+                    'campo': 'mail_body',
+                    'corpo': mail_corpo,
+                    'padrao': mail_padrao.corpo,
+                    'lembrete': 0,
+                    'marcadores': mail_marcadores,
+                    'previa_url': previa_url,
+                    'surveys_id': item.getID(),
+                    'nota': nota_previa
+                }) }}
+
+                {# Só quando há problema: várias perguntas e a mensagem usa
+                   alguma delas. A explicação completa está na Ajuda. #}
+                {% if total_perguntas > 1 and perguntas_no_email > 0 %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>
+                            {{ __('Esta pesquisa tem %d perguntas e a mensagem mostra pergunta no e-mail: muita gente responde só a primeira. Prefira o {{botao}}.', 'npsphere')|format(total_perguntas) }}
+                            {{ npsphere_m.ajuda('ajuda-perguntas', __('Por quê?', 'npsphere')) }}
+                        </span>
+                    </div>
+                {% endif %}
+            </section>
+
+            {# Botões: salvar (sempre) + enviar convites (quando não é chamado) #}
+            <section class="npsphere-card">
+                <div class="npsphere-template-acoes">
+                    <button type="submit" name="update" value="1" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                    </button>
+
+                    {% if item.fields['type'] != 'ticket' %}
+                        <button type="button" class="btn btn-outline-primary" id="npsphere-mail-enviar"
+                                data-url="{{ mail_send_url }}" data-surveys-id="{{ item.getID() }}"
+                                {% if publico %}data-total="{{ publico.recebem }}"{% endif %}>
+                            <i class="ti ti-send"></i> {{ __('Enviar convites', 'npsphere') }}{% if publico %} ({{ publico.recebem }}){% endif %}
+                        </button>
+                        {{ npsphere_m.info(__('Salve antes de enviar: o e-mail usa o texto gravado. Os convites entram na fila de e-mails do GLPI.', 'npsphere')) }}
+                        <span class="npsphere-mail-resultado"></span>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+
+    {# =========================== LEMBRETE =========================== #}
+    {# Lembrete para quem recebeu o convite e ainda não respondeu. Quem
+       envia é a ação automática "npsphereLembrete" (Delivery). Os campos
+       ficam no MESMO <form> da aba: o botão Salvar grava tudo junto. #}
+    <div class="npsphere-panel" data-panel="lembrete" style="display: none;">
+        <div class="npsphere-template">
+            <section class="npsphere-card">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-bell-ringing"></i></span>
+                    <div>
+                        <h3>{{ __('Lembrete automático', 'npsphere') }} {{ npsphere_m.ajuda('ajuda-lembrete') }}</h3>
+                        <p>{{ __('Um novo e-mail para quem recebeu o convite e ainda não respondeu.', 'npsphere') }}</p>
+                    </div>
+                    {% if lembrete.aceita and lembrete.acao %}
+                        <div class="npsphere-csv-barra">
+                            <a href="{{ lembrete.acao.url }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-clock-play"></i> {{ __('Ação automática', 'npsphere') }}
+                            </a>
+                        </div>
+                    {% endif %}
+                </header>
+
+                {% if not lembrete.aceita %}
+                    {# Externa anônima: o link é o mesmo para todos. #}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>
+                            {{ __('Pesquisa anônima não tem lembrete: todos recebem o mesmo link, então não há como saber quem já respondeu.', 'npsphere') }}
+                        </span>
+                    </div>
+                {% else %}
+                    <input type="hidden" name="reminder_active" value="0">
+                    <label class="form-check form-switch npsphere-lembrete-chave">
+                        <input type="checkbox" class="form-check-input" name="reminder_active" value="1"
+                               id="npsphere-lembrete-ativo" {{ lembrete.ativo ? 'checked' : '' }}>
+                        <span class="form-check-label">
+                            <strong>{{ __('Enviar lembrete para quem não respondeu', 'npsphere') }}</strong>
+                        </span>
+                    </label>
+
+                    <div class="npsphere-lembrete-campos">
+                        <div class="npsphere-field">
+                            <label for="npsphere-lembrete-dias">{{ __('Enviar a cada', 'npsphere') }} {{ npsphere_m.info(__('Contados a partir do convite e, depois, do último lembrete.', 'npsphere')) }}</label>
+                            <div class="input-group npsphere-lembrete-numero">
+                                <input type="number" class="form-control" name="reminder_days" id="npsphere-lembrete-dias"
+                                       min="{{ lembrete.limites.dias_min }}" max="{{ lembrete.limites.dias_max }}" value="{{ lembrete.dias }}">
+                                <span class="input-group-text">{{ __('dias sem resposta', 'npsphere') }}</span>
+                            </div>
+                        </div>
+                        <div class="npsphere-field">
+                            <label for="npsphere-lembrete-max">{{ __('No máximo', 'npsphere') }} {{ npsphere_m.info(__('Depois disso a pessoa não é mais cobrada.', 'npsphere')) }}</label>
+                            <div class="input-group npsphere-lembrete-numero">
+                                <input type="number" class="form-control" name="reminder_max" id="npsphere-lembrete-max"
+                                       min="{{ lembrete.limites.max_min }}" max="{{ lembrete.limites.max_max }}" value="{{ lembrete.max }}">
+                                <span class="input-group-text">{{ __('lembrete(s) por pessoa', 'npsphere') }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Chamado: o prazo é o do GLPI (Duração da pesquisa). #}
+                    {% if lembrete.prazo %}
+                        <div class="npsphere-note npsphere-lembrete-prazo {{ lembrete.prazo.duracao > 0 and lembrete.prazo.cabem == 0 ? 'npsphere-note-aviso' : '' }}">
+                            <i class="ti ti-hourglass"></i>
+                            <span>
+                                {% if lembrete.prazo.duracao > 0 %}
+                                    {{ __('Prazo do GLPI: %d dia(s).', 'npsphere')|format(lembrete.prazo.duracao) }}
+                                    <strong class="npsphere-lembrete-cabem" data-duracao="{{ lembrete.prazo.duracao }}">
+                                        {% if lembrete.prazo.cabem == 0 %}
+                                            {{ __('Nenhum lembrete cabe nesse prazo — diminua o intervalo.', 'npsphere') }}
+                                        {% else %}
+                                            {{ __('Cabem até %d lembrete(s).', 'npsphere')|format(min(lembrete.prazo.cabem, lembrete.max)) }}
+                                        {% endif %}
+                                    </strong>
+                                {% else %}
+                                    {{ __('Prazo do GLPI: sem limite.', 'npsphere') }}
+                                {% endif %}
+                                {% if lembrete.prazo.entidade_url %}
+                                    <a href="{{ lembrete.prazo.entidade_url }}">{{ lembrete.prazo.entidade }}</a>
+                                {% endif %}
+                                {{ npsphere_m.info(__('É a "Duração da pesquisa" da entidade (Assistência › Pesquisa de satisfação). Depois dela o GLPI considera a pesquisa expirada e o lembrete para.', 'npsphere')) }}
+                            </span>
+                        </div>
+                    {% endif %}
+
+                    <div class="npsphere-publico-numeros">
+                        <div class="npsphere-publico-numero">
+                            <strong>{{ lembrete.resumo.convidados }}</strong>
+                            <span>{{ __('convites registrados', 'npsphere') }}</span>
+                        </div>
+                        <div class="npsphere-publico-numero is-respondeu">
+                            <strong>{{ lembrete.resumo.responderam }}</strong>
+                            <span>{{ __('já responderam', 'npsphere') }}</span>
+                        </div>
+                        <div class="npsphere-publico-numero is-recebe">
+                            <strong>{{ lembrete.resumo.aguardando }}</strong>
+                            <span>{{ __('aguardando (podem receber lembrete)', 'npsphere') }}</span>
+                        </div>
+                        <div class="npsphere-publico-numero is-sem-email">
+                            <strong>{{ lembrete.resumo.lembretes }}</strong>
+                            <span>{{ __('lembretes enviados', 'npsphere') }}</span>
+                        </div>
+                    </div>
+
+                    {% if lembrete.acao is null %}
+                        <div class="npsphere-note npsphere-note-aviso">
+                            <i class="ti ti-alert-triangle"></i>
+                            <span>{{ __('A ação automática do lembrete não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la.', 'npsphere') }}</span>
+                        </div>
+                    {% elseif not lembrete.acao.ativa %}
+                        <div class="npsphere-note npsphere-note-aviso">
+                            <i class="ti ti-alert-triangle"></i>
+                            <span>
+                                {{ __('A ação automática "npsphereLembrete" está DESATIVADA: nenhum lembrete sai enquanto ela não for ativada.', 'npsphere') }}
+                                <a href="{{ lembrete.acao.url }}">{{ __('Ativar', 'npsphere') }}</a>
+                            </span>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </section>
+
+            {% if lembrete.aceita %}
+                <section class="npsphere-card">
+                    <header class="npsphere-card-head">
+                        <span class="npsphere-card-icon"><i class="ti ti-mail-fast"></i></span>
+                        <div>
+                            <h3>{{ __('E-mail do lembrete', 'npsphere') }}</h3>
+                            <p>{{ __('Mesmas variáveis e mesmo link do convite.', 'npsphere') }}</p>
+                        </div>
+                    </header>
+
+                    <div class="npsphere-field">
+                        <label>{{ __('Assunto', 'npsphere') }} {{ npsphere_m.info(__('Em branco, usa o assunto padrão (o texto em cinza).', 'npsphere')) }}</label>
+                        <input type="text" name="reminder_subject" class="form-control"
+                               value="{{ lembrete.assunto }}"
+                               placeholder="{{ lembrete.padrao.assunto }}">
+                    </div>
+
+                    {{ npsphere_m.editor({
+                        'campo': 'reminder_body',
+                        'corpo': lembrete.corpo,
+                        'padrao': lembrete.padrao.corpo,
+                        'lembrete': 1,
+                        'marcadores': mail_marcadores,
+                        'previa_url': previa_url,
+                        'surveys_id': item.getID(),
+                        'nota': nota_previa
+                    }) }}
+                </section>
+
+                <section class="npsphere-card">
+                    <div class="npsphere-template-acoes">
+                        <button type="submit" name="update" value="1" class="btn btn-primary">
+                            <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                        </button>
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+    </div>
+
+    {# =========================== RELATÓRIO ========================== #}
+    {# Relatório diário para os gestores (DailyReport). Mesmo <form> da
+       aba: o Salvar grava tudo junto. #}
+    <div class="npsphere-panel" data-panel="relatorio" style="display: none;">
+        <div class="npsphere-template">
+            <section class="npsphere-card">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-report-analytics"></i></span>
+                    <div>
+                        <h3>{{ __('Relatório diário', 'npsphere') }} {{ npsphere_m.ajuda('ajuda-relatorio') }}</h3>
+                        <p>{{ __('Um e-mail por dia para os gestores, com as respostas do dia.', 'npsphere') }}</p>
+                    </div>
+                    {% if relatorio.acao %}
+                        <div class="npsphere-csv-barra npsphere-gestor-corpo" data-chave="npsphere-relatorio-ativo">
+                            <a href="{{ relatorio.acao.url }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-clock-play"></i> {{ __('Ação automática', 'npsphere') }}
+                            </a>
+                        </div>
+                    {% endif %}
+                </header>
+
+                <input type="hidden" name="report_active" value="0">
+                <label class="form-check form-switch npsphere-lembrete-chave">
+                    <input type="checkbox" class="form-check-input" name="report_active" value="1"
+                           id="npsphere-relatorio-ativo" {{ relatorio.ativo ? 'checked' : '' }}>
+                    <span class="form-check-label">
+                        <strong>{{ __('Enviar o relatório diário', 'npsphere') }}</strong>
+                    </span>
+                </label>
+
+                {# Fechado: só o título e o interruptor. O resto aparece ao ligar. #}
+                <div class="npsphere-gestor-corpo" data-chave="npsphere-relatorio-ativo">
+
+                <div class="npsphere-relatorio-campos">
+                    <div class="npsphere-field">
+                        <label for="npsphere-relatorio-hora">{{ __('Horário de envio', 'npsphere') }} {{ npsphere_m.info(__('Sai na primeira execução da ação automática depois desse horário.', 'npsphere')) }}</label>
+                        <select class="form-select" name="report_hour" id="npsphere-relatorio-hora">
+                            {% for h in 0..23 %}
+                                <option value="{{ h }}" {{ h == relatorio.hora ? 'selected' : '' }}>{{ '%02d'|format(h) }}:00</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="npsphere-field">
+                        <label for="npsphere-relatorio-nps">{{ __('Nota baixa', 'npsphere') }} {{ npsphere_m.info(__('A mesma nota da coluna "Nota" da aba Resultados (0 a 10). As respostas até este valor vêm em destaque.', 'npsphere')) }}</label>
+                        <select class="form-select npsphere-relatorio-corte" name="report_nps_cut" id="npsphere-relatorio-nps">
+                            {% for n in 0..9 %}
+                                <option value="{{ n }}" {{ n == relatorio.corte ? 'selected' : '' }}>{{ __('até %d', 'npsphere')|format(n) }}{{ n == 6 ? ' — ' ~ __('detratores (padrão)', 'npsphere') : '' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                {{ npsphere_m.destinos(relatorio.destinos, __('Recebe os links "Ver resposta" e "Abrir os resultados" quem pode abrir esta pesquisa no GLPI. Os outros recebem o relatório completo, só sem esses links.', 'npsphere')) }}
+
+                {% if relatorio.ativo and relatorio.destinos.pessoas is empty %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>{{ __('Ninguém vai receber: escolha usuários ou grupos (com e-mail no cadastro) e salve.', 'npsphere') }}</span>
+                    </div>
+                {% endif %}
+                {% if relatorio.acao is null %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>{{ __('A ação automática do relatório não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la.', 'npsphere') }}</span>
+                    </div>
+                {% elseif not relatorio.acao.ativa %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>
+                            {{ __('A ação automática "npsphereRelatorio" está DESATIVADA: nenhum relatório sai enquanto ela não for ativada.', 'npsphere') }}
+                            <a href="{{ relatorio.acao.url }}">{{ __('Ativar', 'npsphere') }}</a>
+                        </span>
+                    </div>
+                {% endif %}
+                {% if relatorio.anonima %}
+                    <div class="npsphere-note">
+                        <i class="ti ti-info-circle"></i>
+                        <span>{{ __('Pesquisa anônima: as respostas aparecem sem o nome de quem respondeu.', 'npsphere') }}</span>
+                    </div>
+                {% endif %}
+
+                    <div class="npsphere-gestor-email">
+                        <div class="npsphere-previa-titulo">
+                            <i class="ti ti-mail"></i>
+                            <div>
+                                <strong>{{ __('E-mail do relatório', 'npsphere') }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="npsphere-field">
+                            <label>{{ __('Assunto', 'npsphere') }} {{ npsphere_m.info(__('Em branco, usa o assunto padrão (o texto em cinza).', 'npsphere')) }}</label>
+                            <input type="text" name="{{ relatorio.modelo.campo_assunto }}" class="form-control"
+                                   value="{{ relatorio.modelo.assunto }}" placeholder="{{ relatorio.modelo.padrao.assunto }}">
+                        </div>
+
+                        {{ npsphere_m.editor({
+                            'campo': relatorio.modelo.campo_corpo,
+                            'corpo': relatorio.modelo.corpo,
+                            'padrao': relatorio.modelo.padrao.corpo,
+                            'lembrete': 0,
+                            'marcadores': relatorio.modelo.marcadores,
+                            'previa_url': relatorio_previa_url,
+                            'surveys_id': item.getID(),
+                            'assunto_campo': relatorio.modelo.campo_assunto
+                        }) }}
+                    </div>
+                </div>{# /npsphere-gestor-corpo #}
+            </section>
+
+
+            <section class="npsphere-card">
+                <div class="npsphere-template-acoes">
+                    <button type="submit" name="update" value="1" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    {# ============================= AVISO ============================ #}
+    {# Aviso imediato de nota baixa (DailyReport::cronNpsphereAviso). Quem
+       recebe e a nota baixa são os da sub-aba Relatório. #}
+    <div class="npsphere-panel" data-panel="aviso" style="display: none;">
+        <div class="npsphere-template">
+            <section class="npsphere-card">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-bell-exclamation"></i></span>
+                    <div>
+                        <h3>{{ __('Aviso imediato de nota baixa', 'npsphere') }} {{ npsphere_m.ajuda('ajuda-aviso') }}</h3>
+                        <p>{{ __('Um e-mail curto, logo depois da resposta com nota baixa.', 'npsphere') }}</p>
+                    </div>
+                    {% if relatorio.aviso.acao %}
+                        <div class="npsphere-csv-barra npsphere-gestor-corpo" data-chave="npsphere-aviso-ativo">
+                            <a href="{{ relatorio.aviso.acao.url }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-clock-play"></i> {{ __('Ação automática', 'npsphere') }}
+                            </a>
+                        </div>
+                    {% endif %}
+                </header>
+
+                <input type="hidden" name="alert_active" value="0">
+                <label class="form-check form-switch npsphere-lembrete-chave">
+                    <input type="checkbox" class="form-check-input" name="alert_active" value="1"
+                           id="npsphere-aviso-ativo" {{ relatorio.aviso.ativo ? 'checked' : '' }}>
+                    <span class="form-check-label">
+                        <strong>{{ __('Avisar na hora quando chegar uma nota baixa', 'npsphere') }}</strong>
+                    </span>
+                </label>
+
+                {# Fechado: só o título e o interruptor. O resto aparece ao ligar. #}
+                <div class="npsphere-gestor-corpo" data-chave="npsphere-aviso-ativo">
+
+                <div class="npsphere-relatorio-campos npsphere-aviso-campos">
+                    <div class="npsphere-field">
+                        <label for="npsphere-aviso-espera">{{ __('Enviar depois de', 'npsphere') }} {{ npsphere_m.info(__('Espera a pessoa terminar o comentário, para o aviso sair com a resposta completa.', 'npsphere')) }}</label>
+                        <select class="form-select npsphere-aviso-espera" name="alert_delay" id="npsphere-aviso-espera">
+                            {% for m in relatorio.aviso.esperas %}
+                                <option value="{{ m }}" {{ m == relatorio.aviso.espera ? 'selected' : '' }}>{{ m }} {{ __('minutos', 'npsphere') }}{{ m == 10 ? ' (' ~ __('padrão', 'npsphere') ~ ')' : '' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="npsphere-field">
+                        <label for="npsphere-aviso-nps">{{ __('Nota baixa', 'npsphere') }} {{ npsphere_m.info(__('Só respostas com nota até este valor geram aviso (nota da coluna "Nota" da aba Resultados). Independente da nota baixa do relatório.', 'npsphere')) }}</label>
+                        <select class="form-select npsphere-aviso-corte" name="alert_nps_cut" id="npsphere-aviso-nps">
+                            {% for n in 0..9 %}
+                                <option value="{{ n }}" {{ n == relatorio.aviso.corte ? 'selected' : '' }}>{{ __('até %d', 'npsphere')|format(n) }}{{ n == 6 ? ' — ' ~ __('detratores (padrão)', 'npsphere') : '' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                {{ npsphere_m.destinos(relatorio.aviso.destinos, __('Recebe o botão "Ver resposta no GLPI" quem pode abrir esta pesquisa no GLPI. Os outros recebem o aviso completo, só sem o botão.', 'npsphere')) }}
+
+                {% if relatorio.aviso.ativo and relatorio.aviso.destinos.pessoas is empty %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>{{ __('Ninguém vai receber: escolha usuários ou grupos acima (com e-mail no cadastro) e salve.', 'npsphere') }}</span>
+                    </div>
+                {% endif %}
+                {% if relatorio.aviso.acao is null %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>{{ __('A ação automática do aviso não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la.', 'npsphere') }}</span>
+                    </div>
+                {% elseif not relatorio.aviso.acao.ativa %}
+                    <div class="npsphere-note npsphere-note-aviso">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>
+                            {{ __('A ação automática "npsphereAviso" está DESATIVADA: nenhum aviso sai enquanto ela não for ativada.', 'npsphere') }}
+                            <a href="{{ relatorio.aviso.acao.url }}">{{ __('Ativar', 'npsphere') }}</a>
+                        </span>
+                    </div>
+                {% endif %}
+
+                    <div class="npsphere-gestor-email">
+                        <div class="npsphere-previa-titulo">
+                            <i class="ti ti-mail"></i>
+                            <div>
+                                <strong>{{ __('E-mail do aviso', 'npsphere') }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="npsphere-field">
+                            <label>{{ __('Assunto', 'npsphere') }} {{ npsphere_m.info(__('Em branco, usa o assunto padrão (o texto em cinza).', 'npsphere')) }}</label>
+                            <input type="text" name="{{ relatorio.aviso.modelo.campo_assunto }}" class="form-control"
+                                   value="{{ relatorio.aviso.modelo.assunto }}" placeholder="{{ relatorio.aviso.modelo.padrao.assunto }}">
+                        </div>
+
+                        {{ npsphere_m.editor({
+                            'campo': relatorio.aviso.modelo.campo_corpo,
+                            'corpo': relatorio.aviso.modelo.corpo,
+                            'padrao': relatorio.aviso.modelo.padrao.corpo,
+                            'lembrete': 0,
+                            'marcadores': relatorio.aviso.modelo.marcadores,
+                            'previa_url': aviso_previa_url,
+                            'surveys_id': item.getID(),
+                            'assunto_campo': relatorio.aviso.modelo.campo_assunto
+                        }) }}
+                    </div>
+                </div>{# /npsphere-gestor-corpo #}
+            </section>
+
+            <section class="npsphere-card">
+                <div class="npsphere-template-acoes">
+                    <button type="submit" name="update" value="1" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    {# ============================ AJUDA ============================= #}
+    {# (data-panel continua "variaveis".) Tabelas recolhidas: clicar na linha de cada grupo abre/fecha.
+       As três tabelas usam as mesmas colunas (npsphere-vars-colunas),
+       para ficarem alinhadas umas com as outras. #}
+    {% macro tabela_vars(marcadores, terceira, valores, blocos) %}
+        <div class="table-responsive">
+            <table class="table table-sm table-vcenter npsphere-vars">
+                <colgroup>
+                    <col class="npsphere-vars-c1"><col class="npsphere-vars-c2"><col class="npsphere-vars-c3">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>{{ __('Variável', 'npsphere') }}</th>
+                        <th>{{ __('Significado', 'npsphere') }}</th>
+                        <th>{{ terceira }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for marcador, descricao in marcadores %}
+                        <tr>
+                            <td><code>{{ marcador }}</code></td>
+                            <td>{{ descricao }}</td>
+                            <td class="npsphere-vars-exemplo">
+                                {% if blocos is not null %}
+                                    {% if marcador in blocos %}
+                                        {{ __('Só na mensagem (bloco pronto)', 'npsphere') }}
+                                    {% else %}
+                                        {{ __('Assunto e mensagem', 'npsphere') }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ valores[marcador] ?? '' }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endmacro %}
+
+    {# Um assunto de ajuda: <details> recolhido, no mesmo padrão dos
+       grupos de variáveis. O id é o alvo do link "Como funciona". #}
+    <div class="npsphere-panel" data-panel="variaveis" style="display: none;">
+        <section class="npsphere-card">
+            <header class="npsphere-card-head">
+                <span class="npsphere-card-icon"><i class="ti ti-help-circle"></i></span>
+                <div>
+                    <h3>{{ __('Como funciona', 'npsphere') }}</h3>
+                    <p>{{ __('As regras de cada e-mail. Clique num assunto para abrir.', 'npsphere') }}</p>
+                </div>
+            </header>
+
+            {# ----------------------------------------------- Convite #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-convite">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-mail"></i> {{ __('Convite', 'npsphere') }}
+                </summary>
+                <ul class="npsphere-ajuda-lista">
+                    {% if chamado %}
+                        <li>{{ __('O convite sai sozinho quando o chamado é encerrado — não há botão de envio. Recebe o requerente do chamado, que responde direto do e-mail, sem login.', 'npsphere') }}</li>
+                        <li>{{ __('O atraso, a porcentagem de chamados que recebem e a duração da pesquisa vêm da entidade (Entidade › Assistência › Pesquisa de satisfação). A entidade precisa estar com "Pesquisa externa" apontando para o NPSphere; com "Pesquisa interna", quem envia é o próprio GLPI e este convite não sai.', 'npsphere') }}</li>
+                        <li>{{ __('A pesquisa aparece na tela do chamado. O e-mail espera o tempo de "Esperar a avaliação no chamado": se o requerente avaliar ali, o e-mail não sai (nem os lembretes). Se não avaliar, o convite sai normalmente, no lugar da notificação de satisfação do GLPI.', 'npsphere') }}</li>
+                        <li>{{ __('Com espera, quem envia é a ação automática "npsphereConvite", a cada minuto. Sem espera, o e-mail entra na fila na hora do encerramento.', 'npsphere') }}</li>
+                        <li>{{ __('Prévia: usa o último chamado encerrado. Os links da prévia abrem a aba Visualizar e não registram avaliação.', 'npsphere') }}</li>
+                    {% elseif publico %}
+                        <li>{{ __('Recebem os usuários do Público-alvo com e-mail no cadastro do GLPI. Para incluir alguém sem e-mail, cadastre o e-mail no usuário.', 'npsphere') }}</li>
+                        {% if publico.multiplas %}
+                            <li>{{ __('Esta pesquisa aceita várias respostas por pessoa: todos com e-mail recebem, inclusive quem já respondeu.', 'npsphere') }}</li>
+                        {% else %}
+                            <li>{{ __('Quem já respondeu não recebe de novo.', 'npsphere') }}</li>
+                        {% endif %}
+                        <li>{{ __('Cada pessoa recebe o próprio link: clicar numa opção do e-mail registra a resposta em nome dela, sem entrar no GLPI. Clicar de novo troca a resposta, sem duplicar.', 'npsphere') }}</li>
+                        <li>{{ __('Prévia: usa a primeira pessoa que vai receber.', 'npsphere') }}</li>
+                    {% else %}
+                        <li>{{ __('Adicione os destinatários um a um ou importe um CSV separado por ponto e vírgula (;), com as colunas email e nome. Os importados são somados aos da lista; e-mails repetidos são ignorados.', 'npsphere') }}</li>
+                        {% if item.fields['is_anonymous'] %}
+                            <li>{{ __('Pesquisa anônima: todos recebem o mesmo link. O clique numa opção abre a pesquisa com a opção já marcada, e a pessoa confirma no botão Enviar.', 'npsphere') }}</li>
+                        {% else %}
+                            <li>{{ __('Cada destinatário recebe o próprio link: o clique numa opção já registra a resposta e mostra a confirmação. Clicar de novo troca a resposta, sem duplicar. Se a pesquisa pede identificação (nome, e-mail e telefone), o clique abre o formulário para a pessoa preencher os dados.', 'npsphere') }}</li>
+                        {% endif %}
+                        <li>{{ __('Prévia: usa o primeiro nome da lista. Os links da prévia abrem a pesquisa de verdade.', 'npsphere') }}</li>
+                    {% endif %}
+                    {% if not chamado %}
+                        <li>{{ __('Os convites saem quando você clica em "Enviar convites". Salve antes: o e-mail usa o texto gravado.', 'npsphere') }}</li>
+                    {% endif %}
+                    <li>{{ __('Todos os e-mails do NPSphere usam a fila de e-mails do GLPI (Configurar › Notificações › Fila de notificações) e o servidor de e-mail configurado nele: saem na próxima execução da ação automática "queuednotification".', 'npsphere') }}</li>
+                </ul>
+            </details>
+
+            {# ------------------------------------ Perguntas no e-mail #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-perguntas">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-list-check"></i> {{ __('Perguntas dentro do e-mail', 'npsphere') }}
+                </summary>
+                <ul class="npsphere-ajuda-lista">
+                    <li>{{ __('Cada pergunta da pesquisa tem uma variável com o nome dela (veja em Variáveis, abaixo). No e-mail, ela mostra a pergunta com as opções para clicar.', 'npsphere') }}</li>
+                    <li><strong>{{ __('Use assim só quando a pesquisa tem uma única pergunta.', 'npsphere') }}</strong> {{ __('Cada clique no e-mail leva UMA resposta: com várias perguntas no e-mail, a pessoa clica na primeira, a página abre e as outras ficam para responder lá. Muita gente fecha a página achando que já respondeu tudo.', 'npsphere') }}</li>
+                    <li>
+                        {{ __('Com mais de uma pergunta, prefira o {{botao}}, que leva a pessoa direto para a pesquisa completa.', 'npsphere') }}
+                        {% if total_perguntas > 1 %}<strong>{{ __('Esta pesquisa tem %d perguntas.', 'npsphere')|format(total_perguntas) }}</strong>{% endif %}
+                    </li>
+                    <li>{{ __('As variáveis de pergunta são criadas sozinhas, com o texto da pergunta sem acentos e sem espaços. Se o texto mudar, o nome da variável muda junto: confira a prévia depois de editar as perguntas.', 'npsphere') }}</li>
+                </ul>
+            </details>
+
+            {# ---------------------------------------------- Lembrete #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-lembrete">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-bell-ringing"></i> {{ __('Lembrete', 'npsphere') }}
+                </summary>
+                <ul class="npsphere-ajuda-lista">
+                    {% if not lembrete.aceita %}
+                        <li>{{ __('Pesquisa anônima não tem lembrete: todos recebem o mesmo link, então o plugin não tem como saber quem já respondeu — e descobrir isso quebraria o anonimato prometido a quem responde.', 'npsphere') }}</li>
+                    {% else %}
+                        <li>{{ __('Vai para quem recebeu o convite e ainda não respondeu, a cada "N dias sem resposta" (contados do convite e, depois, do último lembrete), até o máximo de lembretes por pessoa.', 'npsphere') }}</li>
+                        {% if item.fields['type'] == 'ticket' %}
+                            <li>{{ __('Recebe o requerente do chamado, enquanto não avaliar e a pesquisa não expirar.', 'npsphere') }}</li>
+                            <li>{{ __('O GLPI não tem lembrete próprio de pesquisa de satisfação: o que ele define é a "Duração da pesquisa" da entidade. Depois dela o GLPI considera a pesquisa do chamado expirada, e o lembrete para junto. Com "0" (sem limite), valem só o intervalo e o máximo.', 'npsphere') }}</li>
+                        {% else %}
+                            <li>{{ __('Recebe quem ganhou o convite pelo botão "Enviar convites". Enviar os convites de novo recomeça a contagem.', 'npsphere') }}</li>
+                        {% endif %}
+                        <li>{{ __('O lembrete usa as mesmas variáveis e o mesmo link do convite: clicar numa opção do lembrete já registra a resposta.', 'npsphere') }}</li>
+                        <li>{{ __('Quem envia é a ação automática "npsphereLembrete", de hora em hora, das %dh às %dh.', 'npsphere')|format(lembrete.acao.hourmin ?? 8, lembrete.acao.hourmax ?? 18) }} {{ __('Só entram os convites enviados a partir da versão 0.58.0.', 'npsphere') }}</li>
+                    {% endif %}
+                </ul>
+            </details>
+
+            {# --------------------------------------------- Relatório #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-relatorio">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-report-analytics"></i> {{ __('Relatório diário', 'npsphere') }}
+                </summary>
+                <ul class="npsphere-ajuda-lista">
+                    <li>{{ __('Um e-mail por dia para os gestores: primeiro as respostas com nota baixa, depois todas as respostas, separadas por pessoa.', 'npsphere') }}</li>
+                    <li>{{ __('Sai na primeira execução da ação automática "npsphereRelatorio" (de hora em hora) depois do horário escolhido. Cada relatório traz as respostas desde o anterior (o primeiro, as últimas 24 horas). Dia sem resposta, nada é enviado e o "último envio" não muda.', 'npsphere') }}</li>
+                    <li>{{ __('A nota de cada resposta é a mesma da coluna "Nota" da aba Resultados: de 0 a 10, a média das perguntas com nota (NPS, estrelas e emoji convertidos para 0 a 10). "Nota baixa" é a resposta com nota até o valor escolhido.', 'npsphere') }}</li>
+                    <li>{{ __('Cada resposta tem o link para abri-la no GLPI e, na pesquisa de chamado, o link do chamado.', 'npsphere') }}</li>
+                    <li>{{ __('Pesquisa anônima: o relatório traz as respostas, mas nunca quem respondeu — cada uma aparece como "Resposta anônima".', 'npsphere') }}</li>
+                    <li>{{ __('Prévia: usa as respostas reais das últimas 24 horas (sem nenhuma, as dos últimos 30 dias).', 'npsphere') }}</li>
+                </ul>
+            </details>
+
+            {# ------------------------------------------------- Aviso #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-aviso">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-bell-exclamation"></i> {{ __('Aviso imediato de nota baixa', 'npsphere') }}
+                </summary>
+                <ul class="npsphere-ajuda-lista">
+                    <li>{{ __('Um e-mail por resposta com nota baixa, logo depois da resposta, para o gestor falar com o cliente no mesmo dia. Quem recebe e a nota baixa do aviso são próprios dele, independentes do relatório.', 'npsphere') }}</li>
+                    <li>{{ __('Espera o tempo de "Enviar depois de": quem clica a nota no e-mail costuma escrever o comentário logo depois, e o aviso sai com a resposta completa.', 'npsphere') }}</li>
+                    <li>{{ __('Quem envia é a ação automática "npsphereAviso", a cada 5 minutos: o aviso chega entre a espera escolhida e 5 minutos depois dela.', 'npsphere') }}</li>
+                    <li>{{ __('Um aviso por resposta. Se a pessoa mudar a nota para baixa depois, o aviso sai nessa hora. Só valem as respostas a partir do momento em que o aviso foi ligado. A resposta também entra no relatório diário.', 'npsphere') }}</li>
+                    <li>{{ __('Prévia: usa a nota baixa mais recente dos últimos 30 dias.', 'npsphere') }}</li>
+                </ul>
+            </details>
+
+            {# ---------------------------------- Links dos resultados #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-links">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-link"></i> {{ __('Quem recebe o relatório e o aviso, e quem recebe os links', 'npsphere') }}
+                </summary>
+                <ul class="npsphere-ajuda-lista">
+                    <li>{{ __('Recebem os usuários e os grupos escolhidos em cada e-mail (do grupo, todos os membros), desde que estejam ativos e tenham e-mail no cadastro.', 'npsphere') }}</li>
+                    <li>{{ __('Os links "Ver resposta" e "Abrir os resultados" (e o botão "Ver resposta no GLPI" do aviso) só vão para quem abre a pesquisa no GLPI: um perfil da interface padrão com acesso à entidade da pesquisa, leitura em "Pesquisas de satisfação" e ser quem criou a pesquisa ou administrador geral — a mesma regra do GLPI ao abrir a pesquisa.', 'npsphere') }}</li>
+                    <li>{{ __('Quem não abre recebe o e-mail completo, só sem esses links, qualquer que seja o modelo.', 'npsphere') }}</li>
+                    <li>{{ __('O link do chamado vai para todos: quem abre o chamado é decidido pelo próprio GLPI.', 'npsphere') }}</li>
+                </ul>
+            </details>
+
+            {# --------------------------------------- Ações automáticas #}
+            <details class="npsphere-vars-grupo npsphere-ajuda-grupo" id="ajuda-acoes">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-clock-play"></i> {{ __('Ações automáticas', 'npsphere') }}
+                </summary>
+                <div class="table-responsive">
+                    <table class="table table-sm table-vcenter npsphere-vars">
+                        <colgroup>
+                            <col class="npsphere-vars-c1"><col class="npsphere-vars-c2"><col class="npsphere-vars-c3">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>{{ __('Ação automática', 'npsphere') }}</th>
+                                <th>{{ __('O que faz', 'npsphere') }}</th>
+                                <th>{{ __('Quando roda', 'npsphere') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set acoes = [] %}
+                            {% if chamado %}
+                                {% set acoes = acoes|merge([{'nome': 'npsphereConvite', 'acao': chamado.acao_convite, 'faz': __('Envia o convite do chamado depois da espera', 'npsphere'), 'quando': __('A cada minuto', 'npsphere')}]) %}
+                            {% endif %}
+                            {% set acoes = acoes|merge([
+                                {'nome': 'npsphereLembrete', 'acao': lembrete.acao, 'faz': __('Envia os lembretes', 'npsphere'), 'quando': __('De hora em hora, das %dh às %dh', 'npsphere')|format(lembrete.acao.hourmin ?? 8, lembrete.acao.hourmax ?? 18)},
+                                {'nome': 'npsphereRelatorio', 'acao': relatorio.acao, 'faz': __('Envia o relatório diário', 'npsphere'), 'quando': __('De hora em hora', 'npsphere')},
+                                {'nome': 'npsphereAviso', 'acao': relatorio.aviso.acao, 'faz': __('Envia o aviso de nota baixa', 'npsphere'), 'quando': __('A cada 5 minutos', 'npsphere')}
+                            ]) %}
+                            {% for a in acoes %}
+                                <tr>
+                                    <td>
+                                        {% if a.acao %}
+                                            <a href="{{ a.acao.url }}"><code>{{ a.nome }}</code></a>
+                                            {% if a.acao.ativa %}
+                                                <span class="npsphere-situacao is-recebe">{{ __('ativa', 'npsphere') }}</span>
+                                            {% else %}
+                                                <span class="npsphere-situacao is-sem-email">{{ __('desativada', 'npsphere') }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <code>{{ a.nome }}</code>
+                                            <span class="npsphere-situacao is-sem-email">{{ __('não encontrada', 'npsphere') }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ a.faz }}</td>
+                                    <td class="npsphere-vars-exemplo">{{ a.quando }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td><code>queuednotification</code> <span class="text-secondary">(GLPI)</span></td>
+                                <td>{{ __('Manda a fila de e-mails (todos os e-mails acima passam por ela)', 'npsphere') }}</td>
+                                <td class="npsphere-vars-exemplo">{{ __('Configurada no GLPI', 'npsphere') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul class="npsphere-ajuda-lista">
+                    <li>{{ __('Ficam em Configurar › Ações automáticas. Uma ação "não encontrada" é criada ao atualizar o plugin em Configurar › Plugins.', 'npsphere') }}</li>
+                    <li>{{ __('Para os horários serem cumpridos mesmo sem ninguém usando o GLPI, deixe as ações automáticas no modo "CLI" (cron do servidor).', 'npsphere') }}</li>
+                </ul>
+            </details>
+        </section>
+
+        {# ---------------------------------------------------- Variáveis #}
+        <section class="npsphere-card">
+            <header class="npsphere-card-head">
+                <span class="npsphere-card-icon"><i class="ti ti-variable"></i></span>
+                <div>
+                    <h3>{{ __('Variáveis', 'npsphere') }}</h3>
+                    <p>{{ __('Escreva a variável no assunto ou na mensagem: no envio ela é trocada pelo valor de cada destinatário. Cada e-mail tem as suas — uma variável escrita no e-mail errado sai como texto.', 'npsphere') }}</p>
+                </div>
+            </header>
+
+            <details class="npsphere-vars-grupo" id="ajuda-vars-convite">
+                <summary>
+                    <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                    <i class="ti ti-mail"></i> {{ __('Convite e lembrete', 'npsphere') }}
+                    <span class="npsphere-vars-qtd">{{ mail_marcadores|length }} {{ __('variáveis', 'npsphere') }}</span>
+                </summary>
+
+                {{ npsphere_m.tabela_vars(mail_marcadores, __('Exemplo nesta pesquisa', 'npsphere'), mail_exemplos, null) }}
+
+                <ul class="npsphere-ajuda-lista">
+                    <li>{{ __('As variáveis de pergunta são uma por pergunta ativa (veja "Perguntas dentro do e-mail", acima).', 'npsphere') }}</li>
+                    {% if externa %}
+                        <li>{{ __('{{destinatario}} é o nome da segunda coluna do CSV (email;nome). Sem nome, usa o início do e-mail (a parte antes do @).', 'npsphere') }}</li>
+                    {% elseif publico %}
+                        <li>{{ __('{{destinatario}} é o nome do usuário no GLPI (nome e sobrenome do cadastro; sem eles, o login).', 'npsphere') }}</li>
+                    {% endif %}
+                </ul>
+            </details>
+
+            {% for grupo in vars_gestor %}
+                <details class="npsphere-vars-grupo">
+                    <summary>
+                        <i class="ti ti-chevron-right npsphere-vars-seta"></i>
+                        <i class="{{ grupo.icone }}"></i> {{ grupo.titulo }}
+                        <span class="npsphere-vars-qtd">{{ grupo.marcadores|length }} {{ __('variáveis', 'npsphere') }}</span>
+                    </summary>
+
+                    {{ npsphere_m.tabela_vars(grupo.marcadores, __('Onde usar', 'npsphere'), [], grupo.blocos) }}
+
+                    <ul class="npsphere-ajuda-lista">
+                        <li>{{ __('As variáveis "bloco pronto" (%s) trazem uma parte inteira do e-mail já formatada (tabelas, cores, links): dá para mudar a ordem, tirar ou escrever texto entre elas. No assunto elas não são trocadas. O botão de restaurar do editor volta ao modelo padrão.', 'npsphere')|format(grupo.blocos|join(', ')) }}</li>
+                        <li>{{ grupo.links }}</li>
+                    </ul>
+                </details>
+            {% endfor %}
+        </section>
+    </div>
+</form>
+
+<script>
+(function () {
+    var raiz = document.getElementById('npsphere-template-form');
+    if (!raiz || raiz.dataset.npsphereInit === '1') { return; }
+    raiz.dataset.npsphereInit = '1';
+
+
+    // ------------------------------------------------- POST com CSRF
+    // O GLPI 11 confere o token CSRF em TODO POST, inclusive nos de
+    // ajax/ (CheckCsrfListener). O token do campo oculto da página não
+    // serve aqui: ele expira com o tempo e, se fosse gasto num AJAX, o
+    // "Salvar" do formulário falharia depois. Cada chamada busca um token
+    // novo em ajax/csrf.token.php -- o mesmo padrão do construtor de
+    // perguntas -- e o envia no corpo e no cabeçalho que o GLPI lê.
+    //
+    // Um pedido de cada vez (fila). Com as duas prévias da sub-aba
+    // "Relatório"/"Aviso" pedindo token ao mesmo tempo, os dois tokens
+    // eram gravados na sessão em paralelo e um sobrescrevia o outro: o
+    // POST que ficava com o token perdido era recusado (403) e a prévia
+    // do relatório mostrava "Não foi possível montar a prévia".
+    var filaDePedidos = Promise.resolve();
+    function postar(url, dados) {
+        var pedido = filaDePedidos.then(function () { return postarAgora(url, dados); });
+        filaDePedidos = pedido.then(function () {}, function () {});
+        return pedido;
+    }
+
+    function postarAgora(url, dados) {
+        return fetch(raiz.dataset.csrfUrl, { method: 'GET', credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.text() : ''; })
+            .catch(function () { return ''; })
+            .then(function (token) {
+                token = (token || '').trim();
+                var cabecalhos = { 'X-Requested-With': 'XMLHttpRequest' };
+                if (token) {
+                    dados.append('_glpi_csrf_token', token);
+                    cabecalhos['X-Glpi-Csrf-Token'] = token;
+                }
+                return fetch(url, {
+                    method: 'POST',
+                    body: dados,
+                    headers: cabecalhos,
+                    credentials: 'same-origin'
+                });
+            });
+    }
+
+    // ------------------------------------ mensagem: prévia + código
+    // Um editor por .npsphere-editor: o do convite (sub-aba Modelo) e o
+    // do lembrete (sub-aba Lembrete). Cada um tem a sua prévia.
+    function montarEditor(bloco) {
+        var campo  = bloco.querySelector('.npsphere-mail-body');
+        var iframe = bloco.querySelector('.npsphere-msg-iframe');
+        var caixa  = bloco.querySelector('.npsphere-msg-previa');
+        var ed = { bloco: bloco, sujo: true, pedido: 0, espera: null };
+
+        // A prévia está numa origem opaca, então a página não lê o
+        // documento dela: é a própria prévia que avisa a altura
+        // (ajax/mail.preview.php). Só aceita a mensagem vinda DESTE iframe.
+        window.addEventListener('message', function (e) {
+            if (e.source !== iframe.contentWindow || !e.data || e.data.npsphere !== 'altura') { return; }
+            var h = parseInt(e.data.altura, 10);
+            if (h > 0) { iframe.style.height = Math.max(360, Math.min(h, 5000)) + 'px'; }
+        });
+
+        // Prévia só do editor visível: num painel escondido o iframe não
+        // tem largura, e a altura informada sairia errada. O outro fica
+        // marcado e é montado quando a sub-aba dele abrir.
+        ed.atualizar = function () {
+            if (!ed.sujo || bloco.offsetParent === null) { return; }
+            ed.sujo = false;
+            var meu = ++ed.pedido;
+            caixa.classList.add('is-loading');
+
+            var dados = new FormData();
+            dados.append('surveys_id', iframe.dataset.surveysId);
+            dados.append('mail_body', campo.value);
+            dados.append('lembrete', bloco.dataset.lembrete || '0');
+            // Relatório e aviso: o assunto e a nota de corte / espera da
+            // tela entram na prévia.
+            if (bloco.dataset.assunto) {
+                var campoAssunto = raiz.querySelector('[name="' + bloco.dataset.assunto + '"]');
+                if (campoAssunto) { dados.append('assunto', campoAssunto.value); }
+                raiz.querySelectorAll('.npsphere-relatorio-corte, .npsphere-aviso-corte, .npsphere-aviso-espera').forEach(function (c) {
+                    dados.append(c.name, c.value);
+                });
+            }
+            // {{destinatario}} na prévia = primeira pessoa da lista na tela.
+            var listaNaTela = document.getElementById('npsphere-mail-recipients');
+            if (listaNaTela) { dados.append('mail_recipients', listaNaTela.value); }
+
+            postar(iframe.dataset.url, dados)
+                .then(function (r) { return r.ok ? r.text() : Promise.reject(r.status); })
+                .then(function (html) {
+                    if (meu !== ed.pedido) { return; }
+                    iframe.srcdoc = html;
+                })
+                .catch(function () {
+                    if (meu !== ed.pedido) { return; }
+                    ed.sujo = true;
+                    iframe.srcdoc = '<!DOCTYPE html><html><body style="font-family:sans-serif;color:#d63939;padding:1rem">'
+                        + 'Não foi possível montar a prévia.</body></html>';
+                })
+                .then(function () { if (meu === ed.pedido) { caixa.classList.remove('is-loading'); } });
+        };
+
+        // A prévia acompanha a digitação: espera uma pausa curta para não
+        // fazer uma requisição a cada tecla.
+        ed.agendar = function () {
+            ed.sujo = true;
+            clearTimeout(ed.espera);
+            ed.espera = setTimeout(ed.atualizar, 400);
+        };
+        campo.addEventListener('input', ed.agendar);
+        if (bloco.dataset.assunto) {
+            var assuntoEd = raiz.querySelector('[name="' + bloco.dataset.assunto + '"]');
+            if (assuntoEd) { assuntoEd.addEventListener('input', ed.agendar); }
+        }
+
+        var restaurar = bloco.querySelector('.npsphere-msg-restaurar');
+        restaurar.addEventListener('click', function () {
+            if (campo.value.trim() !== '' && campo.value !== restaurar.dataset.padrao
+                && !window.confirm('Substituir a mensagem atual pelo modelo padrão?')) {
+                return;
+            }
+            campo.value = restaurar.dataset.padrao;
+            ed.sujo = true;
+            ed.atualizar();
+        });
+
+        // Marcadores: clicar insere na posição do cursor.
+        bloco.querySelectorAll('.npsphere-mail-tag').forEach(function (botao) {
+            botao.addEventListener('click', function () {
+                var tag = botao.dataset.tag;
+                var inicio = campo.selectionStart || 0;
+                var fim = campo.selectionEnd || 0;
+
+                campo.value = campo.value.substring(0, inicio) + tag + campo.value.substring(fim);
+                campo.focus();
+                campo.selectionStart = campo.selectionEnd = inicio + tag.length;
+                ed.agendar();
+            });
+        });
+
+        return ed;
+    }
+
+    var editores = [];
+    raiz.querySelectorAll('.npsphere-editor').forEach(function (bloco) {
+        editores.push(montarEditor(bloco));
+    });
+
+    // Usado pela lista de destinatários: o nome da prévia muda nos dois.
+    function agendarPrevia() {
+        editores.forEach(function (ed) { ed.agendar(); });
+    }
+
+    // ---------------------------------------------------- sub-abas
+    var abas = raiz.querySelectorAll('.npsphere-subtab');
+    abas.forEach(function (aba) {
+        aba.addEventListener('click', function () {
+            abas.forEach(function (a) { a.classList.toggle('is-active', a === aba); });
+            raiz.querySelectorAll('.npsphere-panel').forEach(function (p) {
+                p.style.display = (p.dataset.panel === aba.dataset.panel) ? '' : 'none';
+            });
+            editores.forEach(function (ed) { ed.atualizar(); });
+        });
+    });
+
+    editores.forEach(function (ed) { ed.atualizar(); });
+
+    // Botões que levam a outra sub-aba (ex.: do Aviso para o Relatório,
+    // onde ficam quem recebe e a nota baixa).
+    // v0.64.0: data-abrir = id do assunto da Ajuda, que já abre e
+    // aparece na tela.
+    raiz.querySelectorAll('.npsphere-ir-aba').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var alvo = raiz.querySelector('.npsphere-subtab[data-panel="' + b.dataset.ir + '"]');
+            if (alvo) { alvo.click(); }
+            var grupo = b.dataset.abrir ? document.getElementById(b.dataset.abrir) : null;
+            if (grupo) {
+                grupo.open = true;
+                grupo.classList.add('is-destaque');
+                setTimeout(function () { grupo.classList.remove('is-destaque'); }, 1600);
+                grupo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // ------------------------------------------------ relatório e aviso
+    // Cada quadro (relatório diário / aviso imediato) fechado mostra só o
+    // título e o interruptor; ligado, mostra a configuração e o editor do
+    // e-mail, e a prévia é montada na hora.
+    raiz.querySelectorAll('.npsphere-gestor-corpo').forEach(function (corpo) {
+        var chave = document.getElementById(corpo.dataset.chave);
+        if (!chave) { return; }
+        var mostrar = function () {
+            corpo.hidden = !chave.checked;
+            if (chave.checked) {
+                editores.forEach(function (ed) {
+                    if (corpo.contains(ed.bloco)) { ed.sujo = true; ed.atualizar(); }
+                });
+            }
+        };
+        chave.addEventListener('change', mostrar);
+        corpo.hidden = !chave.checked;
+    });
+
+    // Nota de corte e espera mudam o que as prévias do relatório e do
+    // aviso mostram.
+    raiz.querySelectorAll('.npsphere-relatorio-corte, .npsphere-aviso-corte, .npsphere-aviso-espera').forEach(function (c) {
+        c.addEventListener('change', function () {
+            editores.forEach(function (ed) {
+                if (ed.bloco.dataset.assunto) { ed.agendar(); }
+            });
+        });
+    });
+
+    // ------------------------------------------------ lembrete
+    // Campos de intervalo e máximo valem com o lembrete ligado; e, no
+    // chamado, a conta de quantos cabem no prazo do GLPI
+    // acompanha o intervalo digitado.
+    var chaveLembrete = document.getElementById('npsphere-lembrete-ativo');
+    var camposLembrete = raiz.querySelector('.npsphere-lembrete-campos');
+    if (chaveLembrete && camposLembrete) {
+        var alternar = function () {
+            // Só esmaece: os valores continuam editáveis (e são gravados)
+            // para deixar tudo pronto antes de ligar.
+            camposLembrete.classList.toggle('is-desligado', !chaveLembrete.checked);
+        };
+        chaveLembrete.addEventListener('change', alternar);
+        alternar();
+    }
+
+    var cabem = raiz.querySelector('.npsphere-lembrete-cabem');
+    var diasLembrete = document.getElementById('npsphere-lembrete-dias');
+    var maxLembrete = document.getElementById('npsphere-lembrete-max');
+    if (cabem && diasLembrete && maxLembrete) {
+        var recontar = function () {
+            var duracao = parseInt(cabem.dataset.duracao, 10) || 0;
+            var dias = Math.max(1, parseInt(diasLembrete.value, 10) || 1);
+            var max = Math.max(1, parseInt(maxLembrete.value, 10) || 1);
+            var n = Math.floor(Math.max(0, duracao - 1) / dias);
+            cabem.textContent = n === 0
+                ? 'Nenhum lembrete cabe nesse prazo — diminua o intervalo.'
+                : 'Cabem até ' + Math.min(n, max) + ' lembrete(s).';
+            var nota = cabem.closest('.npsphere-lembrete-prazo');
+            if (nota) { nota.classList.toggle('npsphere-note-aviso', n === 0); }
+        };
+        diasLembrete.addEventListener('input', recontar);
+        maxLembrete.addEventListener('input', recontar);
+    }
+
+    // ------------------------------------------------ destinatários
+    // A tabela é a tela; o <textarea> oculto (mail_recipients) é o que vai
+    // para o banco e para a prévia. Toda mudança na tabela regrava o campo.
+    var lista   = document.getElementById('npsphere-mail-recipients');
+    var total   = raiz.querySelector('.npsphere-csv-total');
+    var dest    = raiz.querySelector('.npsphere-dest');
+    var corpoTb = document.getElementById('npsphere-dest-lista');
+    var vazio   = raiz.querySelector('.npsphere-dest-vazio');
+    var aviso   = raiz.querySelector('.npsphere-dest-aviso');
+    var novoNome  = document.getElementById('npsphere-dest-nome');
+    var novoEmail = document.getElementById('npsphere-dest-email');
+    var REGEX_EMAIL = /^[^@\s;,]+@[^@\s;,]+\.[^@\s;,]+$/;
+
+    function emailValido(v) { return REGEX_EMAIL.test(v); }
+
+    function avisar(texto) {
+        if (!aviso) { return; }
+        aviso.textContent = texto || '';
+    }
+
+    function linhas() { return corpoTb ? corpoTb.querySelectorAll('tr') : []; }
+
+    function contar() {
+        if (!total) { return; }
+        var n = 0;
+        linhas().forEach(function (tr) {
+            if (emailValido(tr.querySelector('.npsphere-dest-e').value.trim())) { n++; }
+        });
+        total.textContent = n + (n === 1 ? ' e-mail na lista. ' : ' e-mails na lista. ');
+    }
+
+    // Tabela -> campo oculto (email;nome por linha) e contagem.
+    function gravar() {
+        if (!lista) { return; }
+        var saida = [];
+        linhas().forEach(function (tr, i) {
+            var email = tr.querySelector('.npsphere-dest-e').value.trim();
+            // ; e quebra de linha são separadores do formato gravado.
+            var nome  = tr.querySelector('.npsphere-dest-nm').value.replace(/[;\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+            tr.querySelector('.npsphere-dest-n').textContent = i + 1;
+            if (email === '') { return; }
+            saida.push(nome !== '' ? email + ';' + nome : email);
+        });
+        lista.value = saida.join('\n');
+        if (vazio) { vazio.style.display = linhas().length ? 'none' : ''; }
+        contar();
+    }
+
+    // ... e a prévia, que usa o primeiro nome da lista.
+    function sincronizar() {
+        gravar();
+        agendarPrevia();
+    }
+
+    function jaExiste(email, menos) {
+        var alvo = email.toLowerCase();
+        var achou = false;
+        linhas().forEach(function (tr) {
+            if (tr !== menos && tr.querySelector('.npsphere-dest-e').value.trim().toLowerCase() === alvo) { achou = true; }
+        });
+        return achou;
+    }
+
+    function criarLinha(nome, email) {
+        var tr = document.createElement('tr');
+
+        var tdN = document.createElement('td');
+        tdN.className = 'npsphere-dest-n';
+
+        var tdNome = document.createElement('td');
+        var inNome = document.createElement('input');
+        inNome.type = 'text';
+        inNome.className = 'form-control form-control-sm npsphere-dest-nm';
+        inNome.value = nome || '';
+        inNome.setAttribute('aria-label', 'Nome');
+        tdNome.appendChild(inNome);
+
+        var tdEmail = document.createElement('td');
+        var inEmail = document.createElement('input');
+        inEmail.type = 'email';
+        inEmail.className = 'form-control form-control-sm npsphere-dest-e';
+        inEmail.value = email || '';
+        inEmail.setAttribute('aria-label', 'E-mail');
+        tdEmail.appendChild(inEmail);
+
+        var tdAcao = document.createElement('td');
+        tdAcao.className = 'npsphere-dest-acao';
+        var remover = document.createElement('button');
+        remover.type = 'button';
+        remover.className = 'btn btn-sm btn-ghost-danger npsphere-dest-remover';
+        remover.title = 'Remover';
+        remover.setAttribute('aria-label', 'Remover');
+        remover.innerHTML = '<i class="ti ti-trash"></i>';
+        tdAcao.appendChild(remover);
+
+        tr.appendChild(tdN);
+        tr.appendChild(tdNome);
+        tr.appendChild(tdEmail);
+        tr.appendChild(tdAcao);
+
+        inNome.addEventListener('input', sincronizar);
+        inEmail.addEventListener('input', function () {
+            var v = inEmail.value.trim();
+            inEmail.classList.toggle('is-invalid', v !== '' && (!emailValido(v) || jaExiste(v, tr)));
+            sincronizar();
+        });
+        remover.addEventListener('click', function () {
+            tr.parentNode.removeChild(tr);
+            sincronizar();
+        });
+
+        return tr;
+    }
+
+    function preencher(registros, semPrevia) {
+        if (!corpoTb) { return; }
+        corpoTb.innerHTML = '';
+        (registros || []).forEach(function (r) {
+            corpoTb.appendChild(criarLinha(r.nome, r.email));
+        });
+        // Na abertura da aba a prévia já é pedida logo abaixo.
+        if (semPrevia) { gravar(); } else { sincronizar(); }
+    }
+
+    function adicionar() {
+        var nome  = novoNome.value.replace(/[;\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+        var email = novoEmail.value.trim();
+
+        if (!emailValido(email)) {
+            avisar('Informe um e-mail válido.');
+            novoEmail.classList.add('is-invalid');
+            novoEmail.focus();
+            return;
+        }
+        if (jaExiste(email, null)) {
+            avisar('Este e-mail já está na lista.');
+            novoEmail.classList.add('is-invalid');
+            novoEmail.focus();
+            return;
+        }
+
+        corpoTb.appendChild(criarLinha(nome, email));
+        novoNome.value = '';
+        novoEmail.value = '';
+        novoEmail.classList.remove('is-invalid');
+        avisar('');
+        sincronizar();
+        // A lista rola sozinha até o recém-adicionado.
+        var caixaLista = raiz.querySelector('.npsphere-dest-caixa');
+        if (caixaLista) { caixaLista.scrollTop = caixaLista.scrollHeight; }
+        novoNome.focus();
+    }
+
+    if (dest && corpoTb) {
+        var inicial = [];
+        try { inicial = JSON.parse(dest.dataset.inicial || '[]'); } catch (e) { inicial = []; }
+        preencher(inicial, true);
+
+        document.getElementById('npsphere-dest-adicionar').addEventListener('click', adicionar);
+        // Enter nos campos adiciona, em vez de enviar o formulário.
+        [novoNome, novoEmail].forEach(function (campoNovo) {
+            campoNovo.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); adicionar(); }
+            });
+        });
+        novoEmail.addEventListener('input', function () {
+            novoEmail.classList.remove('is-invalid');
+            avisar('');
+        });
+        // Enter dentro da tabela também não envia o formulário.
+        corpoTb.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); }
+        });
+    }
+
+    var importar = document.getElementById('npsphere-csv-importar');
+    var arquivo  = document.getElementById('npsphere-csv-arquivo');
+    if (importar && arquivo) {
+        importar.addEventListener('click', function () { arquivo.click(); });
+
+        arquivo.addEventListener('change', function () {
+            if (!arquivo.files.length) { return; }
+            var saida = raiz.querySelector('.npsphere-csv-resultado');
+            importar.disabled = true;
+            saida.textContent = '';
+            saida.className = 'npsphere-csv-resultado';
+
+            var dados = new FormData();
+            dados.append('surveys_id', importar.dataset.surveysId);
+            dados.append('csv', arquivo.files[0]);
+            dados.append('atual', lista ? lista.value : '');
+
+            postar(importar.dataset.url, dados)
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (res) {
+                    if (res && res.success) {
+                        preencher(res.registros || []);
+                    }
+                    saida.textContent = res && res.message ? res.message : 'Não foi possível importar.';
+                    saida.className = 'npsphere-csv-resultado ' + (res && res.success ? 'text-success' : 'text-danger');
+                })
+                .catch(function () {
+                    saida.textContent = 'Falha de conexão.';
+                    saida.className = 'npsphere-csv-resultado text-danger';
+                })
+                .then(function () {
+                    importar.disabled = false;
+                    arquivo.value = ''; // permite importar o mesmo arquivo de novo
+                });
+        });
+    }
+
+    // ------------------------------------------------- enviar convites
+    // Por AJAX, para a aba não recarregar e perder as edições em curso.
+    var botaoEnviar = document.getElementById('npsphere-mail-enviar');
+    if (botaoEnviar) {
+        botaoEnviar.addEventListener('click', function () {
+            // Interna: sem ninguém para receber, avisa em vez de enviar.
+            if (botaoEnviar.dataset.total !== undefined && (parseInt(botaoEnviar.dataset.total, 10) || 0) === 0) {
+                var vazio = raiz.querySelector('.npsphere-mail-resultado');
+                if (vazio) {
+                    vazio.textContent = 'Ninguém para receber: confira o público-alvo.';
+                    vazio.className = 'npsphere-mail-resultado text-danger';
+                }
+                return;
+            }
+            var saida = raiz.querySelector('.npsphere-mail-resultado');
+            botaoEnviar.disabled = true;
+            if (saida) { saida.textContent = ''; saida.className = 'npsphere-mail-resultado'; }
+
+            var dados = new FormData();
+            dados.append('surveys_id', botaoEnviar.dataset.surveysId);
+
+            postar(botaoEnviar.dataset.url, dados)
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (res) {
+                    botaoEnviar.disabled = false;
+                    if (saida) {
+                        saida.textContent = res && res.message ? res.message : 'Não foi possível enviar.';
+                        saida.className = 'npsphere-mail-resultado '
+                            + (res && res.success ? 'text-success' : 'text-danger');
+                    }
+                })
+                .catch(function () {
+                    botaoEnviar.disabled = false;
+                    if (saida) {
+                        saida.textContent = 'Falha de conexão.';
+                        saida.className = 'npsphere-mail-resultado text-danger';
+                    }
+                });
+        });
+    }
+})();
+</script>
+
+{# Editor da mensagem: prévia HTML5 à esquerda, código à direita. Usado
+   pelo convite (sub-aba Modelo) e pelo lembrete (sub-aba Lembrete); o
+   script acima monta um editor para cada .npsphere-editor. #}
+{% macro editor(cfg) %}
+    {% import _self as npsphere_m %}
+    <div class="npsphere-field npsphere-editor" data-lembrete="{{ cfg.lembrete }}"
+         data-assunto="{{ cfg.assunto_campo ?? '' }}">
+        <div class="npsphere-msg-topo">
+            <label>{{ __('Mensagem', 'npsphere') }}</label>
+            <button type="button" class="npsphere-msg-modo npsphere-msg-restaurar"
+                    data-padrao="{{ cfg.padrao }}"
+                    title="{{ __('Restaurar o modelo padrão', 'npsphere') }}"
+                    aria-label="{{ __('Restaurar o modelo padrão', 'npsphere') }}">
+                <i class="ti ti-restore"></i>
+            </button>
+        </div>
+
+        {# Lado a lado: à esquerda a mensagem como a pessoa recebe
+           (HTML5), à direita o código. A prévia acompanha a
+           digitação. Em tela estreita, um embaixo do outro. #}
+        <div class="npsphere-msg-split">
+            <div class="npsphere-msg-lado">
+                <div class="npsphere-msg-rotulo">
+                    <i class="ti ti-brand-html5"></i> {{ __('HTML5 — como a pessoa recebe', 'npsphere') }}
+                </div>
+
+                {# iframe isola os estilos do e-mail dos do GLPI.
+                   allow-scripts SEM allow-same-origin: a prévia roda
+                   numa origem opaca, sem acesso à sessão nem à
+                   página do GLPI. #}
+                <div class="npsphere-msg-previa">
+                    <iframe class="npsphere-msg-iframe" title="{{ __('Prévia da mensagem', 'npsphere') }}"
+                            sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+                            data-url="{{ cfg.previa_url }}" data-surveys-id="{{ cfg.surveys_id }}"></iframe>
+                    <span class="npsphere-msg-carregando"><i class="ti ti-loader-2"></i></span>
+                </div>
+                {% if cfg.nota ?? false %}<small>{{ cfg.nota }}</small>{% endif %}
+            </div>
+
+            <div class="npsphere-msg-lado">
+                <div class="npsphere-msg-rotulo">
+                    <i class="ti ti-code"></i> {{ __('Código', 'npsphere') }}
+                </div>
+                <textarea name="{{ cfg.campo }}" class="form-control npsphere-mail-body"
+                          rows="16" spellcheck="false">{{ cfg.corpo }}</textarea>
+
+                <div class="npsphere-mail-marcadores">
+                    <strong>{{ __('Marcadores disponíveis', 'npsphere') }}</strong>
+                    {{ npsphere_m.info(__('Clique para inserir na posição do cursor. Passe o mouse num marcador para ver o que ele traz; a lista completa está na aba Ajuda.', 'npsphere')) }}
+                    <div>
+                        {% for marcador, descricao in cfg.marcadores %}
+                            <button type="button" class="npsphere-mail-tag"
+                                    data-tag="{{ marcador }}" title="{{ descricao }}">{{ marcador }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{# Quem recebe (relatório ou aviso): campos do GLPI, números, lista com
+   quem abre os resultados e o último envio. Um para cada e-mail. #}
+{% macro destinos(d, sem_links) %}
+    {% import _self as npsphere_m %}
+    <div class="npsphere-relatorio-destinos">
+        <div class="npsphere-field">
+            <label>{{ __('Usuários que recebem', 'npsphere') }}</label>
+            <input type="hidden" name="{{ d.prefixo }}_users" value="">
+            {{ d.campo_usuarios|raw }}
+        </div>
+        <div class="npsphere-field">
+            <label>{{ __('Grupos que recebem', 'npsphere') }} {{ npsphere_m.info(__('Todos os membros do grupo recebem.', 'npsphere')) }}</label>
+            <input type="hidden" name="{{ d.prefixo }}_groups" value="">
+            {{ d.campo_grupos|raw }}
+        </div>
+    </div>
+
+    {% set sem_acesso = d.pessoas|filter(p => not p.acesso)|length %}
+    <div class="npsphere-publico-numeros">
+        <div class="npsphere-publico-numero is-recebe">
+            <strong>{{ d.pessoas|length }}</strong>
+            <span>{{ __('pessoa(s) recebem (ativas, com e-mail)', 'npsphere') }}</span>
+        </div>
+        <div class="npsphere-publico-numero {{ sem_acesso > 0 ? 'is-sem-email' : 'is-respondeu' }}">
+            <strong>{{ d.pessoas|length - sem_acesso }}</strong>
+            <span>{{ __('abrem os resultados no GLPI', 'npsphere') }}</span>
+        </div>
+        <div class="npsphere-publico-numero">
+            <strong class="npsphere-relatorio-ultimo">{{ d.ultimo ?: '—' }}</strong>
+            <span>{{ __('último envio', 'npsphere') }}</span>
+        </div>
+    </div>
+
+    {% if d.pessoas is not empty %}
+        <div class="npsphere-dest-caixa">
+            <table class="table table-sm table-vcenter npsphere-dest-tabela">
+                <thead>
+                    <tr>
+                        <th>{{ __('Nome', 'npsphere') }}</th>
+                        <th>{{ __('E-mail', 'npsphere') }}</th>
+                        <th>{{ __('Links para os resultados', 'npsphere') }} {{ npsphere_m.info(sem_links) }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in d.pessoas %}
+                        <tr>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.email }}</td>
+                            <td>
+                                {% if p.acesso %}
+                                    <span class="npsphere-situacao is-recebe"><i class="ti ti-link"></i> {{ __('Recebe os links', 'npsphere') }}</span>
+                                {% else %}
+                                    <span class="npsphere-situacao is-sem-email"><i class="ti ti-link-off"></i> {{ __('Sem os links (sem acesso)', 'npsphere') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{# v0.64.0 -- ajuda de um campo: ícone ⓘ com o texto num balão (CSS,
+   abre ao passar o mouse ou ao focar com o teclado/toque). #}
+{% macro info(texto) %}<span class="npsphere-dica" tabindex="0" role="img" aria-label="{{ texto }}" data-info="{{ texto }}"><i class="ti ti-info-circle"></i></span>{% endmacro %}
+
+{# v0.64.0 -- link "Como funciona": abre a sub-aba Ajuda já no assunto
+   (id do <details>) e rola até ele. #}
+{% macro ajuda(alvo, rotulo) %}<button type="button" class="npsphere-como npsphere-ir-aba" data-ir="variaveis" data-abrir="{{ alvo }}"><i class="ti ti-help-circle"></i> {{ rotulo ?: __('Como funciona', 'npsphere') }}</button>{% endmacro %}

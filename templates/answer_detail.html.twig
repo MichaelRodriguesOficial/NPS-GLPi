@@ -1,0 +1,69 @@
+<div class="npsphere-answer-detail">
+    <div class="npsphere-detail-head">
+        <div>
+            {% if answer.fields['is_anonymous'] %}
+                <h3><i class="ti ti-user-off"></i> {{ __('Respondente anônimo', 'npsphere') }}</h3>
+            {% else %}
+                <h3>{{ answer.fields['respondent_name']|default(__('Usuário do GLPI', 'npsphere')) }}</h3>
+                <p>
+                    {% if answer.fields['respondent_email'] %}
+                        <i class="ti ti-mail"></i> {{ answer.fields['respondent_email'] }}
+                    {% endif %}
+                    {% if answer.fields['respondent_phone'] %}
+                        · <i class="ti ti-phone"></i> {{ answer.fields['respondent_phone'] }}
+                    {% endif %}
+                </p>
+            {% endif %}
+            <p class="text-muted small">
+                <i class="ti ti-clock"></i>
+                {{ answer.fields['date_creation']|date('d/m/Y H:i') }}
+                {% if answer.fields['duration'] %}
+                    · {{ __('preenchida em', 'npsphere') }} {{ answer.fields['duration'] }}s
+                {% endif %}
+            </p>
+        </div>
+        {% if nps %}
+            <div class="npsphere-answer-score npsphere-score-{{ nps.classification }}">
+                <span class="npsphere-score-label">{{ __('Nota', 'npsphere') }}</span>
+                <strong>{{ nps.score }}<small>/{{ nps.scale }}</small></strong>
+                <span class="npsphere-score-tag">
+                    {% if nps.classification == 'promoter' %}{{ __('Promotor', 'npsphere') }}
+                    {% elseif nps.classification == 'passive' %}{{ __('Neutro', 'npsphere') }}
+                    {% else %}{{ __('Detrator', 'npsphere') }}{% endif %}
+                </span>
+            </div>
+        {% endif %}
+
+        <button type="button" class="btn btn-sm btn-outline-secondary npsphere-detail-close">
+            <i class="ti ti-x"></i> {{ __('Fechar', 'npsphere') }}
+        </button>
+    </div>
+
+    {% if items is empty %}
+        <p class="text-muted mb-0">{{ __('Nenhuma resposta registrada.', 'npsphere') }}</p>
+    {% else %}
+        {# Mesma linguagem visual da "Visão geral": cada resposta é um
+           cartão com cabeçalho (pergunta + tipo) e o valor em destaque,
+           em vez de uma lista de definição sem hierarquia. #}
+        {% for item in items %}
+            <section class="npsphere-card npsphere-result-card npsphere-detail-item">
+                <header class="npsphere-result-head">
+                    <div>
+                        <h3>{{ item.position }}. {{ item.name }}</h3>
+                        <p>{{ item.type_label }}</p>
+                    </div>
+                </header>
+                {% if item.widget and item.type in ['nps', 'stars', 'emoticon', 'yesno', 'single_choice', 'multiple_choice'] %}
+                    {# O widget é exibido só para leitura: os campos ficam
+                       desabilitados via CSS/atributo no JS, para ninguém
+                       achar que dá para editar a resposta por aqui. #}
+                    <div class="npsphere-detail-widget npsphere-readonly">
+                        {{ item.widget|raw }}
+                    </div>
+                {% else %}
+                    <blockquote class="npsphere-detail-text">{{ item.value }}</blockquote>
+                {% endif %}
+            </section>
+        {% endfor %}
+    {% endif %}
+</div>

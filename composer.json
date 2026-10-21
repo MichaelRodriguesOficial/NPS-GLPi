@@ -1,0 +1,14 @@
+{
+    "name": "michaelrodriguesoficial/npsphere",
+    "type": "glpi-plugin",
+    "description": "Pesquisas de Satisfação (NPS e outras metodologias) para GLPI 11",
+    "license": "GPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "GlpiPlugin\\Npsphere\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1"
+    }
+}

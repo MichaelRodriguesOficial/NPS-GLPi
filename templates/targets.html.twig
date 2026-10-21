@@ -1,0 +1,205 @@
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+<div class="npsphere-targets" data-surveys-id="{{ survey.getID() }}" data-save-url="{{ save_url }}">
+
+    <section class="npsphere-card">
+        <header class="npsphere-card-head">
+            <span class="npsphere-card-icon"><i class="ti ti-users"></i></span>
+            <div>
+                <h3>{{ __('Quem pode responder', 'npsphere') }}</h3>
+                <p>{{ __('Defina o público desta pesquisa interna. Quem não estiver na lista não a verá.', 'npsphere') }}</p>
+            </div>
+        </header>
+
+        <div class="npsphere-grid">
+            <div class="npsphere-field">
+                <label>{{ __('Disponível para todos os usuários', 'npsphere') }}</label>
+                <select class="form-select" id="npsphere-target-all" {{ can_edit ? '' : 'disabled' }}>
+                    <option value="0"{{ target_all ? '' : ' selected' }}>{{ __('Não') }}</option>
+                    <option value="1"{{ target_all ? ' selected' : '' }}>{{ __('Sim') }}</option>
+                </select>
+            </div>
+
+            <aside class="npsphere-info">
+                <p><strong>{{ __('Sim', 'npsphere') }}</strong> — {{ __('qualquer usuário autenticado do GLPI poderá responder.', 'npsphere') }}</p>
+                <p class="mb-0"><strong>{{ __('Não', 'npsphere') }}</strong> — {{ __('apenas quem estiver na lista abaixo (entidades, perfis, grupos ou usuários).', 'npsphere') }}</p>
+            </aside>
+        </div>
+    </section>
+
+    <section class="npsphere-card" id="npsphere-target-list-card" style="{{ target_all ? 'display:none' : '' }}">
+        <header class="npsphere-card-head">
+            <span class="npsphere-card-icon"><i class="ti ti-user-plus"></i></span>
+            <div>
+                <h3>{{ __('Destinatários', 'npsphere') }}</h3>
+                <p>{{ __('Os critérios se somam: basta estar em um deles para poder responder.', 'npsphere') }}</p>
+            </div>
+        </header>
+
+        {% if can_edit %}
+            <div class="npsphere-target-add">
+                <select class="form-select" id="npsphere-target-type">
+                    {% for value, label in types %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {# Um dropdown nativo do GLPI por tipo, exibido conforme a
+                   escolha. Usar o componente do próprio GLPI traz de
+                   graça a caixa de pesquisa com resultados (select2),
+                   o respeito às entidades do usuário e a paginação --
+                   coisas que minha busca própria não fazia. #}
+                <div class="npsphere-target-search">
+                    {% for value, html in dropdowns %}
+                        <div class="npsphere-target-dropdown" data-for-type="{{ value }}"
+                             style="{{ loop.first ? '' : 'display:none' }}">
+                            {{ html|raw }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-primary" id="npsphere-target-add">
+                    <i class="ti ti-plus"></i> {{ __('Adicionar', 'npsphere') }}
+                </button>
+            </div>
+        {% endif %}
+
+        {% if targets is empty %}
+            <div class="npsphere-note npsphere-note-warn" id="npsphere-target-empty">
+                <i class="ti ti-alert-triangle"></i>
+                <span>{{ __('Nenhum destinatário definido — no momento, ninguém consegue responder esta pesquisa.', 'npsphere') }}</span>
+            </div>
+        {% else %}
+            <table class="table card-table npsphere-target-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('Tipo', 'npsphere') }}</th>
+                        <th>{{ __('Destinatário', 'npsphere') }}</th>
+                        {% if can_edit %}<th class="text-end"></th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in targets %}
+                        <tr data-target-id="{{ t.id }}">
+                            <td><span class="npsphere-target-type">{{ t.type_label }}</span></td>
+                            <td>
+                                {% if t.missing %}
+                                    <span class="text-danger">
+                                        <i class="ti ti-alert-circle"></i>
+                                        {{ __('Item removido do GLPI', 'npsphere') }} (#{{ t.items_id }})
+                                    </span>
+                                {% else %}
+                                    {{ t.name }}
+                                {% endif %}
+                            </td>
+                            {% if can_edit %}
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-danger npsphere-target-remove"
+                                            data-target-id="{{ t.id }}" title="{{ __('Remover', 'npsphere') }}">
+                                        <i class="ti ti-x"></i>
+                                    </button>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </section>
+</div>
+
+<script>
+(function () {
+    var root = document.querySelector('.npsphere-targets');
+    if (!root || root.dataset.init === '1') {
+        return;
+    }
+    root.dataset.init = '1';
+
+    var saveUrl = root.dataset.saveUrl;
+    var surveysId = root.dataset.surveysId;
+
+    function call(params, done) {
+        var qs = new URLSearchParams(params);
+        qs.append('surveys_id', surveysId);
+        fetch(saveUrl + '?' + qs.toString(), { method: 'GET' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (res) {
+                if (res && res.success) {
+                    if (typeof done === 'function') { done(res); }
+                } else {
+                    alert('Não foi possível salvar. Recarregue a página e tente novamente.');
+                }
+            })
+            .catch(function () {
+                alert('Não foi possível salvar. Verifique sua conexão.');
+            });
+    }
+
+    // "Todos os usuários": esconde a lista, que deixa de ter efeito
+    var allSelect = document.getElementById('npsphere-target-all');
+    var listCard = document.getElementById('npsphere-target-list-card');
+    if (allSelect) {
+        allSelect.addEventListener('change', function () {
+            var value = allSelect.value;
+            call({ action: 'toggle_all', value: value }, function () {
+                if (listCard) {
+                    listCard.style.display = (value === '1') ? 'none' : '';
+                }
+            });
+        });
+    }
+
+    // Adicionar destinatário, usando o dropdown nativo do GLPI
+    var addBtn = document.getElementById('npsphere-target-add');
+    var typeSelect = document.getElementById('npsphere-target-type');
+
+    function visibleDropdown() {
+        var wrapper = root.querySelector(
+            '.npsphere-target-dropdown[data-for-type="' + typeSelect.value + '"]'
+        );
+        return wrapper ? wrapper.querySelector('select') : null;
+    }
+
+    function showDropdownForType() {
+        root.querySelectorAll('.npsphere-target-dropdown').forEach(function (el) {
+            el.style.display = (el.dataset.forType === typeSelect.value) ? '' : 'none';
+        });
+    }
+
+    if (typeSelect) {
+        typeSelect.addEventListener('change', showDropdownForType);
+        showDropdownForType();
+    }
+
+    if (addBtn) {
+        addBtn.addEventListener('click', function () {
+            var select = visibleDropdown();
+            var itemsId = select ? parseInt(select.value, 10) : 0;
+
+            if (!itemsId || itemsId < 1) {
+                alert('Selecione um destinatário antes de adicionar.');
+                return;
+            }
+
+            call({ action: 'add', itemtype: typeSelect.value, items_id: itemsId }, function (res) {
+                if (res.duplicate) {
+                    alert('Este destinatário já está na lista.');
+                    return;
+                }
+                window.location.reload();
+            });
+        });
+    }
+
+    // Remover destinatário
+    root.addEventListener('click', function (event) {
+        var btn = event.target.closest('.npsphere-target-remove');
+        if (!btn) {
+            return;
+        }
+        call({ action: 'delete', id: btn.dataset.targetId }, function () {
+            var row = btn.closest('tr');
+            if (row) { row.remove(); }
+        });
+    });
+})();
+</script>

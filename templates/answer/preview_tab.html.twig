@@ -1,0 +1,96 @@
+<div class="npsphere-preview-tab npsphere-refreshable"
+     data-surveys-id="{{ survey.getID() }}"
+     data-refresh-url="{{ preview_refresh_url }}">
+    <div class="card npsphere-answer-card">
+        <div class="card-body" id="npsphere-answer-container">
+            <h2>{{ survey.fields['name'] }}</h2>
+            {% if survey.fields['description'] %}
+                <p class="text-muted">{{ survey.fields['description'] }}</p>
+            {% endif %}
+
+            {% if fields is empty %}
+                <div class="alert alert-info">
+                    {{ __('Esta pesquisa ainda não possui perguntas ativas.', 'npsphere') }}
+                </div>
+            {% elseif not eligible %}
+                <div class="alert alert-warning">
+                    <i class="ti ti-alert-triangle"></i>
+                    {{ reason }}
+                </div>
+                <p class="text-muted small">
+                    {{ __('Os campos abaixo são apenas ilustrativos, já que esta pesquisa não pode ser respondida agora.', 'npsphere') }}
+                </p>
+                {% for item in fields %}
+                    <div class="npsphere-question-block mb-4">
+                        <label class="npsphere-question-label">
+                            {{ item.question['name'] }}
+                            {% if item.question['is_required'] %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {% if item.question['description'] %}
+                            <p class="text-muted small">{{ item.question['description'] }}</p>
+                        {% endif %}
+                        <div class="npsphere-question-field">
+                            {{ item.field_html|raw }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% if aviso is defined and aviso %}
+                    {# Informa por que o respondente NÃO veria este
+                       formulário agora -- sem esconder a pré-visualização,
+                       que é justamente o que a aba serve para mostrar. #}
+                    <div class="npsphere-note npsphere-note-info">
+                        <i class="ti ti-info-circle"></i>
+                        <span>
+                            <strong>{{ __('Atenção', 'npsphere') }}:</strong>
+                            {{ aviso }}
+                            {{ __('Quem for responder verá esta mensagem no lugar do formulário abaixo.', 'npsphere') }}
+                        </span>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{{ answer_form_url }}"
+                      class="npsphere-question-steps npsphere-embedded-answer-form"
+                      data-submit-url="{{ answer_submit_url }}"
+                      data-display-mode="{{ survey.fields['display_mode'] }}">
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="surveys_id" value="{{ survey.getID() }}">
+                    <input type="hidden" name="_started_at" value="{{ "now"|date('U') }}">
+                    {# Marca de PRÉ-VISUALIZAÇÃO.
+                       Viaja no POST de propósito: quem decide não gravar
+                       é o SERVIDOR. Um atributo lido apenas pelo
+                       JavaScript deixaria de valer se o script falhasse
+                       ou estivesse em cache antigo -- e a resposta de
+                       teste do administrador entraria nas métricas. #}
+                    <input type="hidden" name="preview" value="1">
+
+                    {% for item in fields %}
+                        <div class="npsphere-question-block npsphere-step mb-4" data-required="{{ item.question['is_required'] ? '1' : '0' }}"
+                         data-question-id="{{ item.question['id'] }}"
+                         data-cond-trigger="{{ item.question['condition_questions_id']|default(0) }}"
+                         data-cond-operator="{{ item.question['condition_operator']|default('') }}"
+                         data-cond-value="{{ item.question['condition_value']|default('') }}">
+                            <label class="npsphere-question-label">
+                                {{ item.question['name'] }}
+                                {% if item.question['is_required'] %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {% if item.question['description'] %}
+                                <p class="text-muted small">{{ item.question['description'] }}</p>
+                            {% endif %}
+                            <div class="npsphere-question-field">
+                                {{ item.field_html|raw }}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" name="submit_answer" value="1" class="btn btn-primary npsphere-submit-btn">
+                            <i class="ti ti-send"></i>
+                            {{ __('Enviar avaliação', 'npsphere') }}
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>

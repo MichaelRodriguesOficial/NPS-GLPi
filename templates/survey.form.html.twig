@@ -1,0 +1,400 @@
+{% extends "generic_show_form.html.twig" %}
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+{% macro sel(name, current, options) %}
+    <select name="{{ name }}" class="form-select">
+        {% for value, label in options %}
+            <option value="{{ value }}"{{ current == value ? ' selected' : '' }}>{{ label }}</option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+{% block more_fields %}
+    {# Layout próprio: rótulos ACIMA dos campos, em cartões temáticos.
+       A grade padrão do formulário genérico (rótulo à esquerda, campo à
+       direita, 2 pares por linha) espalhava os elementos de ponta a
+       ponta em telas largas e misturava campos sem relação entre si. #}
+    {% import _self as f %}
+
+    <div class="col-12 npsphere-survey-layout">
+
+        {% if summary %}
+            <div class="npsphere-summary-strip">
+                {# O NPS só existe quando há pergunta desse tipo. #}
+                {% if summary.nps %}
+                    <div class="npsphere-summary-item npsphere-rating-{{ summary.nps.rating }}">
+                        <span class="npsphere-summary-label">{{ __('NPS', 'npsphere') }}</span>
+                        <strong>{{ summary.nps.score > 0 ? '+' : '' }}{{ summary.nps.score }}</strong>
+                    </div>
+                {% endif %}
+
+                {# A NOTA MÉDIA, porém, vale para qualquer pergunta com
+                   nota (NPS, estrelas, emoticons) -- ela estava presa
+                   ao bloco do NPS, e por isso uma pesquisa só de
+                   emoticons ou estrelas exibia apenas "Respostas",
+                   como se não houvesse nada a medir. #}
+                {% if summary.average is not null %}
+                    <div class="npsphere-summary-item">
+                        <span class="npsphere-summary-label">{{ __('Nota média', 'npsphere') }}</span>
+                        <strong>{{ summary.average }}<small>/{{ summary.average_scale }}</small></strong>
+                    </div>
+                {% endif %}
+                <div class="npsphere-summary-item">
+                    <span class="npsphere-summary-label">{{ __('Respostas', 'npsphere') }}</span>
+                    <strong>{{ summary.total_answers }}</strong>
+                </div>
+            </div>
+        {% endif %}
+
+        <section class="npsphere-card">
+            <header class="npsphere-card-head">
+                <span class="npsphere-card-icon"><i class="ti ti-file-description"></i></span>
+                <div>
+                    <h3>{{ __('Sobre a pesquisa', 'npsphere') }}</h3>
+                    <p>{{ __('Identificação e finalidade desta pesquisa.', 'npsphere') }}</p>
+                </div>
+            </header>
+
+            <div class="npsphere-grid">
+                <div class="npsphere-field npsphere-field-wide">
+                    <label for="npsphere-description">{{ __('Descrição') }}</label>
+                    <textarea id="npsphere-description" name="description" class="form-control" rows="3"
+                              placeholder="{{ __('Explique brevemente o objetivo desta pesquisa…', 'npsphere') }}">{{ item.fields['description'] }}</textarea>
+                </div>
+
+                <div class="npsphere-field">
+                    <label>{{ __('Tipo de pesquisa', 'npsphere') }}</label>
+                    {{ f.sel('type', item.fields['type'], types) }}
+                </div>
+
+                <aside class="npsphere-info">
+                    <p><strong>{{ __('Interna', 'npsphere') }}</strong> — {{ __('respondida por usuários que já têm acesso ao GLPI.', 'npsphere') }}</p>
+                    <p><strong>{{ __('Externa', 'npsphere') }}</strong> — {{ __('respondida por qualquer pessoa através de um link público, sem precisar de conta.', 'npsphere') }}</p>
+                    <p class="mb-0"><strong>{{ __('Vinculada a chamado', 'npsphere') }}</strong> — {{ __('exibida ao requerente quando o chamado é encerrado.', 'npsphere') }}</p>
+                </aside>
+            </div>
+
+        </section>
+
+        {# Não se aplica à pesquisa vinculada a chamado: quem decide
+           quando a pesquisa é criada é o GLPI, pela configuração da
+           entidade (atraso após o encerramento e percentual de
+           chamados). Um período aqui só criaria uma segunda regra,
+           capaz de silenciosamente impedir a avaliação de chamados que
+           o GLPI já encaminhou. #}
+        <section class="npsphere-card" id="npsphere-availability-card"
+                 style="{{ item.fields['type'] == 'ticket' ? 'display:none' : '' }}">
+            <header class="npsphere-card-head">
+                <span class="npsphere-card-icon"><i class="ti ti-calendar-event"></i></span>
+                <div>
+                    <h3>{{ __('Disponibilidade', 'npsphere') }}</h3>
+                    <p>{{ __('Período em que a pesquisa aceitará respostas.', 'npsphere') }}</p>
+                </div>
+            </header>
+
+            <div class="npsphere-grid">
+                <div class="npsphere-field">
+                    <label for="npsphere-date-begin">{{ __('Data de início', 'npsphere') }}</label>
+                    <input type="date" id="npsphere-date-begin" name="date_begin" class="form-control"
+                           value="{{ item.fields['date_begin'] }}">
+                </div>
+                <div class="npsphere-field">
+                    <label for="npsphere-date-end">{{ __('Data de término', 'npsphere') }}</label>
+                    <input type="date" id="npsphere-date-end" name="date_end" class="form-control"
+                           value="{{ item.fields['date_end'] }}">
+                    <small>{{ __('Deixe em branco para não ter prazo final.', 'npsphere') }}</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="npsphere-card">
+            <header class="npsphere-card-head">
+                <span class="npsphere-card-icon"><i class="ti ti-forms"></i></span>
+                <div>
+                    <h3>{{ __('Como será respondida', 'npsphere') }}</h3>
+                    <p>{{ __('Experiência de quem vai responder.', 'npsphere') }}</p>
+                </div>
+            </header>
+
+            <div class="npsphere-grid">
+                <div class="npsphere-field">
+                    <label>{{ __('Formato de exibição', 'npsphere') }}</label>
+                    {{ f.sel('display_mode', item.fields['display_mode'], display_modes) }}
+                </div>
+                {# Não se aplica à pesquisa vinculada a chamado: ali a
+                   unicidade é por CHAMADO, não por pessoa -- a mesma
+                   pessoa avalia quantos chamados tiver. Deixar a opção
+                   visível sugeriria um controle que não existe. #}
+                <div class="npsphere-field" id="npsphere-multiple-field"
+                     style="{{ item.fields['type'] == 'ticket' ? 'display:none' : '' }}">
+                    <label>{{ __('Permitir múltiplas respostas', 'npsphere') }}</label>
+                    {{ f.sel('allow_multiple_answers', item.fields['allow_multiple_answers'], {1: __('Sim'), 0: __('Não')}) }}
+                    <small>{{ __('Se "Não", cada pessoa responde uma única vez.', 'npsphere') }}</small>
+                </div>
+
+                {# Só faz sentido em pesquisa interna: é o único tipo em
+                   que sabemos quem é a pessoa antes de ela responder e
+                   podemos interceptá-la ao entrar no sistema. #}
+                <div class="npsphere-field" id="npsphere-mandatory-field"
+                     style="{{ item.fields['type'] == 'internal' ? '' : 'display:none' }}">
+                    <label>{{ __('Resposta obrigatória', 'npsphere') }}</label>
+                    {{ f.sel('is_mandatory', item.fields['is_mandatory']|default(0), {1: __('Sim'), 0: __('Não')}) }}
+                </div>
+
+                <aside class="npsphere-info" id="npsphere-mandatory-info"
+                       style="{{ item.fields['type'] == 'internal' ? '' : 'display:none' }}">
+                    <p><strong>{{ __('Resposta obrigatória', 'npsphere') }}</strong> —
+                    {{ __('a pesquisa aparece para o usuário assim que ele entra no GLPI.', 'npsphere') }}</p>
+                    <p class="mb-0">{{ __('Ele pode adiar até o penúltimo dia; no último dia da pesquisa, precisa responder para continuar usando o sistema.', 'npsphere') }}
+                    {{ __('Sem data de término, nunca chega a bloquear.', 'npsphere') }}</p>
+                </aside>
+            </div>
+
+            <div class="npsphere-note">
+                <i class="ti ti-gauge"></i>
+                <span>{{ __('O NPS é calculado automaticamente a partir das perguntas do tipo "NPS" cadastradas na aba "Pergunta".', 'npsphere') }}</span>
+            </div>
+        </section>
+
+        {# Privacidade/acesso só faz sentido na pesquisa EXTERNA: ela é a
+           única respondida por link público. A interna é respondida por
+           quem já está autenticado no GLPI, e a vinculada a chamado é
+           respondida dentro do próprio chamado. #}
+        {# O estado inicial vem do SERVIDOR (style inline), não do JS: sem
+           isso a seção era renderizada visível e só sumia depois que o
+           JavaScript rodava -- e continuava visível para sempre se o JS
+           falhasse. O data-visible-for-type serve apenas para a troca ao
+           vivo, quando o usuário muda o tipo sem salvar. #}
+        <section class="npsphere-card" id="npsphere-independent-only-fields"
+                 data-visible-for-type="external"
+                 style="{{ item.fields['type'] == 'external' ? '' : 'display:none' }}">
+            <header class="npsphere-card-head">
+                <span class="npsphere-card-icon"><i class="ti ti-lock"></i></span>
+                <div>
+                    <h3>{{ __('Privacidade e acesso', 'npsphere') }}</h3>
+                    <p>{{ __('Como a identidade de quem responde pelo link público é tratada.', 'npsphere') }}</p>
+                </div>
+            </header>
+
+            <div class="npsphere-grid">
+                <div class="npsphere-field">
+                    <label>{{ __('Pesquisa anônima', 'npsphere') }}</label>
+                    {{ f.sel('is_anonymous', item.fields['is_anonymous'], {1: __('Sim'), 0: __('Não')}) }}
+                </div>
+
+                <aside class="npsphere-info">
+                    <p><strong>{{ __('Sim', 'npsphere') }}</strong> — {{ __('ninguém é identificado: nenhum dado pessoal é pedido nem gravado.', 'npsphere') }}</p>
+                    <p class="mb-0"><strong>{{ __('Não', 'npsphere') }}</strong> — {{ __('nome, e-mail e telefone passam a ser obrigatórios para quem responder pelo link.', 'npsphere') }}</p>
+                </aside>
+            </div>
+
+            {% if public_url %}
+                <div class="npsphere-note npsphere-public-link">
+                    <i class="ti ti-link"></i>
+                    <span>
+                        <strong>{{ __('Link público desta pesquisa', 'npsphere') }}</strong><br>
+                        <a href="{{ public_url }}" target="_blank" rel="noopener">{{ public_url }}</a><br>
+                        <small>{{ __('Qualquer pessoa com este link pode responder, sem precisar de conta no GLPI. Mude o tipo para "Interna" para invalidar o link imediatamente.', 'npsphere') }}</small>
+                    </span>
+                </div>
+            {% else %}
+                <div class="npsphere-note">
+                    <i class="ti ti-link"></i>
+                    <span>{{ __('O link público aparecerá aqui depois de salvar a pesquisa.', 'npsphere') }}</span>
+                </div>
+            {% endif %}
+        </section>
+
+        {# Visível apenas no tipo "vinculada a chamado". A alternância é
+           feita pelo JavaScript ao trocar o tipo, sem precisar salvar. #}
+        <section class="npsphere-card" id="npsphere-ticket-help"
+                 style="{{ item.fields['type'] == 'ticket' ? '' : 'display:none' }}">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-ticket"></i></span>
+                    <div>
+                        <h3>{{ __('Como esta pesquisa aparece', 'npsphere') }}</h3>
+                        <p>{{ __('Dentro do próprio chamado, na aba "Pesquisa de satisfação".', 'npsphere') }}</p>
+                    </div>
+                </header>
+
+                <ol class="npsphere-passos">
+                    <li>{{ __('Em Administração > Entidades > Assistência, defina "Configuração das pesquisas" como Pesquisa externa e cole a URL abaixo.', 'npsphere') }}</li>
+                    <li>{{ __('O GLPI passa a criar a pesquisa no encerramento do chamado, respeitando o atraso e o percentual configurados ali.', 'npsphere') }}</li>
+                    <li>{{ __('No chamado, em vez do link, aparece a pesquisa — respondida na própria tela.', 'npsphere') }}</li>
+                    <li>{{ __('O requerente responde ali mesmo; técnicos e observadores veem a avaliação depois de enviada.', 'npsphere') }}</li>
+                    <li>{{ __('Cada chamado aceita uma única avaliação.', 'npsphere') }}</li>
+                </ol>
+
+                <div class="npsphere-note">
+                    <i class="ti ti-info-circle"></i>
+                    <span>
+                        <strong>{{ __('Convivência com a pesquisa nativa', 'npsphere') }}:</strong>
+                        {{ __('se a entidade estiver configurada para gerar a pesquisa de satisfação do GLPI, as duas vão coexistir. Para usar apenas esta, defina "Configuração das pesquisas" como desativada em Administração > Entidades > Assistência.', 'npsphere') }}
+                    </span>
+                </div>
+
+                <div class="npsphere-url-box"><code>{{ ticket_url }}</code></div>
+
+                {% if item.getID() %}
+                    <div class="npsphere-note">
+                        <i class="ti ti-info-circle"></i>
+                        <span>
+                            {{ __('A URL já inclui o identificador desta pesquisa — é o que permite ter mais de uma pesquisa vinculada a chamado, cada entidade apontando para a sua.', 'npsphere') }}
+                        </span>
+                    </div>
+                {% else %}
+                    <div class="npsphere-note npsphere-note-warn">
+                        <i class="ti ti-alert-triangle"></i>
+                        <span>{{ __('Salve a pesquisa para a URL incluir o identificador dela.', 'npsphere') }}</span>
+                    </div>
+                {% endif %}
+        </section>
+
+        {% if item.fields['type'] == 'ticket' %}
+            <div class="npsphere-note npsphere-note-info">
+                <i class="ti ti-ticket"></i>
+                <span>{{ __('Pesquisas vinculadas a chamado serão exibidas no próprio chamado após a solução, no lugar da pesquisa nativa do GLPI. Integração em desenvolvimento.', 'npsphere') }}</span>
+            </div>
+        {% endif %}
+
+        {% if not item.isNewItem() %}
+            <section class="npsphere-card npsphere-card-meta">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-history"></i></span>
+                    <div>
+                        <h3>{{ __('Informações do registro', 'npsphere') }}</h3>
+                        <p>{{ __('Autoria e histórico desta pesquisa.', 'npsphere') }}</p>
+                    </div>
+                </header>
+
+                <dl class="npsphere-meta-list">
+                    {% if creator_name %}
+                        <div>
+                            <dt><i class="ti ti-user"></i> {{ __('Criada por', 'npsphere') }}</dt>
+                            <dd>{{ creator_name }}</dd>
+                        </div>
+                    {% endif %}
+                    {% if item.fields['date_creation'] %}
+                        <div>
+                            <dt><i class="ti ti-plus"></i> {{ __('Criada em', 'npsphere') }}</dt>
+                            <dd>{{ item.fields['date_creation']|date('d/m/Y H:i') }}</dd>
+                        </div>
+                    {% endif %}
+                    {% if item.fields['date_mod'] %}
+                        <div>
+                            <dt><i class="ti ti-pencil"></i> {{ __('Última atualização em', 'npsphere') }}</dt>
+                            <dd>{{ item.fields['date_mod']|date('d/m/Y H:i') }}</dd>
+                        </div>
+                    {% endif %}
+                </dl>
+            </section>
+        {% endif %}
+
+    </div>
+
+    <script>
+        // Executa IMEDIATAMENTE, sem esperar DOMContentLoaded: quando o
+        // GLPI injeta o conteúdo desta aba via AJAX, aquele evento já
+        // disparou há muito tempo e o código nunca rodaria -- era por
+        // isso que a seção de privacidade só reagia depois de salvar.
+        (function () {
+            function toggle() {
+                var select = document.querySelector('select[name="type"]');
+                if (!select) {
+                    return;
+                }
+
+                var block = document.getElementById('npsphere-independent-only-fields');
+                if (block) {
+                    block.style.display = (select.value === block.dataset.visibleForType) ? '' : 'none';
+                }
+
+                var isTicket = (select.value === 'ticket');
+
+                // Instruções da pesquisa vinculada a chamado
+                var ticketHelp = document.getElementById('npsphere-ticket-help');
+                if (ticketHelp) {
+                    ticketHelp.style.display = isTicket ? '' : 'none';
+                }
+
+
+
+                // "Permitir múltiplas respostas" não se aplica ao tipo
+                // chamado -- ver o comentário no campo.
+                var multiplas = document.getElementById('npsphere-multiple-field');
+                if (multiplas) {
+                    multiplas.style.display = isTicket ? 'none' : '';
+                }
+
+                // Disponibilidade: no tipo chamado quem controla o
+                // momento é o GLPI, pela configuração da entidade.
+                var disponibilidade = document.getElementById('npsphere-availability-card');
+                if (disponibilidade) {
+                    disponibilidade.style.display = isTicket ? 'none' : '';
+                }
+
+                // "Resposta obrigatória" só existe na pesquisa interna
+                var isInternal = (select.value === 'internal');
+                ['npsphere-mandatory-field', 'npsphere-mandatory-info'].forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el) {
+                        el.style.display = isInternal ? '' : 'none';
+                    }
+                });
+            }
+
+            // change no documento: pega a troca mesmo que o <select> só
+            // exista depois (conteúdo injetado dinamicamente).
+            document.addEventListener('change', function (event) {
+                if (event.target && event.target.name === 'type') {
+                    toggle();
+                }
+            });
+
+            // Rede de segurança para widgets que não disparam "change"
+            // nativo, e para o caso do formulário aparecer só depois.
+            setInterval(toggle, 300);
+            toggle();
+
+            hideNativeFooter();
+            document.addEventListener('DOMContentLoaded', hideNativeFooter);
+        })();
+
+        /**
+         * O GLPI renderiza, abaixo dos botões do formulário, uma faixa
+         * cinza com "Criado em …" / "Última atualização em …". Essas
+         * mesmas informações agora aparecem (com melhor apresentação) no
+         * cartão "Informações do registro", então a faixa nativa é
+         * escondida para não duplicar.
+         */
+        function hideNativeFooter() {
+            var layout = document.querySelector('.npsphere-survey-layout');
+            if (!layout) {
+                return;
+            }
+            var form = layout.closest('form');
+            var scope = form ? form.parentElement : document.body;
+            if (!scope) {
+                return;
+            }
+
+            scope.querySelectorAll('div, footer, p').forEach(function (el) {
+                if (el.closest('.npsphere-survey-layout')) {
+                    return; // nunca esconde o nosso próprio cartão
+                }
+                if (el.querySelector('.npsphere-survey-layout')) {
+                    return; // nem um ancestral que contenha o formulário
+                }
+                var text = (el.textContent || '').trim();
+                if (text.length > 200) {
+                    return; // container grande demais para ser a faixa
+                }
+                var hasCreated = /Criad[oa] em/i.test(text);
+                var hasUpdated = /(Última|Ultima) atualiza/i.test(text);
+                if (hasCreated && hasUpdated) {
+                    el.style.display = 'none';
+                }
+            });
+        }
+    </script>
+{% endblock %}

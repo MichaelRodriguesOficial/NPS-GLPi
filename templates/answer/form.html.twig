@@ -1,0 +1,296 @@
+<div class="npsphere-answer-page">
+    <div class="card npsphere-answer-card">
+        <div class="card-body">
+            {% if is_embed is defined and is_embed %}
+                {# Dentro do chamado o cabeçalho ganha o mesmo cartão com
+                   ícone das demais telas do plugin. Um título solto
+                   sobre a conversa do chamado fica seco e não se
+                   distingue do restante da página. #}
+                <div class="npsphere-ticket-head">
+                    <span class="npsphere-ticket-icon"><i class="ti ti-mood-smile-beam"></i></span>
+                    <div>
+                        <h3>{{ survey.fields['name'] }}</h3>
+                        {% if survey.fields['description'] %}
+                            <p>{{ survey.fields['description'] }}</p>
+                        {% else %}
+                            <p>{{ __('Sua avaliação ajuda a melhorar o atendimento.', 'npsphere') }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <h2>{{ survey.fields['name'] }}</h2>
+                {% if survey.fields['description'] %}
+                    <p class="text-muted">{{ survey.fields['description'] }}</p>
+                {% endif %}
+            {% endif %}
+
+            {# Opção clicada no e-mail: o script abaixo grava e mostra aqui. #}
+            <div class="npsphere-um-clique" role="status" aria-live="polite" hidden></div>
+
+            {% if errors is not empty %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post" action="" id="npsphere-answer-form"
+                  class="npsphere-question-steps" data-display-mode="{{ survey.fields['display_mode'] }}"
+                  {% if um_clique|default(null) %}data-um-clique="{{ um_clique|json_encode|e('html_attr') }}"{% endif %}
+                  {% if token_url is defined and token_url %}data-token-url="{{ token_url }}"{% endif %}>
+                {# Preenchido pelo script do clique: o envio completa a
+                   MESMA resposta gravada no clique. #}
+                <input type="hidden" name="answers_id" value="">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="surveys_id" value="{{ survey.getID() }}">
+                {% if is_embed is defined and is_embed %}
+                    {# Dentro do iframe o envio volta para esta mesma
+                       página, mantendo o parâmetro de modo embutido --
+                       senão a confirmação apareceria sem estilo. #}
+                    <input type="hidden" name="embed" value="1">
+                {% endif %}
+                {% if surveys_id_url is defined and surveys_id_url %}
+                    {# Devolve o ID da pesquisa no envio: sem ele, o POST
+                       resolveria a pesquisa pela entidade e poderia
+                       gravar numa pesquisa diferente da que está sendo
+                       respondida. #}
+                    <input type="hidden" name="surveys_id" value="{{ surveys_id_url }}">
+                {% endif %}
+                {% if tickets_id is defined and tickets_id %}
+                    {# Vínculo com o chamado: viaja no POST para ser
+                       gravado junto da resposta. #}
+                    <input type="hidden" name="tickets_id" value="{{ tickets_id }}">
+                {% endif %}
+                <input type="hidden" name="_started_at" value="{{ started_at }}">
+                {% if chave is defined and chave %}
+                    {# Resposta pelo link do e-mail, sem login: a chave
+                       assinada do chamado viaja no envio. #}
+                    <input type="hidden" name="chave" value="{{ chave }}">
+                {% endif %}
+                {% if usuario is defined and usuario %}
+                    <input type="hidden" name="usuario" value="{{ usuario }}">
+                {% endif %}
+
+                {% for item in fields %}
+                    <div class="npsphere-question-block npsphere-step mb-4" data-required="{{ item.question['is_required'] ? '1' : '0' }}"
+                         data-question-id="{{ item.question['id'] }}"
+                         data-cond-trigger="{{ item.question['condition_questions_id']|default(0) }}"
+                         data-cond-operator="{{ item.question['condition_operator']|default('') }}"
+                         data-cond-value="{{ item.question['condition_value']|default('') }}">
+                        <label class="npsphere-question-label">
+                            {{ item.question['name'] }}
+                            {% if item.question['is_required'] %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {% if item.question['description'] %}
+                            <p class="text-muted small">{{ item.question['description'] }}</p>
+                        {% endif %}
+                        <div class="npsphere-question-field">
+                            {{ item.field_html|raw }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" name="submit_answer" value="1" class="btn btn-primary btn-lg npsphere-submit-btn">
+                        <i class="ti ti-send"></i>
+                        {{ __('Enviar avaliação', 'npsphere') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# Carrega os assets do plugin caso a página não os tenha recebido.
+   A interface simplificada (autoatendimento) não inclui os mesmos
+   assets que a interface padrão -- sem isto, o formato "uma pergunta
+   por etapa" era ignorado e a pesquisa aparecia toda numa página só. #}
+<script>
+(function () {
+    if (!window.NPSPHERE_BUILDER_LOADED && {{ js_url is defined ? 'true' : 'false' }}) {
+        var script = document.createElement('script');
+        script.src = {{ (js_url|default(''))|json_encode|raw }};
+        document.body.appendChild(script);
+    }
+
+    // O CSS é verificado pela presença de uma regra do plugin: se
+    // nenhuma folha o definiu, a página está sem estilo.
+    var sonda = document.createElement('div');
+    sonda.className = 'npsphere-question-label';
+    sonda.style.position = 'absolute';
+    sonda.style.visibility = 'hidden';
+    document.body.appendChild(sonda);
+
+    var temEstilo = window.getComputedStyle(sonda).display === 'block';
+    sonda.remove();
+
+    if (!temEstilo && {{ css_url is defined ? 'true' : 'false' }}) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = {{ (css_url|default(''))|json_encode|raw }};
+        document.head.appendChild(link);
+    }
+})();
+</script>
+
+<script>
+(function () {
+    // Opção clicada no e-mail (pesquisa interna ou de chamado): grava sem
+    // a pessoa precisar clicar em "Enviar".
+    //
+    // É ESTE script, no navegador do usuário logado, que grava. Abrir o
+    // link não grava nada: filtros de segurança de e-mail abrem os links
+    // para verificá-los, mas não fazem este POST.
+    var form = document.querySelector('#npsphere-answer-form[data-um-clique]');
+    if (!form || !window.fetch || form.dataset.umCliqueFeito === '1') {
+        return;
+    }
+    form.dataset.umCliqueFeito = '1';
+
+    var dados;
+    try { dados = JSON.parse(form.dataset.umClique || 'null'); } catch (e) { dados = null; }
+    if (!dados || !dados.url) {
+        return;
+    }
+
+    var corpoCartao = form.closest('.card-body');
+    var aviso = corpoCartao ? corpoCartao.querySelector('.npsphere-um-clique') : null;
+
+    function mostrar(classe, html) {
+        if (!aviso) { return; }
+        // A confirmação final não usa .alert: no tema do GLPI o .alert é
+        // flex em linha, e ícone, título e textos ficavam lado a lado.
+        aviso.className = 'npsphere-um-clique ' + (classe === 'npsphere-um-clique-ok' ? classe : 'alert ' + classe);
+        aviso.innerHTML = html;
+        aviso.hidden = false;
+    }
+
+    function texto(t) {
+        var d = document.createElement('div');
+        d.textContent = t == null ? '' : String(t);
+        return d.innerHTML;
+    }
+
+    function falhou() {
+        mostrar('alert-warning',
+            '<i class="ti ti-alert-triangle"></i> Não conseguimos registrar sua resposta automaticamente. '
+            + 'Confira abaixo e clique em <strong>Enviar avaliação</strong>.');
+    }
+
+    mostrar('alert-secondary', '<i class="ti ti-loader-2"></i> Registrando sua resposta…');
+
+    fetch(dados.csrf_url, { method: 'GET', credentials: 'same-origin' })
+        .then(function (r) { return r.ok ? r.text() : ''; })
+        .catch(function () { return ''; })
+        .then(function (csrf) {
+            csrf = (csrf || '').trim();
+            var corpo = new FormData();
+            corpo.append('surveys_id', dados.surveys_id || 0);
+            corpo.append('tickets_id', dados.tickets_id || 0);
+            corpo.append('pergunta', dados.pergunta);
+            corpo.append('valor', dados.valor);
+            if (dados.chave) { corpo.append('chave', dados.chave); }
+            if (dados.usuario) { corpo.append('usuario', dados.usuario); }
+            var cabecalhos = { 'X-Requested-With': 'XMLHttpRequest' };
+            if (csrf) {
+                corpo.append('_glpi_csrf_token', csrf);
+                cabecalhos['X-Glpi-Csrf-Token'] = csrf;
+            }
+            return fetch(dados.url, {
+                method: 'POST',
+                body: corpo,
+                headers: cabecalhos,
+                credentials: 'same-origin'
+            });
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+            if (!res || !res.success) {
+                falhou();
+                return;
+            }
+
+            var campoId = form.querySelector('input[name="answers_id"]');
+            if (campoId) { campoId.value = res.answers_id || ''; }
+
+            // O token do formulário pode ter sido trocado por esta
+            // chamada; um novo é buscado de qualquer forma no envio.
+            if (res.unica) {
+                form.style.display = 'none';
+                // A confirmação ocupa o cartão inteiro: o título da pesquisa
+                // sai de cima e entra pequeno dentro dela.
+                var titulo = corpoCartao.querySelector('h2, .npsphere-ticket-head');
+                var NOME = titulo ? (titulo.querySelector('h3') || titulo).textContent.trim() : '';
+                if (titulo) { titulo.style.display = 'none'; }
+                mostrar('npsphere-um-clique-ok',
+                    '<div class="npsphere-obrigado">'
+                    + '<span class="npsphere-obrigado-pesquisa">' + texto(NOME) + '</span>'
+                    + '<div class="npsphere-obrigado-icone"><i class="ti ti-check"></i></div>'
+                    + '<h2>Obrigado pela sua avaliação!</h2>'
+                    + '<p class="npsphere-obrigado-sub">Sua resposta foi registrada.</p>'
+                    + '<div class="npsphere-obrigado-resposta">'
+                    +   '<span class="npsphere-obrigado-pergunta">' + texto(res.pergunta || 'Sua resposta') + '</span>'
+                    +   '<span class="npsphere-obrigado-valor">' + texto(res.rotulo) + '</span>'
+                    + '</div>'
+                    + '<p class="npsphere-obrigado-dica"><i class="ti ti-refresh"></i> '
+                    + 'Mudou de ideia? É só clicar em outra opção no e-mail.</p>'
+                    + '</div>');
+                return;
+            }
+
+            mostrar('alert-success',
+                '<i class="ti ti-circle-check"></i> Sua resposta para <strong>' + texto(res.pergunta)
+                + '</strong> foi registrada: <strong>' + texto(res.rotulo) + '</strong>. '
+                + 'Responda as demais perguntas e clique em <strong>Enviar avaliação</strong> para concluir.');
+        })
+        .catch(falhou);
+})();
+</script>
+
+<script>
+(function () {
+    // Resposta pelo link do e-mail, SEM login (chamado e pesquisa
+    // interna): busca um token CSRF novo imediatamente antes de enviar.
+    //
+    // Sem isso o envio era recusado com "A ação que você requisitou não é
+    // permitida": o token embutido na página não era aceito no envio. É a
+    // mesma solução que a página pública já usa (ver public/form).
+    var form = document.querySelector('#npsphere-answer-form[data-token-url]');
+    if (!form || !window.fetch || form.dataset.tokenInit === '1') {
+        return;
+    }
+    form.dataset.tokenInit = '1';
+
+    var enviando = false;
+
+    form.addEventListener('submit', function (evento) {
+        if (enviando) {
+            return; // segunda passagem: segue de verdade
+        }
+        evento.preventDefault();
+
+        fetch(form.dataset.tokenUrl, { method: 'GET', credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.text() : ''; })
+            .catch(function () { return ''; })
+            .then(function (token) {
+                token = (token || '').trim();
+                // Só aceita um token de verdade (64 hexadecimais): uma
+                // página de erro no lugar dele estragaria o envio.
+                if (/^[a-f0-9]{64}$/.test(token)) {
+                    var campo = form.querySelector('input[name="_glpi_csrf_token"]');
+                    if (campo) { campo.value = token; }
+                }
+                enviando = true;
+                var botao = form.querySelector('.npsphere-submit-btn');
+                if (form.requestSubmit) {
+                    form.requestSubmit(botao || undefined);
+                } else {
+                    form.submit();
+                }
+            });
+    });
+})();
+</script>

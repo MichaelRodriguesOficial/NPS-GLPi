@@ -1,0 +1,88 @@
+<div class="npsphere-question-builder"
+     data-surveys-id="{{ survey.getID() }}"
+     data-reorder-url="{{ reorder_url }}"
+     data-csrf-token="{{ csrf_token() }}">
+
+    {% if questions is empty %}
+        <div class="alert alert-info">
+            {{ __('Nenhuma pergunta cadastrada ainda. Use o botão abaixo para adicionar a primeira.', 'npsphere') }}
+        </div>
+    {% else %}
+        <table class="table card-table npsphere-question-list">
+            <thead>
+                <tr>
+                    <th style="width: 2rem"></th>
+                    <th>{{ __('Pergunta') }}</th>
+                    <th>{{ __('Tipo', 'npsphere') }}</th>
+                    <th class="text-center">{{ __('Obrigatória', 'npsphere') }}</th>
+                    <th class="text-center">{{ __('Ativa') }}</th>
+                    <th class="text-center">{{ __('NPS', 'npsphere') }}</th>
+                    <th class="text-end">{{ __('Ações', 'npsphere') }}</th>
+                </tr>
+            </thead>
+            <tbody id="npsphere-question-sortable">
+                {% for question in questions %}
+                    <tr class="npsphere-question-row" draggable="{{ can_edit ? 'true' : 'false' }}" data-id="{{ question.id }}">
+                        <td class="npsphere-drag-handle" title="{{ __('Arraste para reordenar', 'npsphere') }}">
+                            {% if can_edit %}<i class="ti ti-grip-vertical"></i>{% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ question.position }}.</strong>
+                            <a href="{{ question_form_url }}?id={{ question.id }}" class="npsphere-open-form" data-url="{{ question_form_url }}?id={{ question.id }}">{{ question.name }}</a>
+                            {% if question.condition_questions_id %}
+                                <i class="ti ti-git-branch text-secondary ms-1"
+                                   title="{{ __('Esta pergunta só aparece em certas respostas', 'npsphere') }}"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ types[question.type] ?? question.type }}</td>
+                        <td class="text-center">{{ question.is_required ? __('Sim') : __('Não') }}</td>
+                        <td class="text-center">{{ question.is_active ? __('Sim') : __('Não') }}</td>
+                        <td class="text-center">
+                            {% if question.type == 'nps' %}
+                                <i class="ti ti-gauge text-primary" title="{{ __('Esta pergunta entra no cálculo do NPS', 'npsphere') }}"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {# Ícone honesto: lápis quando dá para editar,
+                               olho quando é só leitura. Mostrar "editar"
+                               a quem não pode editar é convidar para um
+                               erro de permissão. #}
+                            <a href="{{ question_form_url }}?id={{ question.id }}" class="btn btn-sm btn-outline-secondary npsphere-open-form"
+                               data-url="{{ question_form_url }}?id={{ question.id }}"
+                               title="{{ can_edit ? __('Editar') : __('Visualizar', 'npsphere') }}">
+                                <i class="ti {{ can_edit ? 'ti-pencil' : 'ti-eye' }}"></i>
+                            </a>
+                            {% if can_create %}
+                                <form method="post" action="{{ question_form_url }}" class="d-inline npsphere-list-action-form">
+                                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="id" value="{{ question.id }}">
+                                    <button type="submit" name="duplicate" value="1" class="btn btn-sm btn-outline-secondary" title="{{ __('Duplicar') }}">
+                                        <i class="ti ti-copy"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                            {% if can_delete %}
+                                <form method="post" action="{{ question_form_url }}" class="d-inline npsphere-list-action-form"
+                                      onsubmit="return confirm('{{ __('Excluir esta pergunta definitivamente?', 'npsphere')|e('js') }}');">
+                                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="id" value="{{ question.id }}">
+                                    <button type="submit" name="delete" value="1" class="btn btn-sm btn-outline-danger" title="{{ __('Excluir') }}">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if can_create %}
+        <a href="{{ question_form_url }}?surveys_id={{ survey.getID() }}" class="btn btn-primary npsphere-open-form"
+           data-url="{{ question_form_url }}?surveys_id={{ survey.getID() }}">
+            <i class="ti ti-plus"></i>
+            {{ __('Adicionar pergunta', 'npsphere') }}
+        </a>
+    {% endif %}
+</div>

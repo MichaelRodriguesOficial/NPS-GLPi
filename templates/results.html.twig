@@ -1,0 +1,440 @@
+{% macro entity_picker(escopo, entidades, selecionadas, refresh_url) %}
+    {# Seletor de entidades com caixas de seleção.
+       Usado nas duas sub-abas: na Visão geral recarrega os números no
+       servidor; nas Respostas filtra a lista na hora. O mesmo
+       componente nos dois lugares evita que as telas divirjam. #}
+    <div class="npsphere-picker" data-escopo="{{ escopo }}"
+         {% if refresh_url %}data-refresh-url="{{ refresh_url }}"{% endif %}>
+        <span class="npsphere-picker-caption">{{ __('Entidades', 'npsphere') }}</span>
+
+        <button type="button" class="npsphere-picker-toggle">
+            <i class="ti ti-building"></i>
+            <span class="npsphere-picker-label">
+                {% if selecionadas is empty %}
+                    {{ __('Todas as entidades', 'npsphere') }}
+                {% elseif selecionadas|length == 1 %}
+                    {{ entidades[selecionadas|first] }}
+                {% else %}
+                    {{ selecionadas|length }} {{ __('entidades', 'npsphere') }}
+                {% endif %}
+            </span>
+            <i class="ti ti-chevron-down"></i>
+        </button>
+
+        <div class="npsphere-picker-menu" hidden>
+            <label class="npsphere-picker-item npsphere-picker-all">
+                <input type="checkbox" class="form-check-input" data-all="1"
+                       {{ selecionadas is empty ? 'checked' : '' }}>
+                <span>{{ __('Todas as entidades', 'npsphere') }}</span>
+            </label>
+
+            <div class="npsphere-picker-sep"></div>
+
+            {% for id, nome in entidades %}
+                <label class="npsphere-picker-item">
+                    <input type="checkbox" class="form-check-input npsphere-picker-entity"
+                           value="{{ id }}" {{ id in selecionadas ? 'checked' : '' }}>
+                    <span>{{ nome }}</span>
+                </label>
+            {% endfor %}
+
+            <div class="npsphere-picker-foot">
+                {{ __('Selecionar uma entidade não inclui as filhas.', 'npsphere') }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro export_button(export_url, surveys_id, has_answers, entidades) %}
+    {# O filtro ativo viaja na URL: o arquivo exportado reproduz o
+       recorte que está na tela. #}
+    {% set filtro = '' %}
+    {% for e in entidades|default([]) %}
+        {% set filtro = filtro ~ '&npsphere_entities[]=' ~ e %}
+    {% endfor %}
+
+    <div class="npsphere-export">
+        <button type="button" class="btn btn-sm btn-outline-secondary npsphere-export-toggle">
+            <i class="ti ti-download"></i> {{ __('Exportar', 'npsphere') }}
+            <i class="ti ti-chevron-down"></i>
+        </button>
+        <div class="npsphere-export-menu" hidden>
+            <p class="npsphere-export-title">{{ __('Planilha (CSV)', 'npsphere') }}</p>
+            <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&scope=overview{{ filtro }}">
+                <i class="ti ti-chart-bar"></i> {{ __('Visão geral', 'npsphere') }}
+            </button>
+            {% if has_answers %}
+                <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&scope=answers{{ filtro }}">
+                    <i class="ti ti-list-details"></i> {{ __('Respostas', 'npsphere') }}
+                </button>
+            {% endif %}
+
+            <p class="npsphere-export-title">{{ __('PDF', 'npsphere') }}</p>
+            <button type="button" data-export-print="overview">
+                <i class="ti ti-printer"></i> {{ __('Imprimir visão geral', 'npsphere') }}
+            </button>
+        </div>
+    </div>
+{% endmacro %}
+
+{# Cabeçalho usado APENAS na impressão: fica oculto em tela e é
+   clonado para o documento gerado, identificando o relatório. #}
+<div class="npsphere-print-title" hidden>
+    <h1>{{ survey.fields['name'] }}</h1>
+    {% if survey.fields['description'] %}
+        <p>{{ survey.fields['description'] }}</p>
+    {% endif %}
+    <p class="npsphere-print-meta">
+        {{ __('Relatório gerado em', 'npsphere') }} {{ "now"|date('d/m/Y H:i') }}
+    </p>
+</div>
+
+<div class="npsphere-results npsphere-refreshable" data-refresh-url="{{ refresh_url }}">
+
+    {% if total_answers == 0 %}
+        <div class="npsphere-empty">
+            <i class="ti ti-chart-bar"></i>
+            <h3>{{ __('Ainda não há respostas', 'npsphere') }}</h3>
+            <p>{{ __('Assim que a primeira resposta chegar, os indicadores aparecem aqui.', 'npsphere') }}</p>
+        </div>
+    {% else %}
+
+        {# Sub-abas: separa a leitura consolidada (indicadores) da lista
+           bruta de respostas. Com muitas respostas, ter as duas coisas
+           na mesma rolagem tornava a tela impraticável. #}
+        {% import _self as ex %}
+
+        <div class="npsphere-results-bar">
+        <nav class="npsphere-subtabs" role="tablist">
+            <button type="button" class="npsphere-subtab is-active" data-panel="overview">
+                <i class="ti ti-chart-bar"></i> {{ __('Visão geral', 'npsphere') }}
+            </button>
+            {% if respondents is defined and respondents is not empty %}
+                <button type="button" class="npsphere-subtab" data-panel="answers">
+                    <i class="ti ti-list-details"></i> {{ __('Respostas', 'npsphere') }}
+                    <span class="npsphere-subtab-count">{{ respondents|length }}</span>
+                </button>
+            {% endif %}
+        </nav>
+            {{ ex.export_button(export_url, survey.getID(), respondents is defined and respondents is not empty, export_params|default([])) }}
+        </div>
+
+        <div class="npsphere-panel" data-panel="overview">
+
+        {% if filtra_entidades and entidades_disponiveis is not empty %}
+            {{ ex.entity_picker('overview', entidades_disponiveis, entidades_filtro, refresh_url) }}
+
+            {% if entidades_filtro is not empty %}
+                <div class="npsphere-note npsphere-note-info">
+                    <i class="ti ti-filter"></i>
+                    <span>{{ __('Mostrando apenas as entidades selecionadas — entidades filhas não estão incluídas.', 'npsphere') }}</span>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="npsphere-kpis">
+            {% if nps %}
+                <div class="npsphere-kpi npsphere-kpi-nps npsphere-rating-{{ nps.rating }}">
+                    <span class="npsphere-kpi-label">{{ __('NPS', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value">{{ nps.score > 0 ? '+' : '' }}{{ nps.score }}</strong>
+                    <span class="npsphere-kpi-foot">
+                        {% if nps.rating == 'excellent' %}{{ __('Excelente', 'npsphere') }}
+                        {% elseif nps.rating == 'great' %}{{ __('Muito bom', 'npsphere') }}
+                        {% elseif nps.rating == 'ok' %}{{ __('Razoável', 'npsphere') }}
+                        {% else %}{{ __('Crítico', 'npsphere') }}{% endif %}
+                    </span>
+                </div>
+            {% endif %}
+
+            {# A nota média vale para qualquer pergunta com nota (NPS,
+               estrelas, emoticons), normalizada para a mesma régua de
+               0 a 10 -- somar "4 estrelas" com "8 de NPS" sem converter
+               daria um número sem significado. #}
+            {% if overall %}
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Nota média', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value">{{ overall.score }}<small class="npsphere-kpi-unit">/{{ overall.scale }}</small></strong>
+                    <span class="npsphere-kpi-foot">{{ __('média de todas as notas', 'npsphere') }}</span>
+                </div>
+            {% endif %}
+
+            <div class="npsphere-kpi">
+                <span class="npsphere-kpi-label">{{ __('Respostas', 'npsphere') }}</span>
+                <strong class="npsphere-kpi-value">{{ total_answers }}</strong>
+                <span class="npsphere-kpi-foot">{{ __('pesquisas enviadas', 'npsphere') }}</span>
+            </div>
+
+            {% if nps %}
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Promotores', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value text-success">{{ nps.promoters_pct }}%</strong>
+                    <span class="npsphere-kpi-foot">{{ nps.promoters }} {{ __('notas', 'npsphere') }}</span>
+                </div>
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Neutros', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value text-warning">{{ nps.passives_pct }}%</strong>
+                    <span class="npsphere-kpi-foot">{{ nps.passives }} {{ __('notas', 'npsphere') }}</span>
+                </div>
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Detratores', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value text-danger">{{ nps.detractors_pct }}%</strong>
+                    <span class="npsphere-kpi-foot">{{ nps.detractors }} {{ __('notas', 'npsphere') }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if nps %}
+            <div class="npsphere-nps-bar" title="{{ __('Distribuição das notas de NPS', 'npsphere') }}">
+                {% if nps.detractors_pct > 0 %}<span class="npsphere-bar-detractor" style="width: {{ nps.detractors_pct }}%">{{ nps.detractors_pct }}%</span>{% endif %}
+                {% if nps.passives_pct > 0 %}<span class="npsphere-bar-passive" style="width: {{ nps.passives_pct }}%">{{ nps.passives_pct }}%</span>{% endif %}
+                {% if nps.promoters_pct > 0 %}<span class="npsphere-bar-promoter" style="width: {{ nps.promoters_pct }}%">{{ nps.promoters_pct }}%</span>{% endif %}
+            </div>
+            {% if nps_questions > 1 %}
+                <div class="npsphere-note-inline npsphere-warn">
+                    <i class="ti ti-info-circle"></i>
+                    {{ __('Esta pesquisa tem %d perguntas do tipo NPS, e o número acima junta as notas de todas — por isso o total de notas não é igual ao total de respostas.', 'npsphere')|format(nps_questions) }}
+                    {{ __('A metodologia NPS padrão usa UMA única pergunta; para comparar com referências de mercado, use o NPS individual de cada pergunta na seção abaixo.', 'npsphere') }}
+                </div>
+            {% endif %}
+
+            <p class="npsphere-formula">
+                {{ __('NPS = % Promotores − % Detratores', 'npsphere') }}
+                = {{ nps.promoters_pct }}% − {{ nps.detractors_pct }}% =
+                <strong>{{ nps.score > 0 ? '+' : '' }}{{ nps.score }}</strong>
+                · {{ __('média das notas', 'npsphere') }}: {{ nps.average }}/{{ nps.scale }}
+            </p>
+        {% endif %}
+
+        <h4 class="npsphere-results-title">{{ __('Por pergunta', 'npsphere') }}</h4>
+
+        {% for r in results %}
+            <section class="npsphere-card npsphere-result-card">
+                <header class="npsphere-result-head">
+                    <div>
+                        <h3>{{ r.question.position }}. {{ r.question.name }}</h3>
+                        <p>
+                            {{ r.type_label }}
+                            {% if r.conditional %}
+                                · <i class="ti ti-git-branch"></i> {{ __('condicional', 'npsphere') }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <span class="npsphere-answered-badge">
+                        {{ r.metrics.answered }} / {{ total_answers }}
+                        {{ __('responderam', 'npsphere') }}
+                    </span>
+                </header>
+
+                {% if r.metrics.answered == 0 %}
+                    <p class="text-muted mb-0">{{ __('Nenhuma resposta para esta pergunta ainda.', 'npsphere') }}</p>
+
+                {% elseif r.metrics.kind == 'nps' %}
+                    <div class="npsphere-metric-highlight">
+                        <span>{{ __('NPS', 'npsphere') }}: <strong>{{ r.metrics.score > 0 ? '+' : '' }}{{ r.metrics.score }}</strong></span>
+                        <span>{{ __('Média', 'npsphere') }}: <strong>{{ r.metrics.average }}</strong>/{{ r.metrics.scale }}</span>
+                        <span class="text-success">{{ __('Promotores', 'npsphere') }}: {{ r.metrics.promoters_pct }}%</span>
+                        <span class="text-warning">{{ __('Neutros', 'npsphere') }}: {{ r.metrics.passives_pct }}%</span>
+                        <span class="text-danger">{{ __('Detratores', 'npsphere') }}: {{ r.metrics.detractors_pct }}%</span>
+                    </div>
+
+                {% elseif r.metrics.kind in ['stars', 'emoticon'] %}
+                    <div class="npsphere-metric-highlight">
+                        <span>{{ __('Média', 'npsphere') }}: <strong>{{ r.metrics.average }}</strong> / {{ r.metrics.max }}</span>
+                    </div>
+                    {% for row in r.metrics.distribution %}
+                        <div class="npsphere-dist-row">
+                            <span class="npsphere-dist-label">{{ row.label }}</span>
+                            <span class="npsphere-dist-track"><span style="width: {{ row.pct }}%"></span></span>
+                            <span class="npsphere-dist-value">{{ row.pct }}% <small>({{ row.count }})</small></span>
+                        </div>
+                    {% endfor %}
+
+                {% elseif r.metrics.kind == 'yesno' %}
+                    <div class="npsphere-metric-highlight">
+                        <span>{{ __('Respostas "Sim"', 'npsphere') }}: <strong>{{ r.metrics.yes_pct }}%</strong></span>
+                    </div>
+                    {% for row in r.metrics.distribution %}
+                        <div class="npsphere-dist-row">
+                            <span class="npsphere-dist-label">{{ row.label }}</span>
+                            <span class="npsphere-dist-track"><span style="width: {{ row.pct }}%"></span></span>
+                            <span class="npsphere-dist-value">{{ row.pct }}% <small>({{ row.count }})</small></span>
+                        </div>
+                    {% endfor %}
+
+                {% elseif r.metrics.kind == 'choice' %}
+                    {% if r.metrics.top_option %}
+                        <div class="npsphere-metric-highlight">
+                            <span>{{ __('Mais escolhida', 'npsphere') }}: <strong>{{ r.metrics.top_option }}</strong></span>
+                        </div>
+                    {% endif %}
+                    {% for row in r.metrics.distribution %}
+                        <div class="npsphere-dist-row">
+                            <span class="npsphere-dist-label">{{ row.label }}</span>
+                            <span class="npsphere-dist-track"><span style="width: {{ row.pct }}%"></span></span>
+                            <span class="npsphere-dist-value">{{ row.pct }}% <small>({{ row.count }})</small></span>
+                        </div>
+                    {% endfor %}
+                    {% if r.metrics.is_multiple %}
+                        <p class="npsphere-note-inline">
+                            {{ __('Cada pessoa pode marcar várias opções, então a soma dos percentuais passa de 100%.', 'npsphere') }}
+                        </p>
+                    {% endif %}
+
+                {% elseif r.metrics.kind == 'text' %}
+                    <ul class="npsphere-comments">
+                        {% for comment in r.metrics.comments %}
+                            <li>{{ comment }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </section>
+        {% endfor %}
+
+        </div>{# /painel visão geral #}
+
+        {% if respondents is defined and respondents is not empty %}
+        <div class="npsphere-panel" data-panel="answers" style="display:none">
+            <div class="npsphere-card npsphere-respondents" data-total="{{ respondents|length }}"
+                 data-detail-url="{{ detail_url }}">
+                <div class="npsphere-filter-bar">
+                    <div class="npsphere-search">
+                        <i class="ti ti-search"></i>
+                        <input type="search" class="form-control" id="npsphere-resp-search"
+                               placeholder="{{ __('Buscar por nome, e-mail, telefone{% if is_ticket %}, chamado{% endif %} ou entidade…', 'npsphere') }}"
+                               autocomplete="off">
+                    </div>
+                    {% if filtra_entidades and entidades_disponiveis is not empty %}
+                        {{ ex.entity_picker('answers', entidades_disponiveis, entidades_filtro, refresh_url) }}
+                    {% endif %}
+
+                    <label class="npsphere-filter-score">
+                        <span>{{ __('Nota', 'npsphere') }}</span>
+                        <select class="form-select" id="npsphere-resp-score">
+                            <option value="">{{ __('Todas', 'npsphere') }}</option>
+                            <option value="promoter">{{ __('Promotores', 'npsphere') }}</option>
+                            <option value="passive">{{ __('Neutros', 'npsphere') }}</option>
+                            <option value="detractor">{{ __('Detratores', 'npsphere') }}</option>
+                        </select>
+                    </label>
+
+                    <div class="npsphere-filter-dates">
+                        <label>
+                            <span>{{ __('De', 'npsphere') }}</span>
+                            <input type="date" class="form-control" id="npsphere-resp-from">
+                        </label>
+                        <label>
+                            <span>{{ __('Até', 'npsphere') }}</span>
+                            <input type="date" class="form-control" id="npsphere-resp-to">
+                        </label>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="npsphere-resp-clear">
+                        <i class="ti ti-filter-off"></i> {{ __('Limpar', 'npsphere') }}
+                    </button>
+                </div>
+
+                <div class="npsphere-table-wrap">
+                    <table class="table card-table npsphere-resp-table">
+                        <thead>
+                            <tr>
+                                {% if filtra_entidades %}
+                                    <th data-sort="entity" class="npsphere-sortable">{{ __('Entidade', 'npsphere') }} <i class="ti ti-arrows-sort"></i></th>
+                                {% endif %}
+                                {% if is_ticket %}
+                                    <th data-sort="ticket" class="npsphere-sortable">{{ __('Chamado', 'npsphere') }} <i class="ti ti-arrows-sort"></i></th>
+                                {% endif %}
+                                <th data-sort="name" class="npsphere-sortable">{{ __('Nome', 'npsphere') }} <i class="ti ti-arrows-sort"></i></th>
+                                <th data-sort="email" class="npsphere-sortable">{{ __('E-mail', 'npsphere') }} <i class="ti ti-arrows-sort"></i></th>
+                                <th>{{ __('Telefone', 'npsphere') }}</th>
+                                <th data-sort="score" class="npsphere-sortable text-center">{{ __('Nota', 'npsphere') }} <i class="ti ti-arrows-sort"></i></th>
+                                <th data-sort="date" class="npsphere-sortable">{{ __('Data', 'npsphere') }} <i class="ti ti-arrows-sort"></i></th>
+                                <th class="text-end"></th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="npsphere-resp-body">
+                            {% for r in respondents %}
+                                <tr data-name="{{ r.respondent_name|lower }}"
+                                    data-email="{{ r.respondent_email|lower }}"
+                                    data-phone="{{ r.respondent_phone }}"
+                                    data-date="{{ r.date_creation|date('Y-m-d') }}"
+                                    data-entity="{{ r.entities_id }}"
+                                    data-entity-name="{{ r.entity_name|default('') }}"
+                                    data-ticket="{{ r.tickets_id|default(0) }}"
+                                    data-score="{{ r.nps ? r.nps.score : '' }}"
+                                    data-class="{{ r.nps ? r.nps.classification : '' }}">
+                                    {% if filtra_entidades %}
+                                        <td>{{ r.entity_name|default('—') }}</td>
+                                    {% endif %}
+                                    {% if is_ticket %}
+                                        <td>
+                                            {% if r.tickets_id %}
+                                                {# Link direto para o chamado avaliado: permite
+                                                   ir da nota ao atendimento que a gerou. #}
+                                                <a href="{{ ticket_url }}?id={{ r.tickets_id }}" target="_blank" rel="noopener">
+                                                    #{{ r.tickets_id }} <i class="ti ti-external-link"></i>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                    <td>{{ r.respondent_name }}</td>
+                                    <td><a href="mailto:{{ r.respondent_email }}">{{ r.respondent_email }}</a></td>
+                                    <td>{{ r.respondent_phone }}</td>
+                                    <td class="text-center">
+                                        {% if r.nps %}
+                                            <span class="npsphere-score-pill npsphere-score-{{ r.nps.classification }}">
+                                                {{ r.nps.score }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ r.date_creation|date('d/m/Y H:i') }}</td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-sm btn-outline-primary npsphere-view-answer"
+                                                data-answer-id="{{ r.id }}">
+                                            <i class="ti ti-eye"></i> {{ __('Ver', 'npsphere') }}
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary npsphere-print-answer"
+                                                data-answer-id="{{ r.id }}"
+                                                title="{{ __('Imprimir / salvar esta resposta em PDF', 'npsphere') }}">
+                                            <i class="ti ti-file-download"></i>
+                                        </button>
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="npsphere-pagination">
+                    <p class="npsphere-filter-count" id="npsphere-resp-count"></p>
+                    <div class="npsphere-pager">
+                        <label class="npsphere-per-page">
+                            <span>{{ __('Por página', 'npsphere') }}</span>
+                            <select class="form-select form-select-sm" id="npsphere-resp-perpage">
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </label>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="npsphere-resp-prev">
+                            <i class="ti ti-chevron-left"></i>
+                        </button>
+                        <span id="npsphere-resp-page" class="npsphere-page-info"></span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="npsphere-resp-next">
+                            <i class="ti ti-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {# Painel de detalhe, preenchido ao clicar em "Ver" #}
+            <div class="npsphere-card npsphere-detail-panel" id="npsphere-detail-panel" style="display:none"></div>
+        </div>
+        {% endif %}
+
+    {% endif %}
+</div>

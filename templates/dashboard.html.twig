@@ -1,0 +1,379 @@
+{% macro variacao(delta, casas, sufixo) %}
+    {# Seta e cor pela DIREÇÃO. Para o NPS, a nota média e o volume, subir
+       é bom -- por isso verde para cima e vermelho para baixo. #}
+    {% if delta is not null %}
+        {% if delta > 0 %}
+            <span class="npsphere-var npsphere-var-sobe">&#9650; {{ delta|number_format(casas, ',', '.') }}{{ sufixo }}</span>
+        {% elseif delta < 0 %}
+            <span class="npsphere-var npsphere-var-desce">&#9660; {{ (delta * -1)|number_format(casas, ',', '.') }}{{ sufixo }}</span>
+        {% else %}
+            <span class="npsphere-var npsphere-var-igual">= {{ __('sem variação', 'npsphere') }}</span>
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro seletor(nome, campo, icone, singular, plural, opcoes, selecionados) %}
+    {# Mesmo componente do filtro de entidades dos Resultados. Os textos
+       vêm por atributo, para o JavaScript montar o rótulo certo em cada
+       seletor ("3 técnicos", "Todas as categorias"...). #}
+    <div class="npsphere-picker" data-escopo="dashboard"
+         data-singular="{{ singular }}" data-plural="{{ plural }}"
+         data-todas="{{ __('Todos', 'npsphere') }}">
+        <span class="npsphere-picker-caption">{{ nome }}</span>
+
+        <button type="button" class="npsphere-picker-toggle">
+            <i class="ti {{ icone }}"></i>
+            <span class="npsphere-picker-label">
+                {% if selecionados is empty %}
+                    {{ __('Todos', 'npsphere') }}
+                {% elseif selecionados|length == 1 %}
+                    {{ opcoes[selecionados|first]|default(selecionados|length ~ ' ' ~ singular) }}
+                {% else %}
+                    {{ selecionados|length }} {{ plural }}
+                {% endif %}
+            </span>
+            <i class="ti ti-chevron-down"></i>
+        </button>
+
+        <div class="npsphere-picker-menu" hidden>
+            <label class="npsphere-picker-item npsphere-picker-all">
+                <input type="checkbox" class="form-check-input" data-all="1"
+                       {{ selecionados is empty ? 'checked' : '' }}>
+                <span>{{ __('Todos', 'npsphere') }}</span>
+            </label>
+
+            <div class="npsphere-picker-sep"></div>
+
+            {% if opcoes is empty %}
+                <div class="npsphere-picker-foot">{{ __('Nenhuma opção no período.', 'npsphere') }}</div>
+            {% endif %}
+
+            {% for id, rotulo in opcoes %}
+                <label class="npsphere-picker-item">
+                    <input type="checkbox" class="form-check-input npsphere-picker-entity"
+                           name="{{ campo }}[]" value="{{ id }}" {{ id in selecionados ? 'checked' : '' }}>
+                    <span>{{ rotulo }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+{% endmacro %}
+
+{#
+   Painel consolidado de satisfação (Fase 10).
+
+   Todas as seções são irmãs dentro de um único container com espaço
+   uniforme entre elas -- antes cada uma trazia a própria margem, e o
+   resultado era um espaçamento diferente entre cada bloco.
+#}
+
+{% macro grupo(titulo, coluna, icone, itens, vazio, campo, amostra_minima, resultados_url) %}
+    <section class="npsphere-card">
+        <header class="npsphere-card-head">
+            <span class="npsphere-card-icon"><i class="ti {{ icone }}"></i></span>
+            <div><h3>{{ titulo }}</h3></div>
+        </header>
+
+        {% if itens is empty %}
+            <p class="text-muted mb-0">{{ vazio }}</p>
+        {% else %}
+            <div class="npsphere-dash-table-wrap">
+                <table class="table card-table npsphere-dash-table">
+                    <thead>
+                        <tr>
+                            {# O nome da dimensão, e não "Grupo": dizer
+                               "Técnico" ou "Categoria" é o que torna a
+                               tabela legível sem voltar ao título. #}
+                            <th>{{ coluna }}</th>
+                            <th class="text-center">{{ __('Respostas', 'npsphere') }}</th>
+                            <th class="text-center">{{ __('NPS', 'npsphere') }}</th>
+                            <th class="text-center">{{ __('Nota média', 'npsphere') }}</th>
+                            <th class="text-center">{{ __('Promotores', 'npsphere') }}</th>
+                            <th class="text-center">{{ __('Detratores', 'npsphere') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#
+                           A linha fica AQUI, e não numa macro à parte.
+
+                           Antes ela era outra macro chamada por
+                           parâmetro ({{ m.linha_grupo(item) }}). No
+                           Twig, uma macro recebida como argumento não
+                           renderiza de outra macro -- o cabeçalho da
+                           tabela aparecia (porque havia itens) e o
+                           corpo saía vazio, sem erro nenhum.
+                        #}
+                        {% for item in itens %}
+                            {# Clicar na linha filtra o painel por ela --
+                               o mesmo que marcá-la no seletor, sem ir até
+                               ele. #}
+                            <tr class="npsphere-dash-linha{{ item.amostra_pequena ? ' npsphere-dash-amostra' : '' }}"
+                                data-filtro-campo="{{ campo }}" data-filtro-id="{{ item.id }}"
+                                title="{{ item.amostra_pequena
+                                    ? __('Menos de %d respostas — clique para filtrar o painel por este item', 'npsphere')|format(amostra_minima)
+                                    : __('Clique para filtrar o painel por este item', 'npsphere') }}">
+                                <td>
+                                    {{ item.rotulo }}
+                                    {% if resultados_url %}
+                                        {# O link não pode disparar o filtro
+                                           da linha: data-no-filter faz o
+                                           JavaScript ignorar o clique. #}
+                                        <a href="{{ resultados_url }}{{ item.id }}" class="npsphere-dash-ir" data-no-filter="1"
+                                           title="{{ __('Abrir os resultados desta pesquisa', 'npsphere') }}">
+                                            <i class="ti ti-external-link"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ item.resumo.total }}</td>
+                                <td class="text-center">
+                                    {% if item.resumo.nps is not null %}
+                                        <span class="npsphere-score-pill {{ item.resumo.nps >= 50 ? 'npsphere-score-promoter' : (item.resumo.nps >= 0 ? 'npsphere-score-passive' : 'npsphere-score-detractor') }}">
+                                            {{ item.resumo.nps > 0 ? '+' : '' }}{{ item.resumo.nps }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.resumo.media is not null %}
+                                        {{ item.resumo.media }}<small class="text-muted">/10</small>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center text-success">{{ item.resumo.nps is not null ? item.resumo.promotores_pct ~ '%' : '—' }}</td>
+                                <td class="text-center text-danger">{{ item.resumo.nps is not null ? item.resumo.detratores_pct ~ '%' : '—' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+    </section>
+{% endmacro %}
+
+{% import _self as m %}
+
+<div class="npsphere-dashboard">
+
+    {# --- Filtros --- #}
+    <section class="npsphere-card">
+        <form method="get" class="npsphere-dash-filtros" id="npsphere-dash-form">
+            <label class="npsphere-filter-score">
+                <span>{{ __('De', 'npsphere') }}</span>
+                <input type="date" name="date_from" class="form-control npsphere-dash-auto" value="{{ date_from }}">
+            </label>
+
+            <label class="npsphere-filter-score">
+                <span>{{ __('Até', 'npsphere') }}</span>
+                <input type="date" name="date_to" class="form-control npsphere-dash-auto" value="{{ date_to }}">
+            </label>
+
+            {{ m.seletor(__('Pesquisas', 'npsphere'), 'surveys', 'ti-clipboard-text', __('pesquisa', 'npsphere'), __('pesquisas', 'npsphere'), pesquisas, sel.surveys) }}
+            {{ m.seletor(__('Entidades', 'npsphere'), 'entities', 'ti-building', __('entidade', 'npsphere'), __('entidades', 'npsphere'), opcoes.entities, sel.entities) }}
+            {{ m.seletor(__('Requerentes', 'npsphere'), 'requerentes', 'ti-user', __('requerente', 'npsphere'), __('requerentes', 'npsphere'), opcoes.requerentes, sel.requerentes) }}
+            {{ m.seletor(__('Técnicos', 'npsphere'), 'tecnicos', 'ti-user-check', __('técnico', 'npsphere'), __('técnicos', 'npsphere'), opcoes.tecnicos, sel.tecnicos) }}
+            {{ m.seletor(__('Grupos técnicos', 'npsphere'), 'grupos', 'ti-users-group', __('grupo', 'npsphere'), __('grupos', 'npsphere'), opcoes.grupos, sel.grupos) }}
+            {{ m.seletor(__('Categorias', 'npsphere'), 'categorias', 'ti-category', __('categoria', 'npsphere'), __('categorias', 'npsphere'), opcoes.categorias, sel.categorias) }}
+
+            <div class="npsphere-dash-acoes">
+                <div class="npsphere-export">
+                    <button type="button" class="btn btn-sm btn-outline-primary npsphere-export-toggle">
+                        <i class="ti ti-download"></i> {{ __('Exportar', 'npsphere') }}
+                        <i class="ti ti-chevron-down"></i>
+                    </button>
+                    <div class="npsphere-export-menu" hidden>
+                        <button type="button" data-export-url="{{ export_url }}">
+                            <i class="ti ti-file-spreadsheet"></i> {{ __('Planilha (CSV)', 'npsphere') }}
+                        </button>
+                        <button type="button" data-export-print="dashboard">
+                            <i class="ti ti-printer"></i> {{ __('Imprimir', 'npsphere') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    {% if not ver_todas %}
+        {# Deixa explícito que o painel mostra um recorte -- sem isso,
+           dois gestores comparando números chegariam a totais
+           diferentes sem entender por quê. #}
+        <div class="npsphere-note npsphere-note-info">
+            <i class="ti ti-user"></i>
+            <span>{{ __('Você está vendo apenas as pesquisas que criou.', 'npsphere') }}</span>
+        </div>
+    {% endif %}
+
+    {% if pesquisas is empty %}
+        <div class="npsphere-empty">
+            <i class="ti ti-clipboard-off"></i>
+            <h3>{{ __('Nenhuma pesquisa criada por você', 'npsphere') }}</h3>
+            <p>{{ __('O painel mostra os resultados das pesquisas que você criou.', 'npsphere') }}</p>
+        </div>
+    {% elseif resumo.total == 0 %}
+        <div class="npsphere-empty">
+            <i class="ti ti-chart-histogram"></i>
+            <h3>{{ __('Nenhuma resposta no período', 'npsphere') }}</h3>
+            <p>{{ __('Ajuste o período ou as pesquisas selecionadas.', 'npsphere') }}</p>
+        </div>
+    {% else %}
+
+        {# --- Indicadores --- #}
+        <div class="npsphere-kpis">
+            {# Os MESMOS seis indicadores da aba Resultados, com os mesmos
+               rótulos -- assim a conferência entre as duas telas é
+               direta, número a número. #}
+            {% if resumo.nps is not null %}
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('NPS', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value {{ resumo.nps >= 50 ? 'text-success' : (resumo.nps >= 0 ? 'text-warning' : 'text-danger') }}">
+                        {{ resumo.nps > 0 ? '+' : '' }}{{ resumo.nps }}
+                    </strong>
+                    <span class="npsphere-kpi-foot">{{ m.variacao(comparacao.nps, 0, ' ' ~ __('pontos', 'npsphere')) }}</span>
+                </div>
+            {% endif %}
+            {% if resumo.media is not null %}
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Nota média', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value">{{ resumo.media }}<small class="npsphere-kpi-unit">/10</small></strong>
+                    <span class="npsphere-kpi-foot">{{ m.variacao(comparacao.media, 1, '') }}</span>
+                </div>
+            {% endif %}
+            <div class="npsphere-kpi">
+                <span class="npsphere-kpi-label">{{ __('Respostas', 'npsphere') }}</span>
+                <strong class="npsphere-kpi-value">{{ resumo.total }}</strong>
+                <span class="npsphere-kpi-foot">{{ comparacao.tem_base ? m.variacao(comparacao.total, 0, '') : __('pesquisas enviadas', 'npsphere') }}</span>
+            </div>
+            {% if resumo.nps is not null %}
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Promotores', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value text-success">{{ resumo.promotores_pct }}%</strong>
+                    <span class="npsphere-kpi-foot">{{ resumo.promotores }} {{ __('notas', 'npsphere') }}</span>
+                </div>
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Neutros', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value text-warning">{{ resumo.neutros_pct }}%</strong>
+                    <span class="npsphere-kpi-foot">{{ resumo.neutros }} {{ __('notas', 'npsphere') }}</span>
+                </div>
+                <div class="npsphere-kpi">
+                    <span class="npsphere-kpi-label">{{ __('Detratores', 'npsphere') }}</span>
+                    <strong class="npsphere-kpi-value text-danger">{{ resumo.detratores_pct }}%</strong>
+                    <span class="npsphere-kpi-foot">{{ resumo.detratores }} {{ __('notas', 'npsphere') }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        {# A base da comparação fica explícita: "subiu 8" só significa algo
+           sabendo contra QUAL período. #}
+        {% if comparacao.tem_base %}
+        <p class="npsphere-dash-hint npsphere-dash-comparacao">
+            <i class="ti ti-arrows-left-right"></i>
+            {{ __('Variação em relação ao período anterior, de mesma duração:', 'npsphere') }}
+            <strong>{{ comparacao.de|date('d/m/Y') }} {{ __('a', 'npsphere') }} {{ comparacao.ate|date('d/m/Y') }}</strong>
+            ({{ comparacao.total_antes }} {{ __('respostas', 'npsphere') }}).
+        </p>
+        {% endif %}
+
+        {# --- Gráficos --- #}
+        <div class="npsphere-dash-graficos">
+
+            {% if resumo.nps is not null %}
+            <section class="npsphere-card">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-chart-donut"></i></span>
+                    <div>
+                        <h3>{{ __('Distribuição das notas', 'npsphere') }}</h3>
+                        <p>{{ __('Quantos promotores, neutros e detratores.', 'npsphere') }}</p>
+                    </div>
+                </header>
+
+                {# Rosca em SVG: sem biblioteca externa, que o GLPI teria
+                   de carregar só para este gráfico. Cada fatia é um
+                   traço de círculo com o comprimento proporcional. #}
+                {# 2 × π × 40 (raio do círculo) #}
+                {% set circ = 251.33 %}
+                {% set p = resumo.promotores_pct / 100 * circ %}
+                {% set n = resumo.neutros_pct / 100 * circ %}
+                {% set d = resumo.detratores_pct / 100 * circ %}
+                <div class="npsphere-dash-rosca">
+                    <svg viewBox="0 0 100 100" class="npsphere-dash-svg">
+                        <circle cx="50" cy="50" r="40" class="npsphere-dash-fundo"/>
+                        <circle cx="50" cy="50" r="40" class="npsphere-dash-fatia npsphere-dash-promotor"
+                                stroke-dasharray="{{ p }} {{ circ }}" stroke-dashoffset="0"/>
+                        <circle cx="50" cy="50" r="40" class="npsphere-dash-fatia npsphere-dash-neutro"
+                                stroke-dasharray="{{ n }} {{ circ }}" stroke-dashoffset="{{ -p }}"/>
+                        <circle cx="50" cy="50" r="40" class="npsphere-dash-fatia npsphere-dash-detrator"
+                                stroke-dasharray="{{ d }} {{ circ }}" stroke-dashoffset="{{ -(p + n) }}"/>
+                        <text x="50" y="47" class="npsphere-dash-centro-valor">{{ resumo.nps > 0 ? '+' : '' }}{{ resumo.nps }}</text>
+                        <text x="50" y="60" class="npsphere-dash-centro-rotulo">NPS</text>
+                    </svg>
+
+                    <ul class="npsphere-dash-legenda">
+                        <li><i class="npsphere-dash-ponto npsphere-dash-promotor"></i>
+                            {{ __('Promotores', 'npsphere') }} <strong>{{ resumo.promotores_pct }}%</strong>
+                            <small>({{ resumo.promotores }})</small></li>
+                        <li><i class="npsphere-dash-ponto npsphere-dash-neutro"></i>
+                            {{ __('Neutros', 'npsphere') }} <strong>{{ resumo.neutros_pct }}%</strong>
+                            <small>({{ resumo.neutros }})</small></li>
+                        <li><i class="npsphere-dash-ponto npsphere-dash-detrator"></i>
+                            {{ __('Detratores', 'npsphere') }} <strong>{{ resumo.detratores_pct }}%</strong>
+                            <small>({{ resumo.detratores }})</small></li>
+                    </ul>
+                </div>
+            </section>
+            {% endif %}
+
+            <section class="npsphere-card">
+                <header class="npsphere-card-head">
+                    <span class="npsphere-card-icon"><i class="ti ti-timeline"></i></span>
+                    <div>
+                        <h3>{{ __('Evolução do NPS', 'npsphere') }}</h3>
+                        <p>{{ __('Mês a mês. A linha tracejada marca o zero.', 'npsphere') }}</p>
+                    </div>
+                </header>
+
+                {% if evolucao|length < 2 %}
+                    <p class="text-muted mb-0">{{ __('É preciso ao menos dois meses com respostas para mostrar a evolução.', 'npsphere') }}</p>
+                {% else %}
+                    <div class="npsphere-dash-evolucao">
+                        {% for ponto in evolucao %}
+                            {% if ponto.vazio or ponto.resumo.nps is null %}
+                                {# Mês sem resposta: coluna vazia, e não uma
+                                   barra na linha do zero -- "sem dados" e
+                                   "NPS zero" são coisas diferentes. #}
+                                <div class="npsphere-dash-coluna npsphere-dash-coluna-vazia"
+                                     title="{{ __('Sem respostas neste mês', 'npsphere') }}">
+                                    <span class="npsphere-dash-valor">—</span>
+                                    <div class="npsphere-dash-trilho"></div>
+                                    <span class="npsphere-dash-periodo">{{ ponto.periodo }}</span>
+                                </div>
+                            {% else %}
+                                {# O NPS vai de -100 a +100: deslocado, o
+                                   zero fica no meio da coluna. #}
+                                {% set altura = ((ponto.resumo.nps + 100) / 2)|round %}
+                                <div class="npsphere-dash-coluna" title="{{ ponto.resumo.total }} {{ __('respostas', 'npsphere') }}">
+                                    <span class="npsphere-dash-valor">{{ ponto.resumo.nps > 0 ? '+' : '' }}{{ ponto.resumo.nps }}</span>
+                                    <div class="npsphere-dash-trilho">
+                                        <div class="npsphere-dash-preenchimento {{ ponto.resumo.nps >= 50 ? 'npsphere-score-promoter' : (ponto.resumo.nps >= 0 ? 'npsphere-score-passive' : 'npsphere-score-detractor') }}"
+                                             style="height:{{ altura }}%"></div>
+                                    </div>
+                                    <span class="npsphere-dash-periodo">{{ ponto.periodo }}</span>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+
+        {# --- Recortes --- #}
+        {{ m.grupo(__('Por pesquisa', 'npsphere'), __('Pesquisa', 'npsphere'), 'ti-clipboard-text', por_pesquisa, __('Sem respostas no período.', 'npsphere'), 'surveys', amostra_minima, resultados_url) }}
+        {{ m.grupo(__('Por entidade', 'npsphere'), __('Entidade', 'npsphere'), 'ti-building', por_entidade, __('Sem respostas no período.', 'npsphere'), 'entities', amostra_minima, null) }}
+        {{ m.grupo(__('Por requerente', 'npsphere'), __('Requerente', 'npsphere'), 'ti-user', por_requerente, __('Disponível apenas para pesquisas vinculadas a chamado.', 'npsphere'), 'requerentes', amostra_minima, null) }}
+        {{ m.grupo(__('Por técnico', 'npsphere'), __('Técnico', 'npsphere'), 'ti-user-check', por_tecnico, __('Disponível apenas para pesquisas vinculadas a chamado.', 'npsphere'), 'tecnicos', amostra_minima, null) }}
+        {{ m.grupo(__('Por grupo técnico', 'npsphere'), __('Grupo técnico', 'npsphere'), 'ti-users-group', por_grupo, __('Disponível apenas para pesquisas vinculadas a chamado.', 'npsphere'), 'grupos', amostra_minima, null) }}
+        {{ m.grupo(__('Por categoria', 'npsphere'), __('Categoria', 'npsphere'), 'ti-category', por_categoria, __('Disponível apenas para pesquisas vinculadas a chamado.', 'npsphere'), 'categorias', amostra_minima, null) }}
+    {% endif %}
+</div>

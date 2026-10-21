@@ -1,0 +1,2345 @@
+/**
+ * Estilos do plugin NPSphere (Pesquisas de Satisfação).
+ * Nesta fase 1, apenas ajustes leves à tela administrativa.
+ * O CSS do formulário público de resposta (moderno, responsivo)
+ * será adicionado na Fase 3 (front/public.php).
+ */
+
+.npsphere-question-list .npsphere-drag-handle {
+    cursor: grab;
+    color: var(--tblr-secondary);
+}
+
+.npsphere-question-list .npsphere-dragging {
+    opacity: .4;
+}
+
+.npsphere-question-list tr[draggable="true"] {
+    cursor: default;
+}
+
+/* ---- Fase 3: formulário de resposta ---- */
+
+.npsphere-answer-page {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.npsphere-answer-card {
+    border-radius: .75rem;
+}
+
+.npsphere-question-block {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+
+.npsphere-step-nav {
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+/* Três áreas de largura previsível (Anterior | progresso | Próxima-ou-
+   Enviar) -- assim o texto "Pergunta X de Y" nunca se desloca,
+   independente de qual botão do lado direito está visível. Os botões
+   em si NÃO esticam (ficam no tamanho natural) -- só a área/slot ao
+   redor deles reserva espaço simétrico. */
+.npsphere-step-nav .npsphere-step-prev-slot,
+.npsphere-step-nav .npsphere-step-next-slot {
+    flex: 1 1 0;
+    display: flex;
+}
+.npsphere-step-nav .npsphere-step-prev-slot {
+    justify-content: flex-start;
+}
+.npsphere-step-nav .npsphere-step-next-slot {
+    justify-content: flex-end;
+}
+.npsphere-step-progress {
+    flex: 1 1 0;
+    text-align: center;
+    color: var(--tblr-secondary);
+    font-size: .875rem;
+}
+.npsphere-step-error {
+    margin-top: 1rem;
+}
+
+.npsphere-question-label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: .25rem;
+}
+
+/* NPS -- apresentação "Números": mesma lógica de distribuição da
+   "Escala visual" (cada opção ocupa uma fração igual da largura, numa
+   única linha), para nunca quebrar de forma desorganizada. */
+.npsphere-nps-scale {
+    display: flex;
+    gap: .35rem;
+}
+.npsphere-nps-option {
+    cursor: pointer;
+    flex: 1 1 0;
+    min-width: 0;
+}
+.npsphere-nps-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.npsphere-nps-option span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 3rem;
+    margin: 0 auto;
+    border-radius: .5rem;
+    border: 1px solid var(--tblr-border-color, #ccc);
+    font-weight: 600;
+}
+.npsphere-nps-option input:checked + span {
+    background: var(--tblr-primary);
+    border-color: var(--tblr-primary);
+    color: #fff;
+}
+.npsphere-nps-option input:focus-visible + span {
+    outline: 2px solid var(--tblr-primary);
+    outline-offset: 2px;
+}
+
+/* NPS -- apresentação "Escala visual": barra contínua colorida por zona */
+.npsphere-nps-visual-scale {
+    display: flex;
+    gap: 2px;
+    border-radius: .5rem;
+    overflow: hidden;
+}
+.npsphere-nps-visual-scale input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.npsphere-nps-visual-segment {
+    flex: 1;
+    min-width: 1.75rem;
+    height: 2.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 600;
+    opacity: .55;
+    transition: opacity .15s ease, transform .15s ease;
+}
+.npsphere-nps-zone-detractor { background: #d63939; }
+.npsphere-nps-zone-passive { background: #f59f00; }
+.npsphere-nps-zone-promoter { background: #2fb344; }
+.npsphere-nps-visual-scale input:checked + .npsphere-nps-visual-segment,
+.npsphere-nps-visual-segment:hover {
+    opacity: 1;
+    transform: scaleY(1.12);
+}
+
+/* Emoticons */
+.npsphere-emoticon-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+.npsphere-emoticon-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    cursor: pointer;
+    padding: .5rem;
+    border-radius: .5rem;
+    border: 1px solid transparent;
+    min-width: 4.5rem;
+    text-align: center;
+}
+.npsphere-emoticon-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.npsphere-emoji {
+    font-size: 1.75rem;
+}
+.npsphere-emoji-label {
+    font-size: .75rem;
+}
+.npsphere-emoticon-option input:checked ~ .npsphere-emoji,
+.npsphere-emoticon-option input:checked + .npsphere-emoji {
+    transform: scale(1.15);
+}
+.npsphere-emoticon-option:has(input:checked) {
+    border-color: var(--tblr-primary);
+    background: rgba(var(--tblr-primary-rgb, 32, 107, 196), .08);
+}
+
+/* Estrelas (truque clássico de rating com CSS puro): o HTML lista as
+   estrelas de trás para frente (max...1) como pares <input><label>
+   IRMÃOS -- não aninhados -- e o CSS inverte visualmente com
+   row-reverse. Isso é o que permite o seletor "~" acender da estrela
+   selecionada/em hover para trás (visualmente: da esquerda até ela). */
+.npsphere-stars-scale {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: .15rem;
+}
+.npsphere-stars-scale input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.npsphere-star-option {
+    cursor: pointer;
+}
+.npsphere-star-option i {
+    font-size: 1.75rem;
+    color: var(--tblr-border-color, #ccc);
+}
+.npsphere-stars-scale input:checked ~ .npsphere-star-option i,
+.npsphere-star-option:hover i,
+.npsphere-star-option:hover ~ .npsphere-star-option i {
+    color: #f5b400;
+}
+
+/* Sim/Não e múltipla escolha */
+.npsphere-yesno-options,
+.npsphere-choice-options {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+.npsphere-yesno-option {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+}
+
+/* Pré-visualização e edição de pergunta (tela única) */
+.npsphere-form-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-form-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 1rem;
+}
+.npsphere-form-section-title {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--tblr-secondary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.npsphere-preview-screen {
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 1.5rem;
+}
+.npsphere-preview-screen .npsphere-question-block {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.npsphere-choice-options-editor {
+    margin-bottom: .5rem;
+}
+
+.npsphere-form-errors {
+    margin-bottom: 1rem;
+}
+
+.npsphere-question-editor {
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 1.5rem;
+}
+
+.npsphere-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* ============================================================
+   Formulário da pesquisa — layout próprio em cartões
+   ============================================================
+   A grade padrão do formulário genérico do GLPI (rótulo à esquerda,
+   campo à direita, dois pares por linha) espalhava os campos de ponta
+   a ponta em telas largas e agrupava campos sem relação entre si.
+   Aqui os campos são agrupados por tema, com o rótulo ACIMA do campo,
+   que é o padrão mais legível para formulários de configuração. */
+
+/* Largura total, igual à aba "Público-alvo" -- as abas do plugin
+   compartilham a mesma medida para não parecerem telas de sistemas
+   diferentes ao alternar entre elas. */
+.npsphere-survey-layout {
+    max-width: none;
+    padding: .5rem 0 0;
+}
+
+.npsphere-card {
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.npsphere-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: .875rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-card-head h3 {
+    font-size: .9375rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+}
+.npsphere-card-head p {
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+    margin: .125rem 0 0;
+}
+.npsphere-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border-radius: .5rem;
+    background: rgba(var(--tblr-primary-rgb, 32, 107, 196), .1);
+    color: var(--tblr-primary, #206bc4);
+    font-size: 1.125rem;
+}
+
+/* Duas colunas em telas largas, uma só no mobile. */
+.npsphere-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.25rem;
+}
+@media (max-width: 768px) {
+    .npsphere-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.npsphere-field {
+    display: flex;
+    flex-direction: column;
+}
+.npsphere-field-wide {
+    grid-column: 1 / -1;
+}
+.npsphere-field > label {
+    font-size: .8125rem;
+    font-weight: 600;
+    margin-bottom: .375rem;
+    color: var(--tblr-body-color);
+}
+.npsphere-field > small {
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+    margin-top: .375rem;
+    line-height: 1.4;
+}
+
+.npsphere-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .625rem;
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: var(--tblr-secondary);
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    border-radius: .5rem;
+    padding: .75rem 1rem;
+    margin-top: 1.25rem;
+}
+.npsphere-note i {
+    flex-shrink: 0;
+    margin-top: .125rem;
+    color: var(--tblr-primary, #206bc4);
+}
+.npsphere-note-info {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+/* Cartão "Informações do registro" (autoria + datas) */
+.npsphere-card-meta {
+    background: var(--tblr-bg-surface-secondary, #f8f9fb);
+}
+.npsphere-meta-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem 1.25rem;
+    margin: 0;
+}
+@media (max-width: 768px) {
+    .npsphere-meta-list {
+        grid-template-columns: 1fr;
+    }
+}
+.npsphere-meta-list dt {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--tblr-secondary);
+    margin-bottom: .25rem;
+}
+.npsphere-meta-list dd {
+    margin: 0;
+    font-size: .875rem;
+    color: var(--tblr-body-color);
+}
+
+/* Regra condicional no formulário de pergunta */
+.npsphere-condition-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: center;
+    gap: .5rem;
+}
+@media (max-width: 992px) {
+    .npsphere-condition-row {
+        grid-template-columns: 1fr;
+    }
+}
+.npsphere-condition-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+    white-space: nowrap;
+}
+
+/* ============================================================
+   Aba "Resultados" (Fase 4 — métricas)
+   ============================================================ */
+
+.npsphere-results { max-width: none; }
+
+.npsphere-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--tblr-secondary);
+}
+.npsphere-empty i { font-size: 2.5rem; opacity: .5; }
+.npsphere-empty h3 { font-size: 1rem; margin: .75rem 0 .25rem; }
+.npsphere-empty p { font-size: .875rem; margin: 0; }
+
+.npsphere-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+.npsphere-kpi {
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
+}
+.npsphere-kpi-label {
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+}
+.npsphere-kpi-value { font-size: 1.75rem; font-weight: 700; line-height: 1.1; }
+.npsphere-kpi-foot { font-size: .75rem; color: var(--tblr-secondary); }
+
+/* Cor do cartão de NPS conforme a faixa do indicador */
+.npsphere-kpi-nps { border-width: 2px; }
+.npsphere-rating-excellent { border-color: #2fb344; }
+.npsphere-rating-excellent .npsphere-kpi-value { color: #2fb344; }
+.npsphere-rating-great { border-color: #4299e1; }
+.npsphere-rating-great .npsphere-kpi-value { color: #4299e1; }
+.npsphere-rating-ok { border-color: #f59f00; }
+.npsphere-rating-ok .npsphere-kpi-value { color: #f59f00; }
+.npsphere-rating-bad { border-color: #d63939; }
+.npsphere-rating-bad .npsphere-kpi-value { color: #d63939; }
+
+.npsphere-nps-bar {
+    display: flex;
+    height: 1.75rem;
+    border-radius: .5rem;
+    overflow: hidden;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #fff;
+}
+.npsphere-nps-bar span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+}
+.npsphere-bar-detractor { background: #d63939; }
+.npsphere-bar-passive { background: #f59f00; }
+.npsphere-bar-promoter { background: #2fb344; }
+
+.npsphere-formula {
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+    margin: .5rem 0 1.5rem;
+}
+
+.npsphere-results-title {
+    font-size: .8125rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+    margin: 1.5rem 0 .75rem;
+}
+
+.npsphere-result-card { padding: 1.25rem 1.5rem; }
+.npsphere-result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: .875rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-result-head h3 { font-size: .9375rem; font-weight: 600; margin: 0; }
+.npsphere-result-head p { font-size: .8125rem; color: var(--tblr-secondary); margin: .125rem 0 0; }
+.npsphere-answered-badge {
+    flex-shrink: 0;
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    border-radius: 999px;
+    padding: .25rem .75rem;
+    white-space: nowrap;
+}
+
+.npsphere-metric-highlight {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    font-size: .875rem;
+    margin-bottom: 1rem;
+}
+
+.npsphere-dist-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 180px) 1fr minmax(80px, auto);
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .375rem;
+    font-size: .8125rem;
+}
+.npsphere-dist-label { color: var(--tblr-body-color); }
+.npsphere-dist-track {
+    background: var(--tblr-bg-surface-secondary, #f0f2f5);
+    border-radius: 999px;
+    height: .625rem;
+    overflow: hidden;
+}
+.npsphere-dist-track > span {
+    display: block;
+    height: 100%;
+    background: var(--tblr-primary, #206bc4);
+    border-radius: 999px;
+}
+.npsphere-dist-value { text-align: right; color: var(--tblr-secondary); }
+
+.npsphere-note-inline {
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+    margin: .75rem 0 0;
+}
+
+.npsphere-comments {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: .875rem;
+}
+.npsphere-comments li { margin-bottom: .5rem; }
+
+/* Faixa de resumo no topo do formulário da pesquisa */
+.npsphere-summary-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    align-items: stretch;
+    gap: 0;
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+}
+.npsphere-summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+    padding: .25rem 1rem;
+    border-right: 1px solid var(--tblr-border-color, #e6e7e9);
+    text-align: center;
+}
+.npsphere-summary-item:last-child { border-right: none; }
+@media (max-width: 640px) {
+    .npsphere-summary-item {
+        border-right: none;
+        border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+        padding: .75rem 0;
+    }
+    .npsphere-summary-item:last-child { border-bottom: none; }
+}
+.npsphere-summary-label {
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+}
+.npsphere-summary-item strong { font-size: 1.375rem; line-height: 1.1; }
+.npsphere-summary-item strong small { font-size: .875rem; color: var(--tblr-secondary); font-weight: 400; }
+.npsphere-summary-item.npsphere-rating-excellent strong { color: #2fb344; }
+.npsphere-summary-item.npsphere-rating-great strong { color: #4299e1; }
+.npsphere-summary-item.npsphere-rating-ok strong { color: #f59f00; }
+.npsphere-summary-item.npsphere-rating-bad strong { color: #d63939; }
+
+.npsphere-kpi-unit { font-size: .9375rem; color: var(--tblr-secondary); font-weight: 400; }
+
+.npsphere-warn {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    background: rgba(245, 159, 0, .1);
+    border-left: 3px solid #f59f00;
+    border-radius: .375rem;
+    padding: .75rem 1rem;
+    margin: .75rem 0;
+    color: var(--tblr-body-color);
+}
+.npsphere-warn i { flex-shrink: 0; margin-top: .125rem; color: #f59f00; }
+
+/* Página pública de resposta (acesso por link, sem login) */
+.npsphere-public-page {
+    max-width: 680px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+.npsphere-public-card {
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 2rem;
+}
+.npsphere-public-card h1 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    margin: 0 0 .5rem;
+}
+.npsphere-public-intro {
+    color: var(--tblr-secondary);
+    margin-bottom: 1.5rem;
+}
+.npsphere-public-foot {
+    text-align: center;
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+    margin-top: 1rem;
+}
+
+/* Identificação do respondente (link público não anônimo) */
+.npsphere-identity {
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    padding: 1rem 1.25rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+.npsphere-identity legend {
+    font-size: .8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--tblr-secondary);
+    width: auto;
+    padding: 0 .5rem;
+    margin-bottom: 0;
+}
+.npsphere-identity-hint {
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+    margin-bottom: 1rem;
+}
+.npsphere-identity-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+@media (max-width: 640px) {
+    .npsphere-identity-grid { grid-template-columns: 1fr; }
+}
+.npsphere-phone-group { display: flex; gap: .5rem; }
+.npsphere-phone-country { max-width: 13rem; flex-shrink: 0; }
+.npsphere-phone-warn { color: #d63939; font-size: .75rem; }
+
+/* Blocos de informação ao lado dos campos (aproveitam o espaço vazio
+   da segunda coluna, em vez de deixar o texto explicativo espremido
+   embaixo do campo) */
+.npsphere-info {
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    border-left: 3px solid var(--tblr-primary, #206bc4);
+    border-radius: .375rem;
+    padding: .875rem 1rem;
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: var(--tblr-secondary);
+    align-self: start;
+}
+.npsphere-info p { margin: 0 0 .5rem; }
+.npsphere-info p:last-child { margin-bottom: 0; }
+.npsphere-info strong { color: var(--tblr-body-color); }
+
+/* Tabela "Quem respondeu" com filtros */
+.npsphere-respondents { padding: 1.25rem 1.5rem; }
+
+.npsphere-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: .75rem;
+    padding-bottom: 1rem;
+    margin-bottom: .5rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-search {
+    position: relative;
+    flex: 1 1 260px;
+    min-width: 200px;
+}
+.npsphere-search i {
+    position: absolute;
+    left: .75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tblr-secondary);
+    pointer-events: none;
+}
+.npsphere-search input { padding-left: 2.25rem; }
+
+.npsphere-filter-dates { display: flex; gap: .5rem; }
+.npsphere-filter-dates label {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+}
+.npsphere-filter-dates input { min-width: 9rem; }
+
+.npsphere-table-wrap { overflow-x: auto; }
+
+.npsphere-sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.npsphere-sortable i { opacity: .35; font-size: .875rem; }
+.npsphere-sortable:hover i { opacity: .7; }
+.npsphere-sorted-asc i, .npsphere-sorted-desc i { opacity: 1; color: var(--tblr-primary, #206bc4); }
+
+.npsphere-filter-count {
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+    margin: .75rem 0 0;
+}
+
+/* Sub-abas da aba Resultados */
+.npsphere-subtabs {
+    display: flex;
+    gap: .25rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+    margin-bottom: 1.25rem;
+}
+.npsphere-subtab {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: .625rem 1rem;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--tblr-secondary);
+    cursor: pointer;
+    margin-bottom: -1px;
+}
+.npsphere-subtab:hover { color: var(--tblr-body-color); }
+.npsphere-subtab.is-active {
+    color: var(--tblr-primary, #206bc4);
+    border-bottom-color: var(--tblr-primary, #206bc4);
+}
+.npsphere-subtab-count {
+    background: var(--tblr-bg-surface-secondary, #eef0f4);
+    border-radius: 999px;
+    padding: .0625rem .5rem;
+    font-size: .6875rem;
+    font-weight: 600;
+}
+.npsphere-subtab.is-active .npsphere-subtab-count {
+    background: rgba(var(--tblr-primary-rgb, 32, 107, 196), .12);
+    color: var(--tblr-primary, #206bc4);
+}
+
+/* Painel de detalhe de uma resposta */
+.npsphere-detail-panel { margin-top: 1rem; padding: 1.25rem 1.5rem; }
+.npsphere-detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-detail-head h3 { font-size: 1rem; font-weight: 600; margin: 0; }
+.npsphere-detail-head p { font-size: .8125rem; color: var(--tblr-secondary); margin: .25rem 0 0; }
+.npsphere-view-answer.active {
+    background: var(--tblr-primary, #206bc4);
+    color: #fff;
+}
+
+/* Paginação da lista de respondentes */
+.npsphere-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: .75rem;
+}
+.npsphere-pagination .npsphere-filter-count { margin: 0; }
+.npsphere-pager { display: flex; align-items: center; gap: .5rem; }
+.npsphere-per-page {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+    margin: 0;
+}
+.npsphere-per-page select { width: auto; }
+.npsphere-page-info {
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+    min-width: 3.5rem;
+    text-align: center;
+}
+
+/* Detalhe de uma resposta, com o mesmo visual da Visão geral */
+.npsphere-detail-item { margin-bottom: .75rem; }
+.npsphere-detail-item:last-child { margin-bottom: 0; }
+.npsphere-detail-item .npsphere-result-head { margin-bottom: .75rem; padding-bottom: .625rem; }
+
+/* ---- Detalhe de uma resposta: widgets em modo leitura ---- */
+
+/* Bloqueia interação: aqui a resposta é exibida, não editada. Os
+   inputs também recebem "disabled" via JS -- o CSS sozinho não
+   impediria navegação por teclado. */
+.npsphere-readonly {
+    pointer-events: none;
+    user-select: text;
+}
+.npsphere-detail-widget {
+    padding: .25rem 0 .5rem;
+}
+
+/* A opção escolhida ganha destaque; as demais ficam esmaecidas, para
+   a leitura ser imediata ("deu 3 de 5") em vez de exigir procurar qual
+   está marcada. */
+.npsphere-readonly .npsphere-emoticon-option,
+.npsphere-readonly .npsphere-yesno-option,
+.npsphere-readonly .npsphere-choice-option {
+    opacity: .35;
+    transition: none;
+}
+.npsphere-readonly .npsphere-emoticon-option:has(input:checked),
+.npsphere-readonly .npsphere-yesno-option:has(input:checked),
+.npsphere-readonly .npsphere-choice-option:has(input:checked) {
+    opacity: 1;
+}
+.npsphere-readonly .npsphere-nps-option { opacity: .3; }
+.npsphere-readonly .npsphere-nps-option:has(input:checked) { opacity: 1; }
+.npsphere-readonly .npsphere-nps-visual-segment { opacity: .25; }
+.npsphere-readonly input:checked + .npsphere-nps-visual-segment {
+    opacity: 1;
+    transform: scaleY(1.12);
+}
+.npsphere-readonly .npsphere-nps-labels { display: none; }
+.npsphere-readonly .npsphere-star-option i { opacity: .9; }
+
+/* Resposta de texto: destacada como citação */
+.npsphere-detail-text {
+    margin: 0;
+    padding: .75rem 1rem;
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    border-left: 3px solid var(--tblr-primary, #206bc4);
+    border-radius: .375rem;
+    font-size: .9375rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* Espaçamento mais generoso no painel de detalhe */
+.npsphere-detail-item { padding: 1.25rem 1.5rem 1.5rem; }
+.npsphere-detail-item .npsphere-result-head h3 { font-size: .9375rem; }
+.npsphere-detail-panel { padding: 1.5rem; }
+.npsphere-detail-head { margin-bottom: 1.5rem; }
+
+/* Nota da avaliação (NPS individual) */
+.npsphere-score-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: .125rem .5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: .8125rem;
+    color: #fff;
+}
+.npsphere-score-promoter { background: #2fb344; }
+.npsphere-score-passive  { background: #f59f00; }
+.npsphere-score-detractor { background: #d63939; }
+
+.npsphere-filter-score {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+    margin: 0;
+}
+.npsphere-filter-score select { min-width: 9rem; }
+
+/* Nota em destaque no cabeçalho do detalhe */
+.npsphere-answer-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .125rem;
+    padding: .625rem 1.25rem;
+    border-radius: .625rem;
+    margin-left: auto;
+    margin-right: .75rem;
+    color: #fff;
+}
+.npsphere-answer-score.npsphere-score-promoter { background: #2fb344; }
+.npsphere-answer-score.npsphere-score-passive  { background: #f59f00; }
+.npsphere-answer-score.npsphere-score-detractor { background: #d63939; }
+.npsphere-answer-score .npsphere-score-label {
+    font-size: .625rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    opacity: .85;
+}
+.npsphere-answer-score strong { font-size: 1.5rem; line-height: 1; }
+.npsphere-answer-score strong small { font-size: .8125rem; opacity: .8; font-weight: 400; }
+.npsphere-answer-score .npsphere-score-tag {
+    font-size: .6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* Alinhamento da barra de filtros: cada controle é uma coluna com
+   rótulo em cima e campo embaixo, e todos compartilham a mesma linha de
+   base -- sem isso o campo "Nota" (que tem rótulo) descia em relação à
+   busca (que não tem). */
+.npsphere-filter-bar > * { margin-bottom: 0; }
+.npsphere-search { align-self: end; }
+.npsphere-filter-bar .btn { align-self: end; }
+.npsphere-filter-score,
+.npsphere-filter-dates label {
+    justify-content: flex-end;
+}
+.npsphere-filter-dates { align-items: end; }
+
+/* Data em uma linha só: quebrar "04/09/2026" e "21:28" em duas linhas
+   deixava a coluna alta e desalinhada. */
+.npsphere-resp-table td:nth-child(5),
+.npsphere-resp-table th:nth-child(5) { white-space: nowrap; }
+.npsphere-resp-table td { vertical-align: middle; }
+
+/* Botão de exportar */
+.npsphere-export {
+    position: relative;
+    display: inline-block;
+}
+.npsphere-export-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + .25rem);
+    z-index: 20;
+    min-width: 14rem;
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .12);
+    padding: .375rem;
+}
+.npsphere-export-menu[hidden] { display: none; }
+.npsphere-export-menu button {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: .5rem .75rem;
+    border-radius: .375rem;
+    font-size: .875rem;
+    cursor: pointer;
+    color: var(--tblr-body-color);
+}
+.npsphere-export-menu button:hover { background: var(--tblr-bg-surface-secondary, #f5f7fb); }
+.npsphere-export-title {
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+    padding: .5rem .75rem .25rem;
+}
+
+/* Nota da avaliação (NPS individual) */
+.npsphere-score-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: .125rem .5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: .8125rem;
+    color: #fff;
+}
+.npsphere-score-promoter { background: #2fb344; }
+.npsphere-score-passive  { background: #f59f00; }
+.npsphere-score-detractor { background: #d63939; }
+
+.npsphere-filter-score {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+    margin: 0;
+}
+.npsphere-filter-score select { min-width: 9rem; }
+
+/* Nota em destaque no cabeçalho do detalhe */
+.npsphere-answer-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .125rem;
+    padding: .625rem 1.25rem;
+    border-radius: .625rem;
+    margin-left: auto;
+    margin-right: .75rem;
+    color: #fff;
+}
+.npsphere-answer-score.npsphere-score-promoter { background: #2fb344; }
+.npsphere-answer-score.npsphere-score-passive  { background: #f59f00; }
+.npsphere-answer-score.npsphere-score-detractor { background: #d63939; }
+.npsphere-answer-score .npsphere-score-label {
+    font-size: .625rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    opacity: .85;
+}
+.npsphere-answer-score strong { font-size: 1.5rem; line-height: 1; }
+.npsphere-answer-score strong small { font-size: .8125rem; opacity: .8; font-weight: 400; }
+.npsphere-answer-score .npsphere-score-tag {
+    font-size: .6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* Alinhamento da barra de filtros: cada controle é uma coluna com
+   rótulo em cima e campo embaixo, e todos compartilham a mesma linha de
+   base -- sem isso o campo "Nota" (que tem rótulo) descia em relação à
+   busca (que não tem). */
+.npsphere-filter-bar > * { margin-bottom: 0; }
+.npsphere-search { align-self: end; }
+.npsphere-filter-bar .btn { align-self: end; }
+.npsphere-filter-score,
+.npsphere-filter-dates label {
+    justify-content: flex-end;
+}
+.npsphere-filter-dates { align-items: end; }
+
+/* Data em uma linha só: quebrar "04/09/2026" e "21:28" em duas linhas
+   deixava a coluna alta e desalinhada. */
+.npsphere-resp-table td:nth-child(5),
+.npsphere-resp-table th:nth-child(5) { white-space: nowrap; }
+.npsphere-resp-table td { vertical-align: middle; }
+
+/* Botão de exportar */
+.npsphere-export {
+    position: relative;
+    display: inline-block;
+}
+.npsphere-export-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + .25rem);
+    z-index: 20;
+    min-width: 14rem;
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .12);
+    padding: .375rem;
+}
+.npsphere-export-menu[hidden] { display: none; }
+.npsphere-export-menu button {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: .5rem .75rem;
+    border-radius: .375rem;
+    font-size: .875rem;
+    cursor: pointer;
+    color: var(--tblr-body-color);
+}
+.npsphere-export-menu button:hover { background: var(--tblr-bg-surface-secondary, #f5f7fb); }
+.npsphere-export-title {
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+    padding: .5rem .75rem .25rem;
+}
+
+/* Barra superior da aba Resultados: sub-abas + exportar */
+.npsphere-results-bar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+    margin-bottom: 1.25rem;
+}
+.npsphere-results-bar .npsphere-subtabs {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.npsphere-results-bar .npsphere-export { margin-bottom: .5rem; }
+
+/* ============================================================
+   Impressão (PDF)
+   ============================================================
+   O JavaScript clona o conteúdo a imprimir para #npsphere-print-root,
+   filho direto do <body>. Isso resolve o espaço em branco que sobrava
+   no topo: esconder os elementos com visibility:hidden os mantinha
+   ocupando espaço no layout, empurrando o conteúdo para baixo. */
+
+/* Fora da impressão, o container clonado nunca aparece.
+   IMPORTANTE: esta regra precisa vir ANTES do bloco @media print.
+   Se viesse depois, venceria por ordem (mesma especificidade de id) e
+   esconderia o conteúdo também na impressão -- que foi exatamente o
+   bug da v0.28.2: a folha saía em branco. */
+#npsphere-print-root { display: none; }
+
+@page {
+    size: A4;
+    margin: 6mm;
+}
+
+@media print {
+    /* Esconde a página inteira -- display:none NÃO reserva espaço. */
+    body.npsphere-printing > *:not(#npsphere-print-root) {
+        display: none !important;
+    }
+
+    body.npsphere-printing {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff;
+    }
+
+    #npsphere-print-root {
+        display: block !important;
+        margin: 0;
+        padding: 0;
+        /* Reduz proporcionalmente para caber em uma folha A4 */
+        zoom: .72;
+    }
+
+    /* Elementos que não fazem sentido no papel */
+    #npsphere-print-root .npsphere-export,
+    #npsphere-print-root .npsphere-subtabs,
+    #npsphere-print-root .npsphere-filter-bar,
+    #npsphere-print-root .npsphere-pagination,
+    #npsphere-print-root .npsphere-view-answer,
+    #npsphere-print-root .npsphere-print-answer,
+    #npsphere-print-root .npsphere-detail-close { display: none !important; }
+
+    /* Um cartão nunca é partido entre duas páginas */
+    #npsphere-print-root .npsphere-card,
+    #npsphere-print-root .npsphere-result-card,
+    #npsphere-print-root .npsphere-detail-item,
+    #npsphere-print-root .npsphere-kpi { break-inside: avoid; page-break-inside: avoid; }
+
+    /* Compacta o suficiente para caber tudo */
+    #npsphere-print-root .npsphere-result-card,
+    #npsphere-print-root .npsphere-detail-item { padding: .5rem .75rem; margin-bottom: .375rem; }
+    #npsphere-print-root .npsphere-kpis { gap: .375rem; margin-bottom: .5rem; }
+    #npsphere-print-root .npsphere-kpi { padding: .5rem; }
+    #npsphere-print-root .npsphere-kpi-value { font-size: 1.25rem; }
+    #npsphere-print-root .npsphere-results-title { margin: .5rem 0 .375rem; }
+    #npsphere-print-root .npsphere-detail-head { margin-bottom: .625rem; padding-bottom: .5rem; }
+    #npsphere-print-root .npsphere-formula { margin: .375rem 0 .75rem; }
+}
+
+/* Largura das colunas da lista de respostas: a de Nome estava larga
+   demais e espremia "Nota", empurrando a seta de ordenação para baixo
+   do rótulo. */
+/* Larguras fixas foram removidas: a quantidade de colunas varia com o
+   tipo de pesquisa (Entidade e Chamado só existem em alguns casos), e
+   um "nth-child" fixo passaria a apontar para a coluna errada. O
+   navegador distribui melhor do que uma regra que pode desalinhar. */
+.npsphere-resp-table th { white-space: nowrap; }
+
+/* O rótulo e a seta de ordenação sempre lado a lado, nunca empilhados */
+.npsphere-sortable {
+    white-space: nowrap;
+}
+.npsphere-sortable i {
+    display: inline-block;
+    margin-left: .25rem;
+    vertical-align: middle;
+}
+
+/* "Limpar" e "Exportar" alinhados pela base com os demais controles,
+   mantendo o tamanho padrão de botão pequeno do GLPI (sem forçar
+   altura -- foi isso que descaracterizou os dois na v0.28.1). */
+.npsphere-filter-bar #npsphere-resp-clear { align-self: end; }
+
+/* Ações da lista (Ver + download) sempre na mesma linha */
+.npsphere-resp-table td:last-child {
+    white-space: nowrap;
+}
+.npsphere-resp-table th:last-child,
+.npsphere-resp-table td:last-child { width: 12%; }
+.npsphere-resp-table td:last-child .btn { vertical-align: middle; }
+.npsphere-resp-table td:last-child .btn + .btn { margin-left: .25rem; }
+
+/* Público-alvo */
+.npsphere-target-add {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.npsphere-target-add .form-select { max-width: 12rem; }
+.npsphere-target-search {
+    flex: 1;
+    min-width: 16rem;
+}
+/* O dropdown nativo do GLPI (select2) precisa poder ocupar a largura
+   do container, senão fica espremido dentro do flex. */
+.npsphere-target-search .select2-container,
+.npsphere-target-search select { width: 100% !important; }
+
+.npsphere-note-warn {
+    background: rgba(245, 159, 0, .1);
+    border-left: 3px solid #f59f00;
+}
+.npsphere-note-warn i { color: #f59f00; }
+
+/* Minhas pesquisas */
+.npsphere-mysurveys { max-width: 720px; margin: 1rem auto; }
+.npsphere-mysurveys-intro { color: var(--tblr-secondary); font-size: .875rem; }
+.npsphere-survey-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: .75rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, transform .15s ease;
+}
+.npsphere-survey-card:hover {
+    border-color: var(--tblr-primary, #206bc4);
+    transform: translateY(-1px);
+    color: inherit;
+}
+.npsphere-survey-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: .625rem;
+    background: rgba(var(--tblr-primary-rgb, 32, 107, 196), .1);
+    color: var(--tblr-primary, #206bc4);
+    font-size: 1.25rem;
+}
+.npsphere-survey-info { display: flex; flex-direction: column; gap: .125rem; flex: 1; }
+.npsphere-survey-info small { color: var(--tblr-secondary); font-size: .8125rem; }
+.npsphere-survey-deadline { color: #f59f00 !important; }
+.npsphere-survey-go { color: var(--tblr-secondary); }
+
+/* ============================================================
+   Aviso de pesquisa obrigatória (interceptação pós-login)
+   ============================================================ */
+.npsphere-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(24, 36, 51, .55);
+    backdrop-filter: blur(2px);
+}
+.npsphere-gate-box {
+    background: #fff;
+    border-radius: .875rem;
+    box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, .25);
+    padding: 2rem;
+    max-width: 640px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+}
+
+/* O formulário em si é alinhado à esquerda: só o cabeçalho do aviso
+   é centralizado. Perguntas centralizadas ficam difíceis de ler. */
+.npsphere-gate-body {
+    text-align: left;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e6e7e9;
+}
+.npsphere-gate-body .npsphere-question-block:last-of-type {
+    border-bottom: none;
+}
+.npsphere-gate-icon-success {
+    background: rgba(47, 179, 68, .12);
+    color: #2fb344;
+}
+.npsphere-gate-countdown {
+    color: #626976;
+    font-size: .875rem;
+    margin: .5rem 0 0;
+}
+.npsphere-gate-actions { margin-top: 1rem; }
+.npsphere-gate-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    /* Segue a paleta do GLPI: instalações com tema personalizado
+       (vermelho, verde...) tinham aqui um azul destoante. */
+    background: rgba(var(--tblr-primary-rgb, 32, 107, 196), .1);
+    color: var(--tblr-primary, #206bc4);
+    font-size: 1.75rem;
+}
+.npsphere-gate-box h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 .5rem;
+}
+.npsphere-gate-desc {
+    color: #626976;
+    font-size: .9375rem;
+    margin: 0 0 1rem;
+}
+.npsphere-gate-warning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    background: rgba(214, 57, 57, .1);
+    border-radius: .5rem;
+    padding: .75rem 1rem;
+    color: #d63939;
+    font-size: .875rem;
+    font-weight: 500;
+    margin: 0 0 1.25rem;
+}
+.npsphere-gate-actions {
+    display: flex;
+    gap: .5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* No último dia não há saída pelo teclado nem por clique fora:
+   o único caminho é responder. */
+.npsphere-gate-blocking { cursor: not-allowed; }
+.npsphere-gate-blocking .npsphere-gate-box { cursor: auto; }
+
+/* Cabeçalho exclusivo do documento impresso */
+.npsphere-print-title { display: none; }
+
+@media print {
+    #npsphere-print-root .npsphere-print-title {
+        display: block !important;
+        margin-bottom: 1rem;
+        padding-bottom: .75rem;
+        border-bottom: 2px solid var(--tblr-primary, #206bc4);
+    }
+    #npsphere-print-root .npsphere-print-title h1 {
+        font-size: 1.25rem;
+        margin: 0 0 .25rem;
+    }
+    #npsphere-print-root .npsphere-print-title p {
+        margin: 0;
+        font-size: .8125rem;
+        color: #626976;
+    }
+    #npsphere-print-root .npsphere-print-meta { font-size: .75rem; }
+}
+
+/* Instruções de configuração da pesquisa por chamado */
+.npsphere-passos {
+    margin: 0 0 1rem;
+    padding-left: 1.25rem;
+    font-size: .875rem;
+    line-height: 1.6;
+}
+.npsphere-passos li { margin-bottom: .375rem; }
+.npsphere-url-box {
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    padding: .75rem 1rem;
+    overflow-x: auto;
+}
+.npsphere-url-box code {
+    font-size: .8125rem;
+    color: var(--tblr-primary, #206bc4);
+    white-space: nowrap;
+}
+
+.npsphere-ticket-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-ticket-head h3 { font-size: 1rem; font-weight: 600; margin: 0; }
+.npsphere-ticket-head p { font-size: .8125rem; color: var(--tblr-secondary); margin: .125rem 0 0; }
+.npsphere-ticket-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: .625rem;
+    background: rgba(var(--tblr-primary-rgb, 32, 107, 196), .1);
+    color: var(--tblr-primary, #206bc4);
+    font-size: 1.25rem;
+}
+
+/* Pesquisa embutida no chamado (iframe isolado) */
+.npsphere-ticket-frame {
+    display: block;
+    width: 100%;
+    border: 0;
+    overflow: hidden;
+}
+/* Dentro do iframe a página não tem o container do GLPI */
+body.npsphere-embed .npsphere-answer-layout,
+body.npsphere-embed .npsphere-card { margin: 0; }
+
+/* Página embutida no chamado: sem fundo próprio, sem margens do tema
+   e com largura limitada -- acompanhando a leitura da tela cheia. */
+body.npsphere-embed,
+body.npsphere-embed #npsphere-embed-root { background: transparent; }
+body.npsphere-embed #npsphere-embed-root {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+body.npsphere-embed .npsphere-answer-page { padding: 0; margin: 0; }
+
+/* O cartão MANTÉM contorno: dentro do chamado, sem ele a pesquisa se
+   mistura à conversa e fica "solta" na página. É o mesmo enquadramento
+   das demais telas do plugin. */
+body.npsphere-embed .npsphere-answer-card {
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    box-shadow: 0 .125rem .5rem rgba(0, 0, 0, .04);
+}
+body.npsphere-embed .npsphere-answer-card > .card-body { padding: 1.5rem; }
+
+/* Cabeçalho com ícone, igual ao das outras telas */
+body.npsphere-embed .npsphere-ticket-head { margin-bottom: 1.25rem; }
+
+/* Confirmação centralizada verticalmente no espaço disponível */
+body.npsphere-embed .npsphere-answer-card.text-center { padding: 1.5rem 0; }
+
+/* ============================================================
+   Seletor de entidades
+   ============================================================
+   Mesmo componente na Visão geral e nas Respostas, seguindo o
+   visual do menu "Exportar": botão discreto que abre um painel. */
+.npsphere-picker {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: .25rem;
+    margin-bottom: 1rem;
+}
+.npsphere-picker-caption {
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 600;
+    color: var(--tblr-secondary);
+}
+.npsphere-picker-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    padding: .4375rem .75rem;
+    font-size: .875rem;
+    color: var(--tblr-body-color);
+    cursor: pointer;
+    min-width: 14rem;
+    text-align: left;
+}
+.npsphere-picker-toggle:hover { border-color: var(--tblr-primary, #206bc4); }
+.npsphere-picker-label { flex: 1; }
+
+/* Estado ativo: o filtro está restringindo algo -- precisa ser
+   percebido sem abrir o painel. */
+.npsphere-picker-ativo .npsphere-picker-toggle {
+    border-color: var(--tblr-primary, #206bc4);
+    color: var(--tblr-primary, #206bc4);
+    font-weight: 600;
+}
+.npsphere-picker-carregando .npsphere-picker-toggle { opacity: .6; cursor: progress; }
+
+.npsphere-picker-menu {
+    position: absolute;
+    left: 0;
+    top: calc(100% + .25rem);
+    z-index: 30;
+    min-width: 16rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    background: var(--tblr-card-bg, #fff);
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .12);
+    padding: .375rem;
+}
+.npsphere-picker-menu[hidden] { display: none; }
+
+.npsphere-picker-item {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4375rem .625rem;
+    border-radius: .375rem;
+    font-size: .875rem;
+    cursor: pointer;
+    margin: 0;
+}
+.npsphere-picker-item:hover { background: var(--tblr-bg-surface-secondary, #f5f7fb); }
+.npsphere-picker-item input { margin: 0; flex-shrink: 0; }
+.npsphere-picker-all { font-weight: 600; }
+.npsphere-picker-sep {
+    height: 1px;
+    background: var(--tblr-border-color, #e6e7e9);
+    margin: .25rem 0;
+}
+.npsphere-picker-foot {
+    padding: .5rem .625rem .25rem;
+    font-size: .6875rem;
+    color: var(--tblr-secondary);
+    border-top: 1px solid var(--tblr-border-color, #e6e7e9);
+    margin-top: .25rem;
+}
+
+/* Na barra de filtros das Respostas o seletor alinha com os demais */
+.npsphere-filter-bar .npsphere-picker { margin-bottom: 0; }
+
+/* ============================================================
+   Painel consolidado (Fase 10)
+   ============================================================
+   Espaçamento UNIFORME: todas as seções são filhas diretas de um
+   container em coluna, com um único "gap". Antes cada bloco trazia a
+   própria margem, e o espaço entre eles variava de seção para seção. */
+.npsphere-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: .5rem 0;
+}
+.npsphere-dashboard > .npsphere-card,
+.npsphere-dashboard > .npsphere-kpis,
+.npsphere-dashboard > .npsphere-dash-graficos,
+.npsphere-dashboard > .npsphere-empty {
+    margin: 0;
+}
+.npsphere-dashboard .npsphere-card-head { margin-bottom: 1rem; }
+
+/* Filtros em linha, alinhados pela base */
+.npsphere-dash-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem;
+}
+.npsphere-dash-filtros .npsphere-picker { margin-bottom: 0; }
+
+/* Dois gráficos lado a lado; empilham em telas estreitas */
+.npsphere-dash-graficos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 1.25rem;
+}
+.npsphere-dash-graficos > .npsphere-card { margin: 0; }
+
+/* --- Rosca --- */
+.npsphere-dash-rosca {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+.npsphere-dash-svg {
+    width: 9rem;
+    height: 9rem;
+    transform: rotate(-90deg); /* começa no topo, e não à direita */
+    flex-shrink: 0;
+}
+.npsphere-dash-fundo {
+    fill: none;
+    stroke: var(--tblr-bg-surface-secondary, #eef0f4);
+    stroke-width: 14;
+}
+.npsphere-dash-fatia { fill: none; stroke-width: 14; }
+.npsphere-dash-promotor { stroke: #2fb344; }
+.npsphere-dash-neutro   { stroke: #f59f00; }
+.npsphere-dash-detrator { stroke: #d63939; }
+
+/* O texto do centro precisa "desfazer" a rotação do SVG */
+.npsphere-dash-centro-valor,
+.npsphere-dash-centro-rotulo {
+    text-anchor: middle;
+    transform: rotate(90deg);
+    transform-origin: 50px 50px;
+    fill: var(--tblr-body-color, #1d273b);
+}
+.npsphere-dash-centro-valor { font-size: 16px; font-weight: 700; }
+.npsphere-dash-centro-rotulo { font-size: 7px; fill: var(--tblr-secondary, #667382); }
+
+.npsphere-dash-legenda {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    font-size: .875rem;
+}
+.npsphere-dash-legenda li { display: flex; align-items: center; gap: .5rem; }
+.npsphere-dash-legenda small { color: var(--tblr-secondary); }
+.npsphere-dash-ponto {
+    display: inline-block;
+    width: .75rem;
+    height: .75rem;
+    border-radius: 50%;
+}
+.npsphere-dash-ponto.npsphere-dash-promotor { background: #2fb344; }
+.npsphere-dash-ponto.npsphere-dash-neutro   { background: #f59f00; }
+.npsphere-dash-ponto.npsphere-dash-detrator { background: #d63939; }
+
+/* --- Evolução --- */
+.npsphere-dash-evolucao {
+    display: flex;
+    align-items: flex-end;
+    gap: .5rem;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+}
+.npsphere-dash-coluna {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    min-width: 3.25rem;
+    flex: 1;
+}
+.npsphere-dash-trilho {
+    position: relative;
+    width: 100%;
+    height: 7rem;
+    background: var(--tblr-bg-surface-secondary, #eef0f4);
+    border-radius: .25rem;
+    display: flex;
+    align-items: flex-end;
+}
+/* Linha do zero: sem ela, NPS negativo se confunde com um baixo */
+.npsphere-dash-trilho::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 1px dashed var(--tblr-border-color, #d0d3d8);
+}
+.npsphere-dash-preenchimento { width: 100%; border-radius: .25rem; min-height: 2px; }
+.npsphere-dash-valor { font-size: .75rem; font-weight: 600; }
+.npsphere-dash-periodo { font-size: .6875rem; color: var(--tblr-secondary); }
+
+/* --- Tabelas de recorte --- */
+.npsphere-dash-table-wrap { overflow-x: auto; }
+.npsphere-dash-table td { vertical-align: middle; }
+.npsphere-dash-table th { white-space: nowrap; }
+
+/* Cinco filtros + datas: quebram linha em telas menores, e o Exportar
+   fica sempre na ponta direita. */
+.npsphere-dash-filtros .npsphere-picker-toggle { min-width: 11rem; }
+.npsphere-dash-acoes { margin-left: auto; align-self: flex-end; }
+
+@media print {
+    #npsphere-print-root .npsphere-dash-filtros,
+    #npsphere-print-root .npsphere-dash-acoes,
+    #npsphere-print-root .npsphere-picker-menu { display: none !important; }
+    #npsphere-print-root .npsphere-dash-graficos { grid-template-columns: 1fr 1fr; }
+}
+
+/* Mês sem resposta: presente no eixo, mas visivelmente vazio */
+.npsphere-dash-coluna-vazia .npsphere-dash-valor { color: var(--tblr-secondary); font-weight: 400; }
+.npsphere-dash-coluna-vazia .npsphere-dash-trilho { opacity: .5; }
+
+/* Linhas de recorte clicáveis */
+.npsphere-dash-linha { cursor: pointer; }
+.npsphere-dash-linha:hover td { background: var(--tblr-bg-surface-secondary, #f5f7fb); }
+
+/* Amostra pequena: esmaecida e com selo -- presente, mas sem o mesmo
+   peso visual de um grupo com volume */
+.npsphere-dash-amostra td { color: var(--tblr-secondary); }
+.npsphere-dash-ir {
+    margin-left: .375rem;
+    color: var(--tblr-primary, #206bc4);
+    text-decoration: none;
+}
+
+/* Variação em relação ao período anterior */
+.npsphere-var { font-size: .8125rem; font-weight: 600; }
+.npsphere-var-sobe { color: #2fb344; }
+.npsphere-var-desce { color: #d63939; }
+.npsphere-var-igual { color: var(--tblr-secondary); font-weight: 400; }
+.npsphere-dash-comparacao { margin: -.5rem 0 0; }
+
+/* Edição do e-mail do convite */
+.npsphere-mail-body { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8125rem; }
+.npsphere-mail-marcadores { margin: .75rem 0; }
+.npsphere-mail-marcadores strong { font-size: .8125rem; }
+.npsphere-mail-marcadores p { font-size: .75rem; color: var(--tblr-secondary); margin: .125rem 0 .5rem; }
+.npsphere-mail-tag {
+    display: inline-block;
+    margin: 0 .25rem .25rem 0;
+    padding: .175rem .5rem;
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .375rem;
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .75rem;
+    color: var(--tblr-primary, #206bc4);
+    cursor: pointer;
+}
+.npsphere-mail-tag:hover { border-color: var(--tblr-primary, #206bc4); }
+
+/* Envio manual dos convites */
+.npsphere-mail-envio {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-top: .75rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--tblr-border-color, #e6e7e9);
+}
+.npsphere-mail-envio p {
+    width: 100%;
+    margin: 0;
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+}
+.npsphere-mail-resultado { font-size: .8125rem; }
+
+/* Aba Template: cartões empilhados com espaçamento igual */
+.npsphere-template {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: .5rem 0;
+}
+.npsphere-template > .npsphere-card { margin: 0; }
+
+.npsphere-template-acoes {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+.npsphere-template-aviso {
+    width: 100%;
+    margin: 0;
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+}
+
+/* Aba Template: sub-abas Modelo / Variáveis */
+.npsphere-template-root .npsphere-subtabs { margin-bottom: .75rem; }
+
+/* Destinatários: botões do CSV no canto direito do cabeçalho */
+.npsphere-csv-barra {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-left: auto;
+}
+.npsphere-csv-resultado { font-size: .8125rem; }
+.npsphere-csv-resultado:not(:empty) { margin: -.5rem 0 .75rem; }
+.npsphere-csv-total { font-weight: 600; color: var(--tblr-body-color); }
+
+/* Mensagem: cabeçalho com os ícones HTML5 / código */
+.npsphere-msg-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+.npsphere-msg-modos {
+    display: inline-flex;
+    align-items: center;
+    gap: .125rem;
+    padding: .125rem;
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    background: var(--tblr-bg-surface, #fff);
+}
+.npsphere-msg-modo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: .375rem;
+    background: transparent;
+    color: var(--tblr-secondary);
+    font-size: 1.125rem;
+    cursor: pointer;
+}
+.npsphere-msg-modo:hover { color: var(--tblr-body-color); background: var(--tblr-bg-surface-secondary, #f5f7fb); }
+.npsphere-msg-modo.is-active {
+    color: var(--tblr-primary, #206bc4);
+    background: rgba(32, 107, 196, .1);
+}
+.npsphere-msg-sep {
+    width: 1px;
+    height: 1.25rem;
+    margin: 0 .25rem;
+    background: var(--tblr-border-color, #e6e7e9);
+}
+
+/* Prévia formatada (iframe isolado do CSS do GLPI) */
+.npsphere-msg-previa {
+    position: relative;
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    background: #f5f7fb;
+    overflow: hidden;
+}
+.npsphere-msg-previa iframe {
+    display: block;
+    width: 100%;
+    min-height: 200px;
+    border: 0;
+}
+.npsphere-msg-carregando {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    display: none;
+    color: var(--tblr-secondary);
+    font-size: 1.125rem;
+}
+.npsphere-msg-previa.is-loading .npsphere-msg-carregando { display: block; }
+.npsphere-msg-carregando .ti-loader-2 { display: inline-block; animation: npsphere-girar 1s linear infinite; }
+@keyframes npsphere-girar { to { transform: rotate(360deg); } }
+.npsphere-msg-lado > small {
+    display: block;
+    margin-top: .375rem;
+    font-size: .75rem;
+    color: var(--tblr-secondary);
+}
+
+/* Sub-aba Variáveis */
+.npsphere-vars code { white-space: nowrap; }
+.npsphere-vars-exemplo { word-break: break-word; color: var(--tblr-secondary); }
+.npsphere-template-aviso i { margin-right: .25rem; }
+
+/* Aviso das variáveis de pergunta (cartão E-mail da aba Template) */
+.npsphere-note-aviso {
+    background: rgba(245, 159, 0, .08);
+    border: 1px solid rgba(245, 159, 0, .35);
+    color: var(--tblr-body-color);
+}
+.npsphere-note-aviso > i { color: #f59f00; }
+.npsphere-note-aviso p { margin: .375rem 0 0; }
+.npsphere-template-root .npsphere-note + .npsphere-note { margin-top: .75rem; }
+.npsphere-vars + .npsphere-note,
+.table-responsive + .npsphere-note { margin-top: .75rem; }
+
+/* Mensagem lado a lado: prévia HTML5 à esquerda, código à direita */
+.npsphere-msg-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+.npsphere-msg-lado { min-width: 0; display: flex; flex-direction: column; }
+.npsphere-msg-rotulo {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    margin-bottom: .375rem;
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: var(--tblr-secondary);
+}
+.npsphere-msg-rotulo i { font-size: 1rem; color: var(--tblr-primary, #206bc4); }
+.npsphere-msg-split .npsphere-mail-body { min-height: 360px; resize: vertical; }
+.npsphere-msg-split .npsphere-msg-previa iframe { min-height: 360px; }
+.npsphere-msg-restaurar { border: 1px solid var(--tblr-border-color, #e6e7e9); }
+@media (max-width: 991.98px) {
+    .npsphere-msg-split { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767.98px) {
+    .npsphere-card-head { flex-wrap: wrap; }
+    .npsphere-csv-barra { width: 100%; justify-content: flex-start; margin-left: 0; }
+}
+
+/* Destinatários: Nome + E-mail + [+] e a lista editável */
+.npsphere-dest-novo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) auto;
+    gap: .5rem;
+    align-items: center;
+}
+.npsphere-dest-mais { width: 2.5rem; padding-left: 0; padding-right: 0; }
+.npsphere-dest-mais i { margin: 0; font-size: 1.125rem; }
+.npsphere-dest-aviso { min-height: 1.25rem; margin-top: .25rem; font-size: .75rem; color: var(--tblr-danger, #d63939); }
+.npsphere-dest-caixa {
+    max-height: 340px;
+    overflow-y: auto;
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+}
+.npsphere-dest-tabela { width: 100%; margin: 0; }
+.npsphere-dest-tabela thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--tblr-bg-surface-secondary, #f5f7fb);
+}
+.npsphere-dest-tabela td { padding-top: .25rem; padding-bottom: .25rem; }
+.npsphere-dest-tabela .form-control-sm { border-color: transparent; background: transparent; }
+.npsphere-dest-tabela .form-control-sm:hover { border-color: var(--tblr-border-color, #e6e7e9); }
+.npsphere-dest-tabela .form-control-sm:focus { border-color: var(--tblr-primary, #206bc4); background: var(--tblr-bg-surface, #fff); }
+.npsphere-dest-tabela .form-control-sm.is-invalid { border-color: var(--tblr-danger, #d63939); }
+.npsphere-dest-n { width: 2.5rem; text-align: right; color: var(--tblr-secondary); font-size: .75rem; }
+.npsphere-dest-acao { width: 2.75rem; text-align: center; }
+.npsphere-dest-remover { padding: .125rem .375rem; }
+.npsphere-dest-vazio {
+    padding: 1.25rem 1rem;
+    text-align: center;
+    font-size: .8125rem;
+    color: var(--tblr-secondary);
+}
+.npsphere-dest-rodape { display: block; margin-top: .5rem; font-size: .75rem; color: var(--tblr-secondary); }
+@media (max-width: 575.98px) {
+    .npsphere-dest-novo { grid-template-columns: minmax(0, 1fr) auto; }
+    .npsphere-dest-novo #npsphere-dest-nome { grid-column: 1 / -1; }
+}
+
+/* Confirmação da opção clicada no e-mail (página pública e interna) */
+.npsphere-um-clique .ti-loader-2 { display: inline-block; animation: npsphere-girar 1s linear infinite; }
+.npsphere-um-clique-ok { display: block; }
+.npsphere-obrigado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem .5rem .75rem;
+}
+.npsphere-obrigado-pesquisa {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--tblr-secondary, #667382);
+    margin-bottom: 1.25rem;
+}
+.npsphere-obrigado-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: rgba(47, 179, 68, .12);
+    color: var(--tblr-success, #2fb344);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    animation: npsphere-surgir .35s ease-out;
+}
+@keyframes npsphere-surgir {
+    from { transform: scale(.6); opacity: 0; }
+    to   { transform: scale(1);  opacity: 1; }
+}
+.npsphere-obrigado h2 {
+    margin: 0 0 .25rem;
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+.npsphere-obrigado-sub {
+    margin: 0 0 1.25rem;
+    color: var(--tblr-secondary, #667382);
+}
+.npsphere-obrigado-resposta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+    min-width: 12rem;
+    max-width: 100%;
+    padding: .875rem 1.5rem;
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .75rem;
+    background: var(--tblr-bg-surface-secondary, #f6f8fb);
+    margin-bottom: 1.25rem;
+}
+.npsphere-obrigado-pergunta {
+    font-size: .8125rem;
+    color: var(--tblr-secondary, #667382);
+}
+.npsphere-obrigado-valor {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--tblr-primary, #206bc4);
+    word-break: break-word;
+}
+.npsphere-obrigado-dica {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--tblr-secondary, #667382);
+}
+@media (prefers-reduced-motion: reduce) {
+    .npsphere-obrigado-icone { animation: none; }
+}
+
+/* Template da pesquisa interna: resumo de quem recebe */
+.npsphere-publico-numeros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+.npsphere-publico-numero {
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    background: var(--tblr-bg-surface-secondary, #f6f8fb);
+}
+.npsphere-publico-numero strong { font-size: 1.5rem; line-height: 1.2; }
+.npsphere-publico-numero span { font-size: .8125rem; color: var(--tblr-secondary, #667382); }
+.npsphere-publico-numero.is-recebe strong { color: var(--tblr-primary, #206bc4); }
+.npsphere-publico-numero.is-respondeu strong { color: var(--tblr-success, #2fb344); }
+.npsphere-publico-numero.is-sem-email strong { color: var(--tblr-warning, #f59f00); }
+.npsphere-situacao { display: inline-flex; align-items: center; gap: .25rem; font-size: .8125rem; white-space: nowrap; }
+.npsphere-situacao.is-recebe { color: var(--tblr-primary, #206bc4); }
+.npsphere-situacao.is-respondeu { color: var(--tblr-success, #2fb344); }
+.npsphere-situacao.is-sem-email { color: var(--tblr-warning, #f59f00); }
+.npsphere-dest-tabela tr.npsphere-publico-respondeu td,
+.npsphere-dest-tabela tr.npsphere-publico-sem_email td { color: var(--tblr-secondary, #667382); }
+.npsphere-dest-tabela td { padding-left: .75rem; }
+
+/* ------------------------------------------------------------------
+   Sub-aba "Lembrete" (v0.58.0)
+   ------------------------------------------------------------------ */
+.npsphere-lembrete-chave { margin: .25rem 0 1rem; }
+.npsphere-lembrete-campos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.25rem;
+    transition: opacity .15s;
+}
+.npsphere-lembrete-campos.is-desligado { opacity: .5; }
+.npsphere-lembrete-numero { max-width: 22rem; }
+.npsphere-lembrete-numero .form-control { max-width: 6rem; }
+.npsphere-lembrete-cabem { display: inline; }
+.npsphere-template .npsphere-note + .npsphere-publico-numeros,
+.npsphere-lembrete-campos + .npsphere-publico-numeros { margin-top: .75rem; }
+@media (max-width: 720px) {
+    .npsphere-lembrete-campos { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ------------------------------------------------------------------
+   Sub-aba "Relatório" (v0.59.0)
+   ------------------------------------------------------------------ */
+.npsphere-relatorio-campos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.25rem;
+}
+.npsphere-relatorio-destinos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.25rem;
+}
+.npsphere-relatorio-campos,
+.npsphere-relatorio-destinos { transition: opacity .15s; }
+.npsphere-relatorio-campos.is-desligado,
+.npsphere-relatorio-destinos.is-desligado { opacity: .5; }
+.npsphere-relatorio-destinos + .npsphere-publico-numeros { margin-top: .75rem; }
+.npsphere-relatorio-previa iframe { width: 100%; min-height: 240px; border: 0; display: block; }
+@media (max-width: 900px) {
+    .npsphere-relatorio-campos,
+    .npsphere-relatorio-destinos { grid-template-columns: minmax(0, 1fr); }
+}
+.npsphere-relatorio-ultimo { font-size: 1rem !important; }
+.npsphere-aviso-regra { margin: .375rem 0 0; color: var(--tblr-secondary, #667382); }
+.npsphere-previa-gestor { margin-top: .75rem; }
+.npsphere-previa-bloco { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--tblr-border-color, #e6e7e9); }
+.npsphere-previa-bloco[hidden] { display: none !important; }
+.npsphere-previa-titulo { display: flex; gap: .5rem; align-items: flex-start; margin-bottom: .5rem; }
+.npsphere-previa-titulo > i { font-size: 1.125rem; color: var(--tblr-primary, #206bc4); margin-top: .1rem; }
+.npsphere-previa-titulo strong { display: block; }
+.npsphere-previa-titulo span { display: block; font-size: .8125rem; color: var(--tblr-secondary, #667382); }
+.npsphere-previa-bloco .npsphere-previa-gestor { margin-top: 0; }
+.npsphere-gestor-corpo[hidden] { display: none !important; }
+.npsphere-gestor-email { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--tblr-border-color, #e6e7e9); }
+.npsphere-mail-tags-lista { display: grid; gap: .25rem; }
+.npsphere-mail-tag-item { display: flex; gap: .5rem; align-items: baseline; font-size: .8125rem; color: var(--tblr-secondary, #667382); }
+.npsphere-mail-tag-item .npsphere-mail-tag { flex: 0 0 auto; }
+
+/* Sub-aba Variáveis (v0.61.3): grupos recolhidos e colunas alinhadas */
+.npsphere-vars { table-layout: fixed; width: 100%; }
+.npsphere-vars .npsphere-vars-c1 { width: 30%; }
+.npsphere-vars .npsphere-vars-c2 { width: 40%; }
+.npsphere-vars .npsphere-vars-c3 { width: 30%; }
+.npsphere-vars th, .npsphere-vars td { text-align: left; vertical-align: top; padding-left: .75rem; padding-right: .75rem; }
+.npsphere-vars code { white-space: normal; word-break: break-all; }
+.npsphere-vars-grupo {
+    border: 1px solid var(--tblr-border-color, #e6e7e9);
+    border-radius: .5rem;
+    margin-top: .75rem;
+    background: var(--tblr-bg-surface, #fff);
+}
+.npsphere-vars-grupo > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .625rem .875rem;
+    font-weight: 600;
+    user-select: none;
+}
+.npsphere-vars-grupo > summary::-webkit-details-marker { display: none; }
+.npsphere-vars-grupo > summary:hover { background: var(--tblr-bg-surface-secondary, #f5f7fb); border-radius: .5rem; }
+.npsphere-vars-grupo > summary i { color: var(--tblr-primary, #206bc4); }
+.npsphere-vars-seta { transition: transform .15s; }
+.npsphere-vars-grupo[open] > summary .npsphere-vars-seta { transform: rotate(90deg); }
+.npsphere-vars-qtd {
+    margin-left: auto;
+    font-weight: 400;
+    font-size: .8125rem;
+    color: var(--tblr-secondary, #667382);
+}
+.npsphere-vars-grupo > .table-responsive,
+.npsphere-vars-grupo > .npsphere-note { margin: 0 .875rem .875rem; }
+.npsphere-vars-grupo > .table-responsive { border-top: 1px solid var(--tblr-border-color, #e6e7e9); }
+.npsphere-convite-espera { margin-top: .75rem; max-width: 34rem; }
+
+/* ---------------------------------------------- v0.64.0: ⓘ e "Como funciona" */
+/* Ajuda do campo num balão: só aparece ao passar o mouse ou focar
+   (teclado/toque), para a tela mostrar só o essencial. */
+.npsphere-dica {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: .2rem;
+    font-size: .9375rem;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--tblr-secondary, #667382);
+    cursor: help;
+    border-radius: 50%;
+}
+.npsphere-dica:hover,
+.npsphere-dica:focus { color: var(--tblr-primary, #206bc4); outline: none; }
+.npsphere-dica:focus-visible { box-shadow: 0 0 0 2px rgba(32, 107, 196, .35); }
+.npsphere-dica::after {
+    content: attr(data-info);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 300px;
+    padding: .5rem .65rem;
+    border-radius: .375rem;
+    background: #1f2937;
+    color: #fff;
+    font-family: inherit;
+    font-size: .75rem;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-align: left;
+    text-transform: none;
+    white-space: normal;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+    z-index: 1080;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .12s ease;
+}
+.npsphere-dica:hover::after,
+.npsphere-dica:focus::after { opacity: 1; visibility: visible; }
+@media (max-width: 576px) {
+    .npsphere-dica::after { max-width: 220px; }
+}
+
+/* Link discreto "Como funciona", ao lado do título do quadro. */
+.npsphere-como {
+    display: inline-flex;
+    align-items: center;
+    gap: .2rem;
+    margin-left: .35rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: .75rem;
+    font-weight: 400;
+    color: var(--tblr-secondary, #667382);
+    vertical-align: middle;
+    cursor: pointer;
+}
+.npsphere-como:hover,
+.npsphere-como:focus-visible { color: var(--tblr-primary, #206bc4); text-decoration: underline; }
+.npsphere-note .npsphere-como { margin-left: .15rem; font-size: inherit; color: inherit; text-decoration: underline; }
+
+/* Sub-aba Ajuda: texto dos assuntos, no mesmo recolhido das variáveis. */
+.npsphere-ajuda-lista {
+    margin: 0 .875rem .875rem;
+    padding: .625rem 0 0 1.25rem;
+    border-top: 1px solid var(--tblr-border-color, #e6e7e9);
+    font-size: .8125rem;
+    line-height: 1.5;
+}
+.npsphere-ajuda-lista li + li { margin-top: .35rem; }
+.npsphere-vars-grupo > .table-responsive + .npsphere-ajuda-lista { border-top: 0; padding-top: .25rem; }
+.npsphere-ajuda-grupo { scroll-margin-top: 5rem; }
+.npsphere-ajuda-grupo.is-destaque { box-shadow: 0 0 0 3px rgba(32, 107, 196, .3); transition: box-shadow .3s; }
+
+.npsphere-mail-marcadores > .npsphere-dica { margin-left: .1rem; }
+.npsphere-template-acoes > .npsphere-dica { align-self: center; }

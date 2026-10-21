@@ -1,0 +1,375 @@
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+<div class="npsphere-question-editor">
+    <div class="npsphere-form-errors" id="npsphere-form-errors" style="display:none"></div>
+
+    <form method="post" action="{{ form_url }}" name="npsphere_question_form" id="npsphere-question-form">
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="surveys_id" value="{{ surveys_id }}">
+        {% if not is_new %}
+            <input type="hidden" name="id" value="{{ item.fields['id'] }}">
+        {% endif %}
+
+        <div class="npsphere-form-section">
+            <h6 class="npsphere-form-section-title">{{ __('Conteúdo', 'npsphere') }}</h6>
+            {{ fields.textField('name', item.fields['name'], __('Pergunta', 'npsphere')) }}
+            {{ fields.textareaField('description', item.fields['description'], __('Texto de apoio (opcional)', 'npsphere')) }}
+        </div>
+
+        <div class="npsphere-form-section">
+            <h6 class="npsphere-form-section-title">{{ __('Comportamento', 'npsphere') }}</h6>
+            {{ fields.dropdownArrayField(
+                'type',
+                item.fields['type'],
+                types,
+                __('Tipo de pergunta', 'npsphere')
+            ) }}
+            {{ fields.dropdownYesNo('is_required', item.fields['is_required'], __('Obrigatória', 'npsphere')) }}
+            {{ fields.dropdownYesNo('is_active', item.fields['is_active'], __('Ativa')) }}
+
+            <div class="form-text mb-0" id="npsphere-nps-hint" style="{{ item.fields['type'] == 'nps' ? '' : 'display:none' }}">
+                <i class="ti ti-gauge"></i>
+                {{ __('Esta pergunta entrará automaticamente no cálculo do NPS da pesquisa.', 'npsphere') }}
+            </div>
+        </div>
+
+        {# Cada bloco abaixo só existe para UM tipo de pergunta. O JS
+           mostra/esconde E desabilita os campos dos blocos não
+           selecionados -- desabilitar é essencial: um <input> com
+           display:none ainda É enviado no submit do formulário se não
+           estiver desabilitado, o que causava campos de tipos
+           diferentes (ex.: Múltipla escolha e Múltiplas opções, que
+           usam o mesmo nome de campo) se misturarem no envio. #}
+        <div class="npsphere-form-section" id="npsphere-type-config">
+            {% for type_key, html in type_forms %}
+                <div class="npsphere-type-config-block" data-type="{{ type_key }}"
+                     style="{{ type_key == item.fields['type'] ? '' : 'display:none' }}">
+                    {{ html|raw }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="npsphere-form-section">
+            <h6 class="npsphere-form-section-title">
+                <i class="ti ti-git-branch"></i>
+                {{ __('Exibição condicional', 'npsphere') }}
+            </h6>
+
+            {% if trigger_candidates is empty %}
+                <div class="form-text">
+                    {{ __('Esta é a primeira pergunta da pesquisa, então não há resposta anterior na qual se basear. Adicione outras perguntas antes desta para poder condicioná-la.', 'npsphere') }}
+                </div>
+            {% else %}
+                <div class="form-text mb-2">
+                    {{ __('Deixe "Sempre exibir" para a pergunta aparecer para todos. Ou escolha uma pergunta anterior para exibi-la só em certas respostas — por exemplo, pedir o motivo apenas quando a nota for baixa.', 'npsphere') }}
+                </div>
+                <div class="npsphere-condition-row">
+                    <span class="npsphere-condition-label">{{ __('Exibir se', 'npsphere') }}</span>
+                    <select name="condition_questions_id" class="form-select">
+                        <option value="0">{{ __('— Sempre exibir —', 'npsphere') }}</option>
+                        {% for qid, qname in trigger_candidates %}
+                            <option value="{{ qid }}"{{ item.fields['condition_questions_id'] == qid ? ' selected' : '' }}>{{ qname }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="condition_operator" class="form-select">
+                        {% for op, label in operators %}
+                            <option value="{{ op }}"{{ item.fields['condition_operator'] == op ? ' selected' : '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span id="npsphere-condition-value-slot">
+                        <input type="text" name="condition_value" class="form-control"
+                               value="{{ item.fields['condition_value'] }}"
+                               placeholder="{{ __('valor', 'npsphere') }}">
+                    </span>
+                </div>
+                <div class="form-text" id="npsphere-condition-hint"></div>
+                <script type="application/json" id="npsphere-trigger-choices">{{ trigger_choices|json_encode|raw }}</script>
+            {% endif %}
+        </div>
+
+        <div class="npsphere-form-section npsphere-form-section-last">
+            <h6 class="npsphere-form-section-title">
+                <i class="ti ti-eye"></i>
+                {{ __('Visualização', 'npsphere') }}
+            </h6>
+            <div class="npsphere-preview-screen">
+                <div class="npsphere-question-block" id="npsphere-preview-block">
+                    <label class="npsphere-question-label" id="npsphere-preview-name">
+                        {{ item.fields['name']|default(__('Sua pergunta aparecerá aqui', 'npsphere')) }}
+                    </label>
+                    <div class="npsphere-question-field" id="npsphere-preview-field">
+                        <em class="text-muted">{{ __('Preencha os campos acima para ver como a pergunta ficará para o respondente.', 'npsphere') }}</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if not can_edit|default(true) %}
+            <div class="npsphere-note npsphere-note-info">
+                <i class="ti ti-eye"></i>
+                <span>{{ __('Você tem permissão apenas para visualizar esta pergunta.', 'npsphere') }}</span>
+            </div>
+        {% endif %}
+
+        <div class="npsphere-form-actions">
+            <button type="button" class="btn btn-outline-secondary npsphere-cancel-form">
+                {{ __('Cancelar', 'npsphere') }}
+            </button>
+            {% if can_edit|default(true) %}
+                <button type="submit" class="btn btn-primary" name="{{ is_new ? 'add' : 'update' }}" value="1">
+                    <i class="ti ti-device-floppy"></i>
+                    <span>{{ _x('button', 'Save') }}</span>
+                </button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+(function () {
+    var form = document.getElementById('npsphere-question-form');
+    if (!form || form.dataset.npsphereInit === '1') {
+        return;
+    }
+    form.dataset.npsphereInit = '1';
+
+    // Modo leitura: desabilita TODOS os campos. Esconder só o botão de
+    // salvar deixaria o formulário com aparência editável -- e o
+    // usuário só descobriria a falta de permissão ao tentar gravar.
+    var canEdit = {{ (can_edit|default(true)) ? 'true' : 'false' }};
+    if (!canEdit) {
+        form.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+            el.disabled = true;
+        });
+    }
+
+    var nameField = form.querySelector('#npsphere-preview-name');
+    var fieldPreview = form.querySelector('#npsphere-preview-field');
+    var previewUrl = {{ preview_url|json_encode|raw }};
+    var defaultPreviewName = {{ __('Sua pergunta aparecerá aqui', 'npsphere')|json_encode|raw }};
+
+    function currentType() {
+        var el = form.querySelector('[name="type"]');
+        return el ? el.value : null;
+    }
+
+    function switchTypeBlock() {
+        var type = currentType();
+        form.querySelectorAll('.npsphere-type-config-block').forEach(function (block) {
+            var visible = (block.dataset.type === type);
+            block.style.display = visible ? '' : 'none';
+            // Essencial: campos escondidos continuam sendo enviados no
+            // submit se não forem desabilitados -- é isso que causava
+            // as opções duplicando a cada salvamento.
+            block.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+                el.disabled = !visible;
+            });
+        });
+        var npsHint = form.querySelector('#npsphere-nps-hint');
+        if (npsHint) {
+            npsHint.style.display = (type === 'nps') ? '' : 'none';
+        }
+    }
+
+    var previewTimer = null;
+    function schedulePreview(immediate) {
+        if (previewTimer) {
+            clearTimeout(previewTimer);
+        }
+        if (immediate) {
+            updatePreview();
+        } else {
+            previewTimer = setTimeout(updatePreview, 300);
+        }
+    }
+
+    function updatePreview() {
+        // GET, de propósito: é uma leitura pura (não altera nada no banco),
+        // então não usa nem consome o token CSRF da página. Campos
+        // desabilitados (blocos de tipo não selecionados) são
+        // automaticamente ignorados por FormData().
+        var formData = new FormData(form);
+        var params = new URLSearchParams();
+        for (var pair of formData.entries()) {
+            if (pair[0] === '_glpi_csrf_token') {
+                continue;
+            }
+            params.append(pair[0], pair[1]);
+        }
+
+        fetch(previewUrl + '?' + params.toString(), { method: 'GET' })
+            .then(function (response) { return response.ok ? response.json() : null; })
+            .then(function (data) {
+                if (!data) {
+                    return;
+                }
+                nameField.textContent = data.name || defaultPreviewName;
+                fieldPreview.innerHTML = data.html;
+            })
+            .catch(function () { /* pré-visualização é apenas cosmética: falhas são ignoradas silenciosamente */ });
+    }
+
+    // Opções de "Múltipla escolha" / "Múltiplas opções": adicionar/remover
+    // linhas dinamicamente, sem precisar salvar a pergunta primeiro.
+    function addOptionRow(container) {
+        var row = document.createElement('div');
+        row.className = 'input-group mb-1 npsphere-choice-option-row';
+        row.innerHTML =
+            '<input type="text" class="form-control" name="choice_options[]" value="" placeholder="' +
+            {{ __('Nova opção…', 'npsphere')|json_encode|raw }} +
+            '">' +
+            '<button type="button" class="btn btn-outline-danger npsphere-remove-option" title="' +
+            {{ __('Remover', 'npsphere')|json_encode|raw }} +
+            '"><i class="ti ti-x"></i></button>';
+        container.appendChild(row);
+        row.querySelector('input').focus();
+    }
+
+    // Emoticon: "Quantidade de níveis" (3 ou 5) reconstrói as linhas de
+    // emoji+texto a partir do mesmo conjunto canônico de 5 emojis
+    // (nunca inventa emojis novos). Para 3 níveis, usa especificamente
+    // os índices 0, 2 e 4 do conjunto canônico -- ou seja, o negativo,
+    // o neutro e o positivo (não os 3 primeiros em sequência, que
+    // ficaria "Muito insatisfeito, Insatisfeito, Neutro" -- errado).
+    function syncEmoticonLevels(select) {
+        var wanted = parseInt(select.value, 10);
+        var editor = select.closest('.npsphere-type-config-block').querySelector('.npsphere-emoticon-levels-editor');
+        if (!editor) {
+            return;
+        }
+        var canonical = JSON.parse(editor.dataset.canonicalLevels);
+        var indices = (wanted === 3) ? [0, 2, 4] : [0, 1, 2, 3, 4];
+
+        editor.innerHTML = '';
+        indices.forEach(function (idx) {
+            var level = canonical[idx];
+            var row = document.createElement('div');
+            row.className = 'input-group mb-1 npsphere-emoticon-level-row';
+            row.innerHTML =
+                '<input type="text" class="form-control" style="max-width:5rem" name="emoticon_emoji[]" value="' + level.emoji + '" maxlength="8">' +
+                '<input type="text" class="form-control" name="emoticon_label[]" value="' + level.label + '">';
+            editor.appendChild(row);
+        });
+    }
+
+    form.addEventListener('click', function (event) {
+        var addBtn = event.target.closest('.npsphere-add-option');
+        if (addBtn) {
+            event.preventDefault();
+            var container = addBtn.parentElement.querySelector('.npsphere-choice-options-editor');
+            if (container) {
+                addOptionRow(container);
+            }
+            return;
+        }
+        var removeBtn = event.target.closest('.npsphere-remove-option');
+        if (removeBtn) {
+            event.preventDefault();
+            removeBtn.closest('.npsphere-choice-option-row').remove();
+            schedulePreview(true);
+        }
+    });
+
+    form.addEventListener('change', function (event) {
+        var target = event.target;
+        if (target && target.name === 'type') {
+            switchTypeBlock();
+            schedulePreview(true);
+            return;
+        }
+        if (target && target.name === 'emoticon_count') {
+            syncEmoticonLevels(target);
+            schedulePreview(true);
+            return;
+        }
+        schedulePreview(false);
+    });
+    form.addEventListener('input', function () { schedulePreview(false); });
+
+    // Regra condicional: o campo "valor" se adapta à pergunta-gatilho
+    // escolhida. Se aquela pergunta tem respostas fechadas (Sim/Não,
+    // NPS, Estrelas, Emoticons, opções), vira um seletor com os valores
+    // REAIS dela -- sem isso o administrador teria que adivinhar e
+    // digitar "no" ou "6" à mão, e um erro de digitação faria a regra
+    // silenciosamente nunca ser satisfeita.
+    var triggerChoicesEl = document.getElementById('npsphere-trigger-choices');
+    var triggerChoices = triggerChoicesEl ? JSON.parse(triggerChoicesEl.textContent || '{}') : {};
+
+    function syncConditionValueField() {
+        var slot = document.getElementById('npsphere-condition-value-slot');
+        var hint = document.getElementById('npsphere-condition-hint');
+        var triggerSelect = form.querySelector('select[name="condition_questions_id"]');
+        if (!slot || !triggerSelect) {
+            return;
+        }
+
+        var current = slot.querySelector('[name="condition_value"]');
+        var currentValue = current ? current.value : '';
+        var info = triggerChoices[triggerSelect.value];
+
+        if (!triggerSelect.value || triggerSelect.value === '0') {
+            slot.innerHTML = '<input type="text" name="condition_value" class="form-control" disabled>';
+            if (hint) { hint.textContent = ''; }
+            return;
+        }
+
+        if (info && info.choices) {
+            var html = '<select name="condition_value" class="form-select">';
+            Object.keys(info.choices).forEach(function (value) {
+                var selected = (String(value) === String(currentValue)) ? ' selected' : '';
+                html += '<option value="' + value.replace(/"/g, '&quot;') + '"' + selected + '>' +
+                        String(info.choices[value]).replace(/</g, '&lt;') + '</option>';
+            });
+            html += '</select>';
+            slot.innerHTML = html;
+            if (hint) {
+                hint.textContent = '';
+            }
+        } else {
+            slot.innerHTML = '<input type="text" name="condition_value" class="form-control" value="' +
+                             String(currentValue).replace(/"/g, '&quot;') + '">';
+            if (hint) {
+                hint.textContent = 'Esta pergunta aceita resposta livre — digite o texto exato a comparar.';
+            }
+        }
+    }
+
+    form.addEventListener('change', function (event) {
+        if (event.target && event.target.name === 'condition_questions_id') {
+            syncConditionValueField();
+        }
+    });
+    syncConditionValueField();
+
+    // Fallback por sondagem (polling): garante que a troca de tipo
+    // funcione mesmo que o widget usado pelo GLPI para estilizar o
+    // <select> não dispare (ou atrase) o evento "change" nativo.
+    var lastType = currentType();
+    setInterval(function () {
+        var type = currentType();
+        if (type !== lastType) {
+            lastType = type;
+            switchTypeBlock();
+            schedulePreview(true);
+        }
+    }, 250);
+
+    // O clique em "Cancelar" normalmente é tratado pelo builder embutido
+    // na aba "Pergunta" (que volta para a lista sem recarregar nada).
+    // Fora desse contexto (modo de página cheia, usado como fallback se
+    // o JS do builder não carregar), volta para a página anterior.
+    var cancelBtn = form.querySelector('.npsphere-cancel-form');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function (event) {
+            if (!form.closest('.npsphere-question-manager')) {
+                event.preventDefault();
+                window.history.back();
+            }
+        });
+    }
+
+    // Primeira renderização, refletindo os valores já preenchidos (edição).
+    switchTypeBlock();
+    schedulePreview(true);
+})();
+</script>

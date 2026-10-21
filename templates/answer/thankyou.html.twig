@@ -1,0 +1,17 @@
+<div class="npsphere-answer-page">
+    <div class="card npsphere-answer-card text-center">
+        <div class="card-body">
+            <i class="ti ti-circle-check text-success" style="font-size: 3rem;"></i>
+            <h2>{{ __('Obrigado pela sua avaliação!', 'npsphere') }}</h2>
+
+            {% if ja_respondida is defined and ja_respondida %}
+                {# Quem já respondeu volta a esta tela. Dizer "já
+                   registrada anteriormente" evita a dúvida de ter
+                   enviado duas vezes. #}
+                <p class="text-muted">{{ __('Sua resposta já havia sido registrada.', 'npsphere') }}</p>
+            {% else %}
+                <p class="text-muted">{{ __('Sua resposta foi registrada com sucesso.', 'npsphere') }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
