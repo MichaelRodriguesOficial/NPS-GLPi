@@ -1,13 +1,14 @@
 name: Release
 
-# Publica a release quando a versão do setup.php muda na main: monta o
-# ZIP do plugin (pasta npsphere/), cria a tag vX.Y.Z e anexa o ZIP. Se a
-# release dessa versão já existe, não faz nada. Também pode ser disparado
-# à mão (Actions › Release › Run workflow).
+# Publica a release da versão do setup.php: monta o ZIP do plugin (pasta
+# npsphere/), cria a tag vX.Y.Z e anexa o ZIP. Se a release dessa versão
+# já existe (ajuste na mesma versão), troca o ZIP, atualiza as notas e
+# move a tag para o commit novo. Também pode ser disparado à mão
+# (Actions › Release › Run workflow).
 on:
   push:
     branches: [main]
-    paths: ['setup.php', '.github/workflows/release.yml', '.github/release-notes/**']
+    paths: ['setup.php', '.github/workflows/release.yml', '.github/release-notes/**', 'src/**', 'front/**', 'ajax/**', 'templates/**', 'public/**', 'hook.php']
   workflow_dispatch:
 
 permissions:
@@ -26,21 +27,19 @@ jobs:
           echo "versao=$VERSAO" >> "$GITHUB_OUTPUT"
           echo "Versão: $VERSAO"
 
-      - name: Skip if this version is already released
+      - name: Check whether this version is already released
         id: existe
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "v${{ steps.versao.outputs.versao }}" >/dev/null 2>&1; then
-            echo "pular=1" >> "$GITHUB_OUTPUT"; echo "Release já existe."
+            echo "atualizar=1" >> "$GITHUB_OUTPUT"; echo "Release já existe: será atualizada."
           fi
 
       - name: Lint every PHP file
-        if: steps.existe.outputs.pular != '1'
         run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
 
       - name: Build npsphere-X.Y.Z.zip
-        if: steps.existe.outputs.pular != '1'
         run: |
           VERSAO="${{ steps.versao.outputs.versao }}"
           mkdir -p /tmp/pacote/npsphere
@@ -49,7 +48,7 @@ jobs:
           unzip -l "npsphere-${VERSAO}.zip" | tail -1
 
       - name: Publish the release
-        if: steps.existe.outputs.pular != '1'
+        if: steps.existe.outputs.atualizar != '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -58,3 +57,18 @@ jobs:
           if [ -f "$NOTAS" ]; then ARG=(--notes-file "$NOTAS"); else ARG=(--generate-notes); fi
           gh release create "v${VERSAO}" "npsphere-${VERSAO}.zip" \
             --target "$GITHUB_SHA" --title "NPSphere ${VERSAO}" "${ARG[@]}" --latest
+
+      # Mesma versão com correções (ex.: ajuste pedido antes de liberar):
+      # a release continua a mesma, com o ZIP trocado, as notas atualizadas
+      # e a tag apontando para o commit novo.
+      - name: Update the existing release
+        if: steps.existe.outputs.atualizar == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSAO="${{ steps.versao.outputs.versao }}"
+          git tag -f "v${VERSAO}" "$GITHUB_SHA"
+          git push -f origin "refs/tags/v${VERSAO}"
+          gh release upload "v${VERSAO}" "npsphere-${VERSAO}.zip" --clobber
+          NOTAS=".github/release-notes/v${VERSAO}.md"
+          if [ -f "$NOTAS" ]; then gh release edit "v${VERSAO}" --notes-file "$NOTAS"; fi

@@ -16,7 +16,9 @@ As versões mais recentes ficam no topo.
   - **Emoji:** os 5 ficam numa linha só, em vez de 3 + 2.
   - **Estrelas:** maiores, mais fáceis de tocar.
   - **Margens:** menores na página pública, nas páginas do link do e-mail, na pesquisa dentro do chamado e no aviso de pesquisa obrigatória.
-  - **Botão "Enviar avaliação":** na largura toda.
+  - **Botões no padrão do GLPI:**
+    - "Enviar avaliação" no tamanho normal, alinhado à direita, como os botões do próprio GLPI;
+    - em todos os botões do plugin, o texto vai num `<span>` depois do ícone, o que dá o mesmo espaço entre ícone e texto dos botões nativos (antes ficavam colados).
 
 ## v0.64.2 — botão Duplicar e README com telas
 

@@ -61,17 +61,17 @@
         <div class="npsphere-export-menu" hidden>
             <p class="npsphere-export-title">{{ __('Planilha (CSV)', 'npsphere') }}</p>
             <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&scope=overview{{ filtro }}">
-                <i class="ti ti-chart-bar"></i> {{ __('Visão geral', 'npsphere') }}
+                <i class="ti ti-chart-bar"></i> <span>{{ __('Visão geral', 'npsphere') }}</span>
             </button>
             {% if has_answers %}
                 <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&scope=answers{{ filtro }}">
-                    <i class="ti ti-list-details"></i> {{ __('Respostas', 'npsphere') }}
+                    <i class="ti ti-list-details"></i> <span>{{ __('Respostas', 'npsphere') }}</span>
                 </button>
             {% endif %}
 
             <p class="npsphere-export-title">{{ __('PDF', 'npsphere') }}</p>
             <button type="button" data-export-print="overview">
-                <i class="ti ti-printer"></i> {{ __('Imprimir visão geral', 'npsphere') }}
+                <i class="ti ti-printer"></i> <span>{{ __('Imprimir visão geral', 'npsphere') }}</span>
             </button>
         </div>
     </div>
@@ -107,12 +107,12 @@
         <div class="npsphere-results-bar">
         <nav class="npsphere-subtabs" role="tablist">
             <button type="button" class="npsphere-subtab is-active" data-panel="overview">
-                <i class="ti ti-chart-bar"></i> {{ __('Visão geral', 'npsphere') }}
+                <i class="ti ti-chart-bar"></i> <span>{{ __('Visão geral', 'npsphere') }}</span>
             </button>
             {% if respondents is defined and respondents is not empty %}
                 <button type="button" class="npsphere-subtab" data-panel="answers">
-                    <i class="ti ti-list-details"></i> {{ __('Respostas', 'npsphere') }}
-                    <span class="npsphere-subtab-count">{{ respondents|length }}</span>
+                    <i class="ti ti-list-details"></i> <span>{{ __('Respostas', 'npsphere') }}
+                    <span class="npsphere-subtab-count">{{ respondents|length }}</span></span>
                 </button>
             {% endif %}
         </nav>
@@ -328,7 +328,7 @@
                         </label>
                     </div>
                     <button type="button" class="btn btn-sm btn-outline-secondary" id="npsphere-resp-clear">
-                        <i class="ti ti-filter-off"></i> {{ __('Limpar', 'npsphere') }}
+                        <i class="ti ti-filter-off"></i> <span>{{ __('Limpar', 'npsphere') }}</span>
                     </button>
                 </div>
 
@@ -394,7 +394,7 @@
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-outline-primary npsphere-view-answer"
                                                 data-answer-id="{{ r.id }}">
-                                            <i class="ti ti-eye"></i> {{ __('Ver', 'npsphere') }}
+                                            <i class="ti ti-eye"></i> <span>{{ __('Ver', 'npsphere') }}</span>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary npsphere-print-answer"
                                                 data-answer-id="{{ r.id }}"

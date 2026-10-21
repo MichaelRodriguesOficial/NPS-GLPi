@@ -405,6 +405,7 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
 - ✅ **Aba Template** (0.64.0/0.64.1).
 - 🔁 **Duplicar** (0.64.2) funcionou, mas o Michael pediu o padrão do GLPI → **0.64.3**: Clonar pela ação em massa (lista e Ações da pesquisa); botão removido.
 - 🔁 **Celular:** o telefone ficou certo, mas as outras páginas não estavam boas → **0.64.3**: revisão a 390 px de todas as páginas de resposta e dos 4 e-mails.
+- 🔁 **Botão "Enviar avaliação"** ainda fora do padrão no celular → ajustado na **própria 0.64.3** (sem release nova): tamanho e alinhamento dos botões do GLPI, e o texto de todos os botões do plugin num `<span>` depois do ícone. A automação de release passou a atualizar a release existente quando a versão não muda.
 
 ### Falta testar no ambiente real
 

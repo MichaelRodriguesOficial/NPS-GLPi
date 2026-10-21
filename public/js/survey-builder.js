@@ -1405,7 +1405,7 @@
         var prevBtn = document.createElement('button');
         prevBtn.type = 'button';
         prevBtn.className = 'btn btn-outline-secondary';
-        prevBtn.innerHTML = '<i class="ti ti-chevron-left"></i> ' + 'Anterior';
+        prevBtn.innerHTML = '<i class="ti ti-chevron-left"></i><span>Anterior</span>';
 
         var prevSlot = document.createElement('div');
         prevSlot.className = 'npsphere-step-prev-slot';
@@ -1417,7 +1417,7 @@
         var nextBtn = document.createElement('button');
         nextBtn.type = 'button';
         nextBtn.className = 'btn btn-primary npsphere-step-next';
-        nextBtn.innerHTML = 'Próxima' + ' <i class="ti ti-chevron-right"></i>';
+        nextBtn.innerHTML = '<span>Próxima</span><i class="ti ti-chevron-right ms-1"></i>';
 
         var error = document.createElement('div');
         error.className = 'npsphere-step-error alert alert-danger';

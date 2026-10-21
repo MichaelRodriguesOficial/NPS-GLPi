@@ -23,22 +23,22 @@
 
     <nav class="npsphere-subtabs" role="tablist">
         <button type="button" class="npsphere-subtab is-active" data-panel="modelo" role="tab">
-            <i class="ti ti-mail"></i> {{ __('Convite', 'npsphere') }}
+            <i class="ti ti-mail"></i> <span>{{ __('Convite', 'npsphere') }}</span>
         </button>
         <button type="button" class="npsphere-subtab" data-panel="lembrete" role="tab">
-            <i class="ti ti-bell-ringing"></i> {{ __('Lembrete', 'npsphere') }}
-            {% if lembrete.aceita and lembrete.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}
+            <i class="ti ti-bell-ringing"></i> <span>{{ __('Lembrete', 'npsphere') }}
+            {% if lembrete.aceita and lembrete.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}</span>
         </button>
         <button type="button" class="npsphere-subtab" data-panel="relatorio" role="tab">
-            <i class="ti ti-report-analytics"></i> {{ __('Relatório', 'npsphere') }}
-            {% if relatorio.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}
+            <i class="ti ti-report-analytics"></i> <span>{{ __('Relatório', 'npsphere') }}
+            {% if relatorio.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}</span>
         </button>
         <button type="button" class="npsphere-subtab" data-panel="aviso" role="tab">
-            <i class="ti ti-bell-exclamation"></i> {{ __('Aviso', 'npsphere') }}
-            {% if relatorio.aviso.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}
+            <i class="ti ti-bell-exclamation"></i> <span>{{ __('Aviso', 'npsphere') }}
+            {% if relatorio.aviso.ativo %}<span class="npsphere-subtab-count">{{ __('ligado', 'npsphere') }}</span>{% endif %}</span>
         </button>
         <button type="button" class="npsphere-subtab" data-panel="variaveis" role="tab">
-            <i class="ti ti-help-circle"></i> {{ __('Ajuda', 'npsphere') }}
+            <i class="ti ti-help-circle"></i> <span>{{ __('Ajuda', 'npsphere') }}</span>
         </button>
     </nav>
 
@@ -60,11 +60,11 @@
                         </div>
                         <div class="npsphere-csv-barra">
                             <a href="{{ csv_modelo_url }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="ti ti-file-download"></i> {{ __('Baixar modelo CSV', 'npsphere') }}
+                                <i class="ti ti-file-download"></i> <span>{{ __('Baixar modelo CSV', 'npsphere') }}</span>
                             </a>
                             <button type="button" class="btn btn-sm btn-outline-primary" id="npsphere-csv-importar"
                                     data-url="{{ csv_import_url }}" data-surveys-id="{{ item.getID() }}">
-                                <i class="ti ti-file-upload"></i> {{ __('Importar CSV', 'npsphere') }}
+                                <i class="ti ti-file-upload"></i> <span>{{ __('Importar CSV', 'npsphere') }}</span>
                             </button>
                             <input type="file" id="npsphere-csv-arquivo" accept=".csv,text/csv" hidden>
                         </div>
@@ -128,7 +128,7 @@
                         </div>
                         <div class="npsphere-csv-barra">
                             <a href="{{ publico_url }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="ti ti-adjustments"></i> {{ __('Editar público-alvo', 'npsphere') }}
+                                <i class="ti ti-adjustments"></i> <span>{{ __('Editar público-alvo', 'npsphere') }}</span>
                             </a>
                         </div>
                     </header>
@@ -204,7 +204,7 @@
                         {% if chamado.entidade_url %}
                             <div class="npsphere-csv-barra">
                                 <a href="{{ chamado.entidade_url }}" class="btn btn-sm btn-outline-secondary">
-                                    <i class="ti ti-adjustments"></i> {{ __('Configurar na entidade', 'npsphere') }}
+                                    <i class="ti ti-adjustments"></i> <span>{{ __('Configurar na entidade', 'npsphere') }}</span>
                                 </a>
                             </div>
                         {% endif %}
@@ -367,14 +367,14 @@
             <section class="npsphere-card">
                 <div class="npsphere-template-acoes">
                     <button type="submit" name="update" value="1" class="btn btn-primary">
-                        <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                        <i class="ti ti-device-floppy"></i> <span>{{ __('Salvar', 'npsphere') }}</span>
                     </button>
 
                     {% if item.fields['type'] != 'ticket' %}
                         <button type="button" class="btn btn-outline-primary" id="npsphere-mail-enviar"
                                 data-url="{{ mail_send_url }}" data-surveys-id="{{ item.getID() }}"
                                 {% if publico %}data-total="{{ publico.recebem }}"{% endif %}>
-                            <i class="ti ti-send"></i> {{ __('Enviar convites', 'npsphere') }}{% if publico %} ({{ publico.recebem }}){% endif %}
+                            <i class="ti ti-send"></i> <span>{{ __('Enviar convites', 'npsphere') }}{% if publico %} ({{ publico.recebem }}){% endif %}</span>
                         </button>
                         {{ npsphere_m.info(__('Salve antes de enviar: o e-mail usa o texto gravado. Os convites entram na fila de e-mails do GLPI.', 'npsphere')) }}
                         <span class="npsphere-mail-resultado"></span>
@@ -400,7 +400,7 @@
                     {% if lembrete.aceita and lembrete.acao %}
                         <div class="npsphere-csv-barra">
                             <a href="{{ lembrete.acao.url }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="ti ti-clock-play"></i> {{ __('Ação automática', 'npsphere') }}
+                                <i class="ti ti-clock-play"></i> <span>{{ __('Ação automática', 'npsphere') }}</span>
                             </a>
                         </div>
                     {% endif %}
@@ -536,7 +536,7 @@
                 <section class="npsphere-card">
                     <div class="npsphere-template-acoes">
                         <button type="submit" name="update" value="1" class="btn btn-primary">
-                            <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                            <i class="ti ti-device-floppy"></i> <span>{{ __('Salvar', 'npsphere') }}</span>
                         </button>
                     </div>
                 </section>
@@ -559,7 +559,7 @@
                     {% if relatorio.acao %}
                         <div class="npsphere-csv-barra npsphere-gestor-corpo" data-chave="npsphere-relatorio-ativo">
                             <a href="{{ relatorio.acao.url }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="ti ti-clock-play"></i> {{ __('Ação automática', 'npsphere') }}
+                                <i class="ti ti-clock-play"></i> <span>{{ __('Ação automática', 'npsphere') }}</span>
                             </a>
                         </div>
                     {% endif %}
@@ -657,7 +657,7 @@
             <section class="npsphere-card">
                 <div class="npsphere-template-acoes">
                     <button type="submit" name="update" value="1" class="btn btn-primary">
-                        <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                        <i class="ti ti-device-floppy"></i> <span>{{ __('Salvar', 'npsphere') }}</span>
                     </button>
                 </div>
             </section>
@@ -679,7 +679,7 @@
                     {% if relatorio.aviso.acao %}
                         <div class="npsphere-csv-barra npsphere-gestor-corpo" data-chave="npsphere-aviso-ativo">
                             <a href="{{ relatorio.aviso.acao.url }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="ti ti-clock-play"></i> {{ __('Ação automática', 'npsphere') }}
+                                <i class="ti ti-clock-play"></i> <span>{{ __('Ação automática', 'npsphere') }}</span>
                             </a>
                         </div>
                     {% endif %}
@@ -770,7 +770,7 @@
             <section class="npsphere-card">
                 <div class="npsphere-template-acoes">
                     <button type="submit" name="update" value="1" class="btn btn-primary">
-                        <i class="ti ti-device-floppy"></i> {{ __('Salvar', 'npsphere') }}
+                        <i class="ti ti-device-floppy"></i> <span>{{ __('Salvar', 'npsphere') }}</span>
                     </button>
                 </div>
             </section>
@@ -1701,4 +1701,4 @@
 
 {# v0.64.0 -- link "Como funciona": abre a sub-aba Ajuda já no assunto
    (id do <details>) e rola até ele. #}
-{% macro ajuda(alvo, rotulo) %}<button type="button" class="npsphere-como npsphere-ir-aba" data-ir="variaveis" data-abrir="{{ alvo }}"><i class="ti ti-help-circle"></i> {{ rotulo ?: __('Como funciona', 'npsphere') }}</button>{% endmacro %}
+{% macro ajuda(alvo, rotulo) %}<button type="button" class="npsphere-como npsphere-ir-aba" data-ir="variaveis" data-abrir="{{ alvo }}"><i class="ti ti-help-circle"></i> <span>{{ rotulo ?: __('Como funciona', 'npsphere') }}</span></button>{% endmacro %}

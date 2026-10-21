@@ -2398,6 +2398,4 @@ body.npsphere-embed .npsphere-answer-card.text-center { padding: 1.5rem 0; }
     /* Estrelas maiores, para acertar com o dedo. */
     .npsphere-star-option i { font-size: 2rem; }
 
-    /* Botão de enviar na largura toda, fácil de alcançar com o polegar. */
-    .npsphere-submit-btn { width: 100%; justify-content: center; }
 }
