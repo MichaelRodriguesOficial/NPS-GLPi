@@ -17,7 +17,7 @@ if (!defined('GLPI_ROOT')) {
     die('Sorry. You can not access directly to this file');
 }
 
-define('PLUGIN_NPSPHERE_VERSION', '0.64.0');
+define('PLUGIN_NPSPHERE_VERSION', '0.64.1');
 
 // Versão mínima do GLPI suportada (inclusive)
 define('PLUGIN_NPSPHERE_MIN_GLPI_VERSION', '11.0.0');
@@ -92,6 +92,13 @@ function plugin_init_npsphere()
     foreach ([
         '/front/ticket.answer.php', '/ajax/ticket.oneclick.php', '/ajax/ticket.token.php',
         '/front/internal.answer.php', '/ajax/internal.oneclick.php', '/ajax/internal.token.php',
+        // v0.64.1: o pending-survey.js roda em todas as páginas, inclusive
+        // nas de resposta sem login. Com a checagem padrão, o GLPI
+        // redirecionava o visitante para a tela de login, que limpa a
+        // sessão -- e levava junto o token CSRF que o clique do e-mail
+        // estava para usar (a resposta não era gravada). O script já
+        // devolve lista vazia para quem não está logado.
+        '/ajax/pending.php',
     ] as $script) {
         \Glpi\Http\Firewall::addPluginStrategyForLegacyScripts(
             'npsphere',

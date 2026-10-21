@@ -2279,9 +2279,11 @@ body.npsphere-embed .npsphere-answer-card.text-center { padding: 1.5rem 0; }
 .npsphere-dica::after {
     content: attr(data-info);
     position: absolute;
-    left: 50%;
+    /* Alinhado pela esquerda do ícone e crescendo para a direita: no
+       GLPI, centralizado, o balão dos campos da esquerda ficava por
+       baixo do menu de abas e era cortado (v0.64.1). */
+    left: -.5rem;
     bottom: calc(100% + 8px);
-    transform: translateX(-50%);
     width: max-content;
     max-width: 300px;
     padding: .5rem .65rem;
@@ -2305,6 +2307,9 @@ body.npsphere-embed .npsphere-answer-card.text-center { padding: 1.5rem 0; }
 }
 .npsphere-dica:hover::after,
 .npsphere-dica:focus::after { opacity: 1; visibility: visible; }
+/* Ícones no lado direito da tela: o balão cresce para a esquerda. */
+.npsphere-mail-marcadores .npsphere-dica::after,
+.npsphere-dest-tabela th .npsphere-dica::after { left: auto; right: -.5rem; }
 @media (max-width: 576px) {
     .npsphere-dica::after { max-width: 220px; }
 }

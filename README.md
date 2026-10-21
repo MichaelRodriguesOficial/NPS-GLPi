@@ -8,7 +8,7 @@ O NPSphere é um plugin do **GLPI 11** para criar, enviar e medir pesquisas de s
 
 Os resultados ficam num painel consolidado, e os gestores recebem relatório diário e aviso de nota baixa por e-mail.
 
-> Versão atual: **0.64.0** · GLPI **11.0.0 a 11.99.99** · PHP **8.1+** · Licença **GPL v3+**
+> Versão atual: **0.64.1** · GLPI **11.0.0 a 11.99.99** · PHP **8.1+** · Licença **GPL v3+**
 
 ---
 

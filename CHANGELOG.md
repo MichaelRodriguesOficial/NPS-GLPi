@@ -2,6 +2,20 @@
 
 As versões mais recentes ficam no topo.
 
+## v0.64.1 — correções encontradas no teste completo num GLPI 11.0.11
+
+Testado de ponta a ponta num GLPI 11.0.11 com MariaDB:
+- instalação, desinstalação e reinstalação;
+- atualização a partir da 0.50.0 e da 0.63.0 (banco idêntico ao de uma instalação nova);
+- convites, respostas e ações automáticas;
+- envio real pela fila de e-mails do GLPI.
+
+- **Resposta pelo link do e-mail às vezes não era gravada** ("Não conseguimos registrar sua resposta automaticamente"). Acontecia com quem não estava logado no GLPI, a partir do segundo clique no mesmo navegador.
+  - **Causa:** o script das pesquisas obrigatórias (`pending.php`), carregado em todas as páginas, mandava o visitante para a tela de login. Essa tela limpa a sessão e levava junto o token de segurança que o clique do e-mail estava para usar.
+  - **Correção:** o `pending.php` passa a responder sem exigir login. Para quem não está logado, ele já devolvia uma lista vazia.
+- **Pesquisa nova já vinha com "Permitir várias respostas: Sim"** (e a externa com "Anônima: Sim"). Sem valor inicial, nenhuma opção ficava marcada e o navegador escolhia a primeira. Agora o formulário de pesquisa nova abre com "Não" nos dois, como o padrão do banco.
+- **Balões ⓘ:** no GLPI, os balões dos campos da coluna da esquerda ficavam por baixo do menu de abas e eram cortados. Agora crescem para a direita; os do lado direito, para a esquerda.
+
 ## v0.64.0 — aba Template mais limpa (ajuda em ⓘ e sub-aba Ajuda)
 
 - As sub-abas **Convite, Lembrete, Relatório e Aviso** mostram só o essencial: título, uma linha de descrição, campos, números, prévias e **avisos só quando há problema** (ação automática desativada, ninguém recebe, entidade mal configurada, pesquisa anônima).

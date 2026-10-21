@@ -1,7 +1,7 @@
 # NPSphere — Status do Projeto
 
 **Plugin de pesquisas de satisfação para GLPI 11**
-Versão: **0.64.0** · atualizado em 15/10/2026 · Autor: Michael Rodrigues
+Versão: **0.64.1** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 
 ---
 
@@ -229,7 +229,7 @@ resposta, sem duplicar.
 | Aviso ao gestor em nota baixa → virou **relatório diário** (decisão de 14/10): todas as respostas do dia por pessoa, notas baixas primeiro; nota de corte configurável sobre a **nota da resposta** (a mesma da aba Resultados, 0 a 10); usuários e grupos do GLPI; horário por pesquisa; ação `npsphereRelatorio` — 0.59.0, layout refeito na 0.59.1 | 🟢 *validado em 14/10 (e-mail recebido)*; histórico: *em teste — 0.59.0 achado confuso e com nota divergente dos Resultados, corrigido na 0.59.1; links só para quem abre a pesquisa no GLPI na 0.59.2* |
 | **Aviso imediato de nota baixa** (espera configurável, padrão 10 min; mesmos destinatários e nota de corte do relatório; ação `npsphereAviso` a cada 5 min) — 0.60.0 | 🟡 *em teste — prévia do aviso OK; prévia do relatório falhava com as duas prévias juntas (tokens CSRF em paralelo), corrigido na 0.60.1; prévias dentro de cada quadro e só com o interruptor ligado na 0.60.2; **e-mail de aviso recebido em 14/10*** |
 | **Aviso independente**: nota baixa, usuários/grupos, links e último envio próprios — 0.62.0 | 🟢 *validado em 14/10 (configuração copiada, só a lista do aviso recebe, nota separada, último envio, não repete, respostas antigas não disparam)* |
-| **Convite do chamado com espera** (padrão 15 min): só sai se o requerente não avaliar no próprio chamado; ação `npsphereConvite` — 0.63.0 | 🟡 *em teste* |
+| **Convite do chamado com espera** (padrão 15 min): só sai se o requerente não avaliar no próprio chamado; ação `npsphereConvite` — 0.63.0 | 🟢 *validado no teste automatizado de 21/10 (avaliado no chamado → sem e-mail; sem avaliar → e-mail; reaberto → nada)* |
 | Aba Template com **5 sub-abas** (Convite, Lembrete, Relatório, Aviso, Variáveis) — 0.61.5 | 🟢 *validado em 14/10* |
 | **Aba Template mais limpa**: ajuda dos campos em ícones ⓘ, link "Como funciona" em cada quadro, avisos só quando há problema; sub-aba **Variáveis → Ajuda** (Como funciona por assunto + Ações automáticas + Variáveis) — 0.64.0 | 🟡 *em teste* |
 | Relatório e aviso: quadros recolhidos quando desligados; **modelo de e-mail editável** (assunto, HTML5 + código, restaurar padrão, variáveis com descrição) — 0.61.0 | 🟢 *validado em 14/10* |
@@ -339,22 +339,57 @@ Cada um custou várias rodadas:
 
 ## Onde estamos agora
 
-**Fase 9: tudo entregue (até a 0.64.0); falta TESTAR.** Revisão de 14/10, atualizada em 15/10:
+**Fase 9: entregue e testada de ponta a ponta (0.64.1).** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
 
-### Falta testar (Fase 9)
+### Teste completo de 21/10 — GLPI 11.0.11 + MariaDB 10.11 + PHP 8.3
 
-Validado em 14/10: relatório diário (envio no horário e não repete no dia), aviso imediato completo (independente), Outlook desktop, Template da pesquisa de chamado, quadros recolhidos, modelos editáveis, 5 sub-abas, Variáveis, URL completa e `{{link}}`.
+Feito num GLPI montado só para o teste, com navegador automatizado e envio real por SMTP de teste. Tudo ✅:
 
-1. **Relatório 2b** — não sai em dia sem resposta (pesquisa sem respostas nas últimas 24h → nada na fila).
-2. **Lembrete** — ✅ recebido e respondido pelo lembrete em 15/10. Conferir na próxima execução que não vem outro.
-3. **Desinstalar/reinstalar** numa homologação.
-5. **Convite com espera (0.63.0)** — encerrar chamado e avaliar no chamado em menos de 15 min → nenhum e-mail; encerrar outro e não avaliar → e-mail após ~15 min; "Não esperar" → e-mail na hora.
-6. **Template limpo (0.64.0)** — passar por Convite, Lembrete, Relatório e Aviso conferindo que só ficou o essencial; passar o mouse nos ⓘ; clicar em "Como funciona" (abre a Ajuda no assunto certo); abrir "Ações automáticas" na Ajuda e conferir ativa/desativada; salvar e conferir que nada mudou nos valores.
-4. **Correções da 0.62.1** — "último envio" não muda em dia sem resposta (junto com o 2b); remover uma pesquisa de teste definitivamente e conferir que perguntas/respostas sumiram; duplicar uma pesquisa e conferir "último envio" com "—" na cópia.
+- **Instalação:** 8 tabelas, 4 ações automáticas, 4 modelos e os direitos de perfil. **Desinstalação** limpa tudo e preserva a nota gravada na satisfação nativa. **Reinstalação** OK.
+- **Atualização** a partir da 0.50.0 e da 0.63.0: o banco fica idêntico ao de uma instalação nova (colunas, tipos, padrões e índices).
+- **Telas:** todas as abas das pesquisas interna, externa e de chamado abrem, mais Minhas pesquisas, painel e listagem, sem erro de PHP ou JavaScript. As 4 prévias da aba Template montam. **Salvar** a aba Template grava e preserva o resto.
+- **Respostas:**
+  - pela tela (logado);
+  - pelo link do e-mail sem login, na interna, na externa e no chamado; clicar de novo troca a nota sem duplicar;
+  - pelo link público;
+  - pela pesquisa dentro do chamado, gravando em `glpi_ticketsatisfactions`.
+- **Segurança:** link com chave adulterada é recusado.
+- **Resultados, CSV e painel** batem com as respostas.
+- **Convite:** convites enfileirados; a notificação nativa de satisfação vai para a lixeira, então não chegam dois e-mails.
+- **Convite com espera:** avaliado no chamado → sem e-mail; sem avaliar → e-mail; chamado reaberto → nada.
+- **Lembrete:**
+  - só para quem não respondeu;
+  - não repete antes do intervalo;
+  - para no máximo.
+- **Relatório diário:**
+  - envio único no dia;
+  - **2b** (dia sem resposta: nada na fila e o "último envio" não muda);
+  - links só para quem abre a pesquisa no GLPI.
+- **Aviso de nota baixa:**
+  - respeita a espera;
+  - só respostas depois de ligado;
+  - um aviso por resposta;
+  - grava o último envio.
+- **Remover definitivamente** apaga perguntas, respostas, valores e envios, e preserva a satisfação nativa. **Duplicar** (POST) zera as datas na cópia.
+- **E-mails reais** pelo SMTP do GLPI: 22 do NPSphere, todos com HTML e texto, variáveis trocadas e links absolutos.
 
-✅ 14/10: relatório sem links para quem não tem acesso (2c) e "Ver resposta" abrindo a resposta certa, inclusive passando pela autenticação (2d).
+**Corrigidos na 0.64.1:**
+- clique do e-mail que às vezes não gravava para quem não estava logado;
+- pesquisa nova vindo com "várias respostas: Sim" e "anônima: Sim";
+- balões ⓘ cortados pelo menu de abas.
 
-### Pontos encontrados na revisão — corrigidos na 0.62.1 (em teste)
+### Pontos em aberto (decisão do Michael)
+
+- **Duplicar pesquisa:** não há botão na tela (só o código do POST), e a cópia sai **sem perguntas e sem público-alvo**.
+- **Prévia do convite em tela estreita** (~1400 px): o e-mail tem largura fixa e a linha de notas 0–10 fica cortada na prévia. O e-mail enviado não é afetado.
+- **Modelo padrão do convite de chamado** já traz a variável da 1ª pergunta. Com 2+ perguntas, o aviso "Perguntas dentro do e-mail" aparece logo de saída.
+
+### Falta testar no ambiente real
+
+- **Template limpo (0.64.0/0.64.1):** conferir visualmente no seu GLPI.
+- Relatório com muitas respostas (acima de ~60/dia o Gmail corta o e-mail) e ações automáticas no modo CLI.
+
+### Pontos encontrados na revisão — corrigidos na 0.62.1 (validados em 21/10)
 
 - "Último envio" do relatório só muda quando um e-mail sai (`date_report_sent`; `date_last_report` segue como dia processado).
 - Remover pesquisa definitivamente apaga perguntas, respostas e valores, público-alvo, conclusões, convites e envios do lembrete.

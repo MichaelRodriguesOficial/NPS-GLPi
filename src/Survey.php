@@ -92,6 +92,12 @@ class Survey extends CommonDBTM
         $this->fields['allow_public_access']    = 0;
         $this->fields['is_mandatory']           = 0;
         $this->fields['display_mode']           = self::DISPLAY_SINGLE_PAGE;
+        // v0.64.1: sem valor, nenhuma opção dos "Sim/Não" vinha marcada e
+        // o navegador ficava com a primeira ("Sim"): toda pesquisa nova
+        // nascia aceitando várias respostas (e a externa, anônima). Os
+        // padrões são os do banco.
+        $this->fields['allow_multiple_answers'] = 0;
+        $this->fields['is_anonymous']           = 0;
     }
 
     public function prepareInputForAdd($input)
