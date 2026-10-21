@@ -42,7 +42,7 @@ class YesNo extends AbstractQuestionType
 
     public static function renderAnswerField(string $field_name, array $configuration, $current_value = null): string
     {
-        $options = ['yes' => __('Sim'), 'no' => __('Não')];
+        $options = ['yes' => __('Yes'), 'no' => __('No')];
         if (!empty($configuration['allow_dont_know'])) {
             $options['dont_know'] = __('Não sei', 'npsphere');
         }
@@ -77,7 +77,7 @@ class YesNo extends AbstractQuestionType
 
     public static function getConditionChoices(array $configuration): ?array
     {
-        $out = ['yes' => __('Sim'), 'no' => __('Não')];
+        $out = ['yes' => __('Yes'), 'no' => __('No')];
         if (!empty($configuration['allow_dont_know'])) {
             $out['dont_know'] = __('Não sei', 'npsphere');
         }

@@ -32,6 +32,7 @@ so each step gives the label you'll see on screen *(in italics)*.
 - [Where do I see the results?](#where-do-i-see-the-results)
 - [How are the NPS and the score calculated?](#how-are-the-nps-and-the-score-calculated)
 - [How do I export the answers?](#how-do-i-export-the-answers)
+- [Where do I see what changed in a survey?](#where-do-i-see-what-changed-in-a-survey)
 
 **Other questions**
 - [How do I clone (duplicate) a survey?](#how-do-i-clone-duplicate-a-survey)
@@ -39,6 +40,7 @@ so each step gives the label you'll see on screen *(in italics)*.
 - [What happens when a ticket is reopened?](#what-happens-when-a-ticket-is-reopened)
 - [Can I have different ticket surveys per entity?](#can-i-have-different-ticket-surveys-per-entity)
 - [Who can see and edit a survey?](#who-can-see-and-edit-a-survey)
+- [Can I use it in English?](#can-i-use-it-in-english)
 
 ---
 
@@ -123,6 +125,10 @@ automatic action is disabled.
 1. Create a survey of type **Internal**.
 2. In the **Target audience** tab *(Público-alvo)*, choose who answers: entities, profiles, groups,
    specific users, or **everyone**. Sub-entities are taken into account.
+   - To leave someone out, add them under **Exceptions** *(Exceções)* on the same tab, for example
+     "the Finance group, except its manager" or "everyone, except the IT group". An exception always
+     wins: that person doesn't see the survey, isn't asked by the mandatory pop-up and doesn't get the
+     invitation email.
 3. Activate it. Users with the **My surveys** right *(Minhas pesquisas)* see it under **Tools › My
    surveys**, or **Plug-ins › My surveys** in the self-service portal.
 4. To also email them, go to **Template › Invitation** and click **Send invitations** *(Enviar
@@ -309,8 +315,26 @@ shows who gets them.
 
 ### How do I export the answers?
 
-In **Results**, click **Export**: CSV with the active filters applied, or print/PDF. The dashboard
-has its own export with the same filters.
+In **Results**, click **Export** *(Exportar)*. The active filters (dates, score, entity) are applied
+to every format:
+
+- **Excel (.xlsx)** or **LibreOffice (.ods)**: one file with two sheets, **Overview** and **Answers**.
+  Scores are real numbers and dates are real dates, so you can sort, filter and build charts.
+- **CSV**: overview or answers, separated by the delimiter set in your GLPI preferences.
+- **Print / PDF** of the overview.
+
+The **Satisfaction dashboard** has the same Excel, LibreOffice and CSV options, with the dashboard's
+filters.
+
+### Where do I see what changed in a survey?
+
+In the survey's **Historical** tab *(Histórico)*, the same one every GLPI item has. It lists who changed
+what and when:
+
+- the survey's own settings and email templates;
+- questions added, changed, deleted or reordered;
+- people, groups, profiles and entities added to or removed from the target audience and the
+  exceptions.
 
 ---
 
@@ -350,6 +374,19 @@ to its own entity and, when recursive, to its sub-entities.
 Whoever has the **Satisfaction surveys** right manages the surveys **they created**. General
 administrators (with the right to change GLPI's configuration) manage all of them. Answer pages
 aren't restricted this way, since respondents aren't the survey's creators.
+
+### Can I use it in English?
+
+Yes. The plugin follows each user's language in GLPI (**My settings › Language**). Brazilian Portuguese
+and English are included. Pages opened without login (the public link and the email links) follow the
+visitor's browser language.
+
+What you write yourself (survey names, questions and email templates) stays as you wrote it. Dates and
+numbers follow the date and number formats in GLPI's preferences.
+
+Emails that still use the built-in template come in the language GLPI is using when they're built:
+the automatic actions (ticket invitations, reminders, report, alert) use GLPI's default language
+(**Setup › General › Default language**), and **Send invitations** uses yours.
 
 ---
 

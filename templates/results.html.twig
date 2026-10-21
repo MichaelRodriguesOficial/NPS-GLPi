@@ -59,7 +59,17 @@
             <i class="ti ti-chevron-down"></i>
         </button>
         <div class="npsphere-export-menu" hidden>
-            <p class="npsphere-export-title">{{ __('Planilha (CSV)', 'npsphere') }}</p>
+            {# Excel e LibreOffice: uma planilha só, com as abas Visão geral
+               e Respostas. #}
+            <p class="npsphere-export-title">{{ __('Planilha', 'npsphere') }}</p>
+            <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&format=xlsx{{ filtro }}">
+                <i class="ti ti-file-spreadsheet"></i> <span>{{ __('Excel (.xlsx)', 'npsphere') }}</span>
+            </button>
+            <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&format=ods{{ filtro }}">
+                <i class="ti ti-table"></i> <span>{{ __('LibreOffice (.ods)', 'npsphere') }}</span>
+            </button>
+
+            <p class="npsphere-export-title">{{ __('CSV', 'npsphere') }}</p>
             <button type="button" data-export-url="{{ export_url }}?surveys_id={{ surveys_id }}&scope=overview{{ filtro }}">
                 <i class="ti ti-chart-bar"></i> <span>{{ __('Visão geral', 'npsphere') }}</span>
             </button>
@@ -85,7 +95,7 @@
         <p>{{ survey.fields['description'] }}</p>
     {% endif %}
     <p class="npsphere-print-meta">
-        {{ __('Relatório gerado em', 'npsphere') }} {{ "now"|date('d/m/Y H:i') }}
+        {{ __('Relatório gerado em', 'npsphere') }} {{ "now"|date('Y-m-d H:i:s')|formatted_datetime }}
     </p>
 </div>
 
@@ -300,7 +310,7 @@
                     <div class="npsphere-search">
                         <i class="ti ti-search"></i>
                         <input type="search" class="form-control" id="npsphere-resp-search"
-                               placeholder="{{ __('Buscar por nome, e-mail, telefone{% if is_ticket %}, chamado{% endif %} ou entidade…', 'npsphere') }}"
+                               placeholder="{{ is_ticket ? __('Buscar por nome, e-mail, telefone, chamado ou entidade…', 'npsphere') : __('Buscar por nome, e-mail, telefone ou entidade…', 'npsphere') }}"
                                autocomplete="off">
                     </div>
                     {% if filtra_entidades and entidades_disponiveis is not empty %}
@@ -390,7 +400,7 @@
                                             <span class="text-muted">—</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ r.date_creation|date('d/m/Y H:i') }}</td>
+                                    <td>{{ r.date_creation|date('Y-m-d H:i:s')|formatted_datetime }}</td>
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-outline-primary npsphere-view-answer"
                                                 data-answer-id="{{ r.id }}">

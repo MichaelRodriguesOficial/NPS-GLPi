@@ -57,7 +57,7 @@
 
             <div class="npsphere-grid">
                 <div class="npsphere-field npsphere-field-wide">
-                    <label for="npsphere-description">{{ __('Descrição') }}</label>
+                    <label for="npsphere-description">{{ __('Description') }}</label>
                     <textarea id="npsphere-description" name="description" class="form-control" rows="3"
                               placeholder="{{ __('Explique brevemente o objetivo desta pesquisa…', 'npsphere') }}">{{ item.fields['description'] }}</textarea>
                 </div>
@@ -128,7 +128,7 @@
                 <div class="npsphere-field" id="npsphere-multiple-field"
                      style="{{ item.fields['type'] == 'ticket' ? 'display:none' : '' }}">
                     <label>{{ __('Permitir múltiplas respostas', 'npsphere') }}</label>
-                    {{ f.sel('allow_multiple_answers', item.fields['allow_multiple_answers'], {1: __('Sim'), 0: __('Não')}) }}
+                    {{ f.sel('allow_multiple_answers', item.fields['allow_multiple_answers'], {1: __('Yes'), 0: __('No')}) }}
                     <small>{{ __('Se "Não", cada pessoa responde uma única vez.', 'npsphere') }}</small>
                 </div>
 
@@ -138,7 +138,7 @@
                 <div class="npsphere-field" id="npsphere-mandatory-field"
                      style="{{ item.fields['type'] == 'internal' ? '' : 'display:none' }}">
                     <label>{{ __('Resposta obrigatória', 'npsphere') }}</label>
-                    {{ f.sel('is_mandatory', item.fields['is_mandatory']|default(0), {1: __('Sim'), 0: __('Não')}) }}
+                    {{ f.sel('is_mandatory', item.fields['is_mandatory']|default(0), {1: __('Yes'), 0: __('No')}) }}
                 </div>
 
                 <aside class="npsphere-info" id="npsphere-mandatory-info"
@@ -179,7 +179,7 @@
             <div class="npsphere-grid">
                 <div class="npsphere-field">
                     <label>{{ __('Pesquisa anônima', 'npsphere') }}</label>
-                    {{ f.sel('is_anonymous', item.fields['is_anonymous'], {1: __('Sim'), 0: __('Não')}) }}
+                    {{ f.sel('is_anonymous', item.fields['is_anonymous'], {1: __('Yes'), 0: __('No')}) }}
                 </div>
 
                 <aside class="npsphere-info">
@@ -277,13 +277,13 @@
                     {% if item.fields['date_creation'] %}
                         <div>
                             <dt><i class="ti ti-plus"></i> {{ __('Criada em', 'npsphere') }}</dt>
-                            <dd>{{ item.fields['date_creation']|date('d/m/Y H:i') }}</dd>
+                            <dd>{{ item.fields['date_creation']|date('Y-m-d H:i:s')|formatted_datetime }}</dd>
                         </div>
                     {% endif %}
                     {% if item.fields['date_mod'] %}
                         <div>
                             <dt><i class="ti ti-pencil"></i> {{ __('Última atualização em', 'npsphere') }}</dt>
-                            <dd>{{ item.fields['date_mod']|date('d/m/Y H:i') }}</dd>
+                            <dd>{{ item.fields['date_mod']|date('Y-m-d H:i:s')|formatted_datetime }}</dd>
                         </div>
                     {% endif %}
                 </dl>

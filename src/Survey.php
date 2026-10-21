@@ -729,7 +729,7 @@ class Survey extends CommonDBTM
             'id'       => 1,
             'table'    => self::getTable(),
             'field'    => 'name',
-            'name'     => __('Nome'),
+            'name'     => __('Name'),
             'datatype' => 'itemlink',
         ];
 
@@ -744,7 +744,7 @@ class Survey extends CommonDBTM
             'id'       => 3,
             'table'    => self::getTable(),
             'field'    => 'is_active',
-            'name'     => __('Ativa'),
+            'name'     => __('Ativa', 'npsphere'),
             'datatype' => 'bool',
         ];
 
@@ -785,7 +785,7 @@ class Survey extends CommonDBTM
             'id'            => 19,
             'table'         => self::getTable(),
             'field'         => 'date_mod',
-            'name'          => __('Última atualização'),
+            'name'          => __('Last update'),
             'datatype'      => 'datetime',
             'massiveaction' => false,
         ];
@@ -794,7 +794,7 @@ class Survey extends CommonDBTM
             'id'            => 121,
             'table'         => self::getTable(),
             'field'         => 'date_creation',
-            'name'          => __('Data de criação'),
+            'name'          => __('Creation date'),
             'datatype'      => 'datetime',
             'massiveaction' => false,
         ];
@@ -803,10 +803,114 @@ class Survey extends CommonDBTM
             'id'       => 80,
             'table'    => 'glpi_entities',
             'field'    => 'completename',
-            'name'     => __('Entidade'),
+            'name'     => __('Entity'),
             'datatype' => 'dropdown',
         ];
 
+        // v0.65.0: as demais configurações. Além de poderem virar coluna
+        // na lista, é por estas opções que o GLPI registra cada alteração
+        // na aba Histórico, com o nome do campo -- campo sem opção de
+        // busca não entra no histórico.
+        //
+        // Mensagens e listas de destinatários (HTML/JSON grandes) usam
+        // datatype "text": o histórico mostra "Atualização do campo" em
+        // vez de despejar o conteúdo, e ficam fora da busca.
+        $t = self::getTable();
+        $campo = static function (int $id, string $field, string $name, string $datatype, array $extra = []) use ($t): array {
+            return [
+                'id'            => $id,
+                'table'         => $t,
+                'field'         => $field,
+                'name'          => $name,
+                'datatype'      => $datatype,
+                'massiveaction' => false,
+            ] + $extra;
+        };
+        $oculto = ['nosearch' => true, 'nodisplay' => true];
+
+        $options[] = $campo(9, 'description', __('Description'), 'text', $oculto);
+        $options[] = $campo(10, 'display_mode', __('Formato de exibição', 'npsphere'), 'specific', ['searchtype' => ['equals', 'notequals']]);
+        $options[] = $campo(11, 'allow_multiple_answers', __('Permitir múltiplas respostas', 'npsphere'), 'bool');
+        $options[] = $campo(12, 'is_mandatory', __('Resposta obrigatória', 'npsphere'), 'bool');
+        $options[] = $campo(13, 'is_anonymous', __('Pesquisa anônima', 'npsphere'), 'bool');
+        $options[] = $campo(14, 'require_identification', __('Exigir identificação', 'npsphere'), 'bool');
+        $options[] = $campo(15, 'target_all', __('Disponível para todos os usuários', 'npsphere'), 'bool');
+        $options[] = $campo(16, 'mail_recipients', __('Destinatários do convite (externa)', 'npsphere'), 'text', $oculto);
+        $options[] = $campo(17, 'invite_delay', __('Espera do convite do chamado (min)', 'npsphere'), 'number');
+        $options[] = $campo(18, 'mail_subject', __('Assunto do convite', 'npsphere'), 'string');
+        $options[] = $campo(20, 'mail_body', __('Mensagem do convite', 'npsphere'), 'text', $oculto);
+        $options[] = $campo(21, 'reminder_active', __('Lembrete ligado', 'npsphere'), 'bool');
+        $options[] = $campo(22, 'reminder_days', __('Lembrete: a cada (dias)', 'npsphere'), 'number');
+        $options[] = $campo(23, 'reminder_max', __('Lembrete: no máximo', 'npsphere'), 'number');
+        $options[] = $campo(24, 'reminder_subject', __('Assunto do lembrete', 'npsphere'), 'string');
+        $options[] = $campo(25, 'reminder_body', __('Mensagem do lembrete', 'npsphere'), 'text', $oculto);
+        $options[] = $campo(26, 'report_active', __('Relatório diário ligado', 'npsphere'), 'bool');
+        $options[] = $campo(27, 'report_hour', __('Relatório: horário de envio', 'npsphere'), 'number');
+        $options[] = $campo(28, 'report_nps_cut', __('Relatório: nota baixa', 'npsphere'), 'number');
+        $options[] = $campo(29, 'report_stars_cut', __('Relatório: nota baixa (estrelas)', 'npsphere'), 'number');
+        $options[] = $campo(30, 'report_recipients', __('Relatório: quem recebe', 'npsphere'), 'text', $oculto);
+        $options[] = $campo(31, 'report_subject', __('Assunto do relatório', 'npsphere'), 'string');
+        $options[] = $campo(32, 'report_body', __('Mensagem do relatório', 'npsphere'), 'text', $oculto);
+        $options[] = $campo(33, 'alert_active', __('Aviso de nota baixa ligado', 'npsphere'), 'bool');
+        $options[] = $campo(34, 'alert_delay', __('Aviso: enviar depois de (min)', 'npsphere'), 'number');
+        $options[] = $campo(35, 'alert_nps_cut', __('Aviso: nota baixa', 'npsphere'), 'number');
+        $options[] = $campo(36, 'alert_recipients', __('Aviso: quem recebe', 'npsphere'), 'text', $oculto);
+        $options[] = $campo(37, 'alert_subject', __('Assunto do aviso', 'npsphere'), 'string');
+        $options[] = $campo(38, 'alert_body', __('Mensagem do aviso', 'npsphere'), 'text', $oculto);
+
+        $options[] = [
+            'id'       => 86,
+            'table'    => $t,
+            'field'    => 'is_recursive',
+            'name'     => __('Recursivo', 'npsphere'),
+            'datatype' => 'bool',
+            'massiveaction' => false,
+        ];
+
         return $options;
+    }
+
+    /**
+     * Rótulo dos campos "specific" (tipo e formato) na lista e no
+     * histórico, em vez do valor gravado no banco ("internal").
+     */
+    public static function getSpecificValueToDisplay($field, $values, array $options = [])
+    {
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+
+        switch ($field) {
+            case 'type':
+                return htmlescape(self::getTypes()[$values[$field]] ?? (string) $values[$field]);
+            case 'display_mode':
+                $modos = [
+                    self::DISPLAY_SINGLE_PAGE  => __('Página única', 'npsphere'),
+                    self::DISPLAY_STEP_BY_STEP => __('Uma pergunta por etapa', 'npsphere'),
+                ];
+                return htmlescape($modos[$values[$field]] ?? (string) $values[$field]);
+        }
+
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
+
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
+        if (!is_array($values)) {
+            $values = [$field => $values];
+        }
+        $options['display'] = false;
+
+        switch ($field) {
+            case 'type':
+                return \Dropdown::showFromArray($name, self::getTypes(), $options + ['value' => $values[$field]]);
+            case 'display_mode':
+                return \Dropdown::showFromArray($name, [
+                    self::DISPLAY_SINGLE_PAGE  => __('Página única', 'npsphere'),
+                    self::DISPLAY_STEP_BY_STEP => __('Uma pergunta por etapa', 'npsphere'),
+                ], $options + ['value' => $values[$field]]);
+        }
+
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 }

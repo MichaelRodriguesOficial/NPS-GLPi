@@ -36,6 +36,7 @@ switch ($action) {
     case 'add':
         $itemtype = $_GET['itemtype'] ?? '';
         $items_id = (int) ($_GET['items_id'] ?? 0);
+        $excecao  = !empty($_GET['excluded']) ? 1 : 0;
 
         if (!array_key_exists($itemtype, Target::getTargetTypes()) || $items_id <= 0) {
             http_response_code(400);
@@ -45,20 +46,27 @@ switch ($action) {
 
         // A tabela tem índice único (surveys_id, itemtype, items_id),
         // mas checar antes evita um erro de banco por duplicidade e
-        // permite responder de forma amigável.
+        // permite responder de forma amigável. O mesmo item não pode ser
+        // destinatário e exceção ao mesmo tempo: a resposta diz em qual
+        // das duas listas ele já está.
         if ($target->getFromDBByCrit([
             'surveys_id' => $surveys_id,
             'itemtype'   => $itemtype,
             'items_id'   => $items_id,
         ])) {
-            echo json_encode(['success' => true, 'duplicate' => true]);
+            echo json_encode([
+                'success'   => true,
+                'duplicate' => true,
+                'em'        => !empty($target->fields['is_excluded']) ? 'excecoes' : 'destinatarios',
+            ]);
             exit;
         }
 
         $target->add([
-            'surveys_id' => $surveys_id,
-            'itemtype'   => $itemtype,
-            'items_id'   => $items_id,
+            'surveys_id'  => $surveys_id,
+            'itemtype'    => $itemtype,
+            'items_id'    => $items_id,
+            'is_excluded' => $excecao,
         ]);
         break;
 

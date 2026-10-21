@@ -99,7 +99,12 @@ class Invite extends CommonDBTM
         }
 
         $token = is_string($token) ? trim($token) : '';
-        if (!preg_match('/^[a-f0-9]{64}$/', $token) || !$DB->tableExists(self::getTable())) {
+        if ($token === '' || !$DB->tableExists(self::getTable())) {
+            return null;
+        }
+        if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
+            // v0.65.0: convite informado e inválido conta para o bloqueio.
+            RateLimit::registrarFalha();
             return null;
         }
 
@@ -110,6 +115,7 @@ class Invite extends CommonDBTM
         ])->current();
 
         if (!$linha || !hash_equals((string) $linha['token'], $token)) {
+            RateLimit::registrarFalha();
             return null;
         }
 

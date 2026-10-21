@@ -69,7 +69,7 @@ class Profile extends CommonDBTM
                 'itemtype' => DashboardMenu::class,
                 'label'    => __('Painel de satisfação', 'npsphere'),
                 'field'    => 'plugin_npsphere_dashboard',
-                'rights'   => [READ => __('Ler')],
+                'rights'   => [READ => __('Read')],
             ],
             [
                 // Direito SEPARADO para responder pesquisas.
@@ -81,7 +81,7 @@ class Profile extends CommonDBTM
                 'itemtype' => MySurveysMenu::class,
                 'label'    => __('Minhas pesquisas', 'npsphere'),
                 'field'    => 'plugin_npsphere_answer',
-                'rights'   => [READ => __('Ler')],
+                'rights'   => [READ => __('Read')],
             ],
         ];
     }

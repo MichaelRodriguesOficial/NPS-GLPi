@@ -44,7 +44,8 @@ class SurveyTargets extends CommonGLPI
 
     public static function showForSurvey(Survey $survey): void
     {
-        $targets = [];
+        $targets  = [];
+        $excecoes = [];
         foreach (Target::getForSurvey($survey->getID()) as $row) {
             $itemtype = $row['itemtype'];
             $name = null;
@@ -61,7 +62,7 @@ class SurveyTargets extends CommonGLPI
                 }
             }
 
-            $targets[] = [
+            $linha = [
                 'id'        => $row['id'],
                 'itemtype'  => $itemtype,
                 'items_id'  => $row['items_id'],
@@ -69,6 +70,12 @@ class SurveyTargets extends CommonGLPI
                 'name'      => $name,
                 'missing'   => $name === null,
             ];
+
+            if (!empty($row['is_excluded'])) {
+                $excecoes[] = $linha;
+            } else {
+                $targets[] = $linha;
+            }
         }
 
         // Um dropdown NATIVO do GLPI por tipo de destinatário.
@@ -81,46 +88,50 @@ class SurveyTargets extends CommonGLPI
         // 'display' => false pede o HTML como retorno; algumas versões
         // ignoram esse parâmetro e imprimem direto, por isso o
         // ob_start() em volta -- assim funciona nos dois casos.
-        $dropdowns = [];
-        foreach (Target::getTargetTypes() as $itemtype => $label) {
-            $options = [
-                'name'                => 'target_' . $itemtype,
-                'value'               => 0,
-                'width'               => '100%',
-                'display_emptychoice' => true,
-                'emptylabel'          => sprintf(__('Selecione %s…', 'npsphere'), mb_strtolower($label)),
-                'entity'              => -1,
-                'display'             => false,
-            ];
+        // Dois conjuntos: um para os destinatários, outro para as exceções.
+        $dropdowns = ['incluir' => [], 'excluir' => []];
+        foreach (['incluir' => 'target_', 'excluir' => 'exclude_'] as $lista => $prefixo) {
+            foreach (Target::getTargetTypes() as $itemtype => $label) {
+                $options = [
+                    'name'                => $prefixo . $itemtype,
+                    'value'               => 0,
+                    'width'               => '100%',
+                    'display_emptychoice' => true,
+                    'emptylabel'          => sprintf(__('Selecione %s…', 'npsphere'), mb_strtolower($label)),
+                    'entity'              => -1,
+                    'display'             => false,
+                ];
 
-            ob_start();
-            if ($itemtype === Target::TYPE_USER) {
-                // Usuário tem dropdown PRÓPRIO no GLPI. O genérico
-                // (Dropdown::show) lista pelo campo "name", que é o
-                // login -- já User::dropdown() respeita o formato de
-                // nome configurado na instalação (nome + sobrenome) e
-                // permite pesquisar tanto pelo login quanto pelo nome
-                // real da pessoa.
-                //
-                // 'right' => 'all' inclui todos os usuários, e não
-                // apenas os que têm algum direito específico: quem
-                // responde uma pesquisa interna pode ser qualquer
-                // pessoa da organização.
-                $html = \User::dropdown($options + [
-                    'right' => 'all',
-                ]);
-            } else {
-                $html = \Dropdown::show($itemtype, $options);
+                ob_start();
+                if ($itemtype === Target::TYPE_USER) {
+                    // Usuário tem dropdown PRÓPRIO no GLPI. O genérico
+                    // (Dropdown::show) lista pelo campo "name", que é o
+                    // login -- já User::dropdown() respeita o formato de
+                    // nome configurado na instalação (nome + sobrenome) e
+                    // permite pesquisar tanto pelo login quanto pelo nome
+                    // real da pessoa.
+                    //
+                    // 'right' => 'all' inclui todos os usuários, e não
+                    // apenas os que têm algum direito específico: quem
+                    // responde uma pesquisa interna pode ser qualquer
+                    // pessoa da organização.
+                    $html = \User::dropdown($options + [
+                        'right' => 'all',
+                    ]);
+                } else {
+                    $html = \Dropdown::show($itemtype, $options);
+                }
+                $printed = ob_get_clean();
+
+                $dropdowns[$lista][$itemtype] = is_string($html) && $html !== '' ? $html : $printed;
             }
-            $printed = ob_get_clean();
-
-            $dropdowns[$itemtype] = is_string($html) && $html !== '' ? $html : $printed;
         }
 
         TemplateRenderer::getInstance()->display('@npsphere/targets.html.twig', [
             'dropdowns'   => $dropdowns,
             'survey'      => $survey,
             'targets'     => $targets,
+            'excecoes'    => $excecoes,
             'target_all'  => !empty($survey->fields['target_all']),
             'types'       => Target::getTargetTypes(),
             'can_edit'    => Session::haveRight(Target::$rightname, UPDATE),

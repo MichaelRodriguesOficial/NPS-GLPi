@@ -1,11 +1,11 @@
-{% macro variacao(delta, casas, sufixo) %}
+{% macro variacao(delta, casas, sufixo, sep_decimal) %}
     {# Seta e cor pela DIREÇÃO. Para o NPS, a nota média e o volume, subir
        é bom -- por isso verde para cima e vermelho para baixo. #}
     {% if delta is not null %}
         {% if delta > 0 %}
-            <span class="npsphere-var npsphere-var-sobe">&#9650; {{ delta|number_format(casas, ',', '.') }}{{ sufixo }}</span>
+            <span class="npsphere-var npsphere-var-sobe">&#9650; {{ delta|number_format(casas, sep_decimal|default(','), '') }}{{ sufixo }}</span>
         {% elseif delta < 0 %}
-            <span class="npsphere-var npsphere-var-desce">&#9660; {{ (delta * -1)|number_format(casas, ',', '.') }}{{ sufixo }}</span>
+            <span class="npsphere-var npsphere-var-desce">&#9660; {{ (delta * -1)|number_format(casas, sep_decimal|default(','), '') }}{{ sufixo }}</span>
         {% else %}
             <span class="npsphere-var npsphere-var-igual">= {{ __('sem variação', 'npsphere') }}</span>
         {% endif %}
@@ -184,8 +184,14 @@
                         <i class="ti ti-chevron-down"></i>
                     </button>
                     <div class="npsphere-export-menu" hidden>
-                        <button type="button" data-export-url="{{ export_url }}">
-                            <i class="ti ti-file-spreadsheet"></i> <span>{{ __('Planilha (CSV)', 'npsphere') }}</span>
+                        <button type="button" data-export-url="{{ export_url }}&format=xlsx">
+                            <i class="ti ti-file-spreadsheet"></i> <span>{{ __('Excel (.xlsx)', 'npsphere') }}</span>
+                        </button>
+                        <button type="button" data-export-url="{{ export_url }}&format=ods">
+                            <i class="ti ti-table"></i> <span>{{ __('LibreOffice (.ods)', 'npsphere') }}</span>
+                        </button>
+                        <button type="button" data-export-url="{{ export_url }}&format=csv">
+                            <i class="ti ti-file-text"></i> <span>{{ __('CSV', 'npsphere') }}</span>
                         </button>
                         <button type="button" data-export-print="dashboard">
                             <i class="ti ti-printer"></i> <span>{{ __('Imprimir', 'npsphere') }}</span>
@@ -231,20 +237,20 @@
                     <strong class="npsphere-kpi-value {{ resumo.nps >= 50 ? 'text-success' : (resumo.nps >= 0 ? 'text-warning' : 'text-danger') }}">
                         {{ resumo.nps > 0 ? '+' : '' }}{{ resumo.nps }}
                     </strong>
-                    <span class="npsphere-kpi-foot">{{ m.variacao(comparacao.nps, 0, ' ' ~ __('pontos', 'npsphere')) }}</span>
+                    <span class="npsphere-kpi-foot">{{ m.variacao(comparacao.nps, 0, ' ' ~ __('pontos', 'npsphere'), sep_decimal) }}</span>
                 </div>
             {% endif %}
             {% if resumo.media is not null %}
                 <div class="npsphere-kpi">
                     <span class="npsphere-kpi-label">{{ __('Nota média', 'npsphere') }}</span>
                     <strong class="npsphere-kpi-value">{{ resumo.media }}<small class="npsphere-kpi-unit">/10</small></strong>
-                    <span class="npsphere-kpi-foot">{{ m.variacao(comparacao.media, 1, '') }}</span>
+                    <span class="npsphere-kpi-foot">{{ m.variacao(comparacao.media, 1, '', sep_decimal) }}</span>
                 </div>
             {% endif %}
             <div class="npsphere-kpi">
                 <span class="npsphere-kpi-label">{{ __('Respostas', 'npsphere') }}</span>
                 <strong class="npsphere-kpi-value">{{ resumo.total }}</strong>
-                <span class="npsphere-kpi-foot">{{ comparacao.tem_base ? m.variacao(comparacao.total, 0, '') : __('pesquisas enviadas', 'npsphere') }}</span>
+                <span class="npsphere-kpi-foot">{{ comparacao.tem_base ? m.variacao(comparacao.total, 0, '', sep_decimal) : __('pesquisas enviadas', 'npsphere') }}</span>
             </div>
             {% if resumo.nps is not null %}
                 <div class="npsphere-kpi">
@@ -271,7 +277,7 @@
         <p class="npsphere-dash-hint npsphere-dash-comparacao">
             <i class="ti ti-arrows-left-right"></i>
             {{ __('Variação em relação ao período anterior, de mesma duração:', 'npsphere') }}
-            <strong>{{ comparacao.de|date('d/m/Y') }} {{ __('a', 'npsphere') }} {{ comparacao.ate|date('d/m/Y') }}</strong>
+            <strong>{{ comparacao.de|date('Y-m-d')|formatted_date }} {{ __('a', 'npsphere') }} {{ comparacao.ate|date('Y-m-d')|formatted_date }}</strong>
             ({{ comparacao.total_antes }} {{ __('respostas', 'npsphere') }}).
         </p>
         {% endif %}

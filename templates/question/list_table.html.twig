@@ -12,10 +12,10 @@
             <thead>
                 <tr>
                     <th style="width: 2rem"></th>
-                    <th>{{ __('Pergunta') }}</th>
+                    <th>{{ __('Pergunta', 'npsphere') }}</th>
                     <th>{{ __('Tipo', 'npsphere') }}</th>
                     <th class="text-center">{{ __('Obrigatória', 'npsphere') }}</th>
-                    <th class="text-center">{{ __('Ativa') }}</th>
+                    <th class="text-center">{{ __('Ativa', 'npsphere') }}</th>
                     <th class="text-center">{{ __('NPS', 'npsphere') }}</th>
                     <th class="text-end">{{ __('Ações', 'npsphere') }}</th>
                 </tr>
@@ -35,8 +35,8 @@
                             {% endif %}
                         </td>
                         <td>{{ types[question.type] ?? question.type }}</td>
-                        <td class="text-center">{{ question.is_required ? __('Sim') : __('Não') }}</td>
-                        <td class="text-center">{{ question.is_active ? __('Sim') : __('Não') }}</td>
+                        <td class="text-center">{{ question.is_required ? __('Yes') : __('No') }}</td>
+                        <td class="text-center">{{ question.is_active ? __('Yes') : __('No') }}</td>
                         <td class="text-center">
                             {% if question.type == 'nps' %}
                                 <i class="ti ti-gauge text-primary" title="{{ __('Esta pergunta entra no cálculo do NPS', 'npsphere') }}"></i>
@@ -49,14 +49,14 @@
                                erro de permissão. #}
                             <a href="{{ question_form_url }}?id={{ question.id }}" class="btn btn-sm btn-outline-secondary npsphere-open-form"
                                data-url="{{ question_form_url }}?id={{ question.id }}"
-                               title="{{ can_edit ? __('Editar') : __('Visualizar', 'npsphere') }}">
+                               title="{{ can_edit ? __('Edit') : __('Visualizar', 'npsphere') }}">
                                 <i class="ti {{ can_edit ? 'ti-pencil' : 'ti-eye' }}"></i>
                             </a>
                             {% if can_create %}
                                 <form method="post" action="{{ question_form_url }}" class="d-inline npsphere-list-action-form">
                                     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="id" value="{{ question.id }}">
-                                    <button type="submit" name="duplicate" value="1" class="btn btn-sm btn-outline-secondary" title="{{ __('Duplicar') }}">
+                                    <button type="submit" name="duplicate" value="1" class="btn btn-sm btn-outline-secondary" title="{{ __('Duplicate') }}">
                                         <i class="ti ti-copy"></i>
                                     </button>
                                 </form>
@@ -66,7 +66,7 @@
                                       onsubmit="return confirm('{{ __('Excluir esta pergunta definitivamente?', 'npsphere')|e('js') }}');">
                                     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="id" value="{{ question.id }}">
-                                    <button type="submit" name="delete" value="1" class="btn btn-sm btn-outline-danger" title="{{ __('Excluir') }}">
+                                    <button type="submit" name="delete" value="1" class="btn btn-sm btn-outline-danger" title="{{ __('Delete') }}">
                                         <i class="ti ti-trash"></i>
                                     </button>
                                 </form>

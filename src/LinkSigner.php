@@ -38,8 +38,15 @@ class LinkSigner
     /** A chave confere com a mensagem? Comparação em tempo constante. */
     public static function confere($chave, string $mensagem): bool
     {
-        return is_string($chave)
+        $ok = is_string($chave)
             && preg_match('/^[a-f0-9]{64}$/', $chave) === 1
             && hash_equals(self::assinar($mensagem), $chave);
+
+        // v0.65.0: chave errada conta para o bloqueio por IP (RateLimit).
+        if (!$ok) {
+            RateLimit::registrarFalha();
+        }
+
+        return $ok;
     }
 }

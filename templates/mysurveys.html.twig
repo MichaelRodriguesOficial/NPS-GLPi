@@ -21,7 +21,7 @@
                     {% if survey.fields['date_end'] %}
                         <small class="npsphere-survey-deadline">
                             <i class="ti ti-clock"></i>
-                            {{ __('Responda até', 'npsphere') }} {{ survey.fields['date_end']|date('d/m/Y') }}
+                            {{ __('Responda até', 'npsphere') }} {{ survey.fields['date_end']|date('Y-m-d')|formatted_date }}
                         </small>
                     {% endif %}
                 </span>

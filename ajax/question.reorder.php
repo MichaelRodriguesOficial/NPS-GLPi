@@ -39,6 +39,13 @@ if ($surveys_id <= 0 || !is_array($order) || empty($order)) {
 }
 
 $table = Question::getTable();
+
+// Ordem anterior, para registrar no histórico só quando mudou de fato.
+$antes = [];
+foreach ($DB->request(['SELECT' => ['id'], 'FROM' => $table, 'WHERE' => ['surveys_id' => $surveys_id], 'ORDER' => 'position ASC']) as $r) {
+    $antes[] = (int) $r['id'];
+}
+
 $position = 1;
 foreach ($order as $questions_id) {
     $questions_id = (int) $questions_id;
@@ -59,6 +66,21 @@ foreach ($order as $questions_id) {
         $DB->update($table, ['position' => $position], ['id' => $questions_id]);
     }
     $position++;
+}
+
+$depois = [];
+foreach ($DB->request(['SELECT' => ['id'], 'FROM' => $table, 'WHERE' => ['surveys_id' => $surveys_id], 'ORDER' => 'position ASC']) as $r) {
+    $depois[] = (int) $r['id'];
+}
+if ($antes !== $depois) {
+    // Aba Histórico da pesquisa (v0.65.0).
+    Log::history(
+        $surveys_id,
+        \GlpiPlugin\Npsphere\Survey::class,
+        ['0', '', __('Ordem das perguntas alterada', 'npsphere')],
+        Question::class,
+        Log::HISTORY_UPDATE_SUBITEM
+    );
 }
 
 echo json_encode(['success' => true]);

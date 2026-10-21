@@ -23,6 +23,9 @@
 use GlpiPlugin\Npsphere\PublicAccess;
 use GlpiPlugin\Npsphere\RespondentIdentity;
 
+// v0.65.0: limite de requisições por IP nas rotas sem login.
+\GlpiPlugin\Npsphere\RateLimit::proteger(\GlpiPlugin\Npsphere\RateLimit::PAGINA, true);
+
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 

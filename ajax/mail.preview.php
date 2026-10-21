@@ -48,7 +48,7 @@ $corpo = SurveyMailer::montarPrevia(
 );
 
 echo '<!DOCTYPE html>' . "\n"
-    . '<html lang="' . htmlspecialchars($_SESSION['glpilanguage'] ?? 'pt_BR') . '">' . "\n"
+    . '<html lang="' . \GlpiPlugin\Npsphere\JsI18n::langHtml() . '">' . "\n"
     . '<head><meta charset="UTF-8">'
     . '<meta name="viewport" content="width=device-width, initial-scale=1">'
     // Links da prévia abrem fora do iframe, sem trocar a prévia pela

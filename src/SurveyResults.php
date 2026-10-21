@@ -169,7 +169,7 @@ class SurveyResults extends CommonGLPI
             // inteira enquanto a tela mostra um recorte seria um
             // resultado surpreendente -- e difícil de notar, porque o
             // arquivo só é conferido depois.
-            'export_url'    => \Plugin::getWebDir('npsphere', true) . '/ajax/export.csv.php',
+            'export_url'    => \Plugin::getWebDir('npsphere', true) . '/ajax/results.export.php',
             'export_params' => $entidades_filtro,
             'survey'        => $survey,
             'total_answers' => $total_answers,

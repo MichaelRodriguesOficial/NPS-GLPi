@@ -2,6 +2,37 @@
 
 As versões mais recentes ficam no topo.
 
+## v0.65.0 — Fase 11: exportação Excel/ODS, exceções, histórico, limite de requisições e inglês
+
+- **Exportação em Excel (.xlsx) e LibreOffice (.ods)**, além do CSV, nos **Resultados** e no **Painel de satisfação**.
+  - Um arquivo só, com as abas **Visão geral** e **Respostas** (no Painel, uma aba por quadro).
+  - Notas saem como número e datas como data: dá para ordenar, filtrar e montar gráfico direto.
+  - Usa a mesma biblioteca de planilhas que o próprio GLPI usa nas listas (PhpSpreadsheet); nada novo para instalar.
+  - Os filtros da tela (datas, nota, entidade) valem para todos os formatos.
+- **Exceções no público-alvo** (pesquisa interna): um quadro novo na aba **Público-alvo**.
+  - Ex.: "o grupo Financeiro, **exceto** o gestor", ou "todos os usuários, **exceto** o grupo de TI".
+  - A exceção sempre vence: a pessoa não vê a pesquisa, não recebe o aviso de pesquisa obrigatória e não recebe o convite por e-mail.
+  - Vale para entidade (com as filhas), perfil, grupo e usuário.
+- **Histórico de alterações** na aba **Histórico** nativa do GLPI:
+  - campos da pesquisa e dos modelos de e-mail;
+  - perguntas criadas, alteradas, excluídas e reordenadas;
+  - destinatários e exceções do público-alvo incluídos e removidos.
+- **Limite de requisições** nas páginas que abrem sem login (link público e links dos e-mails).
+  - Por IP, com o mesmo componente que o GLPI usa no código de verificação em duas etapas (Symfony RateLimiter), guardado no cache do GLPI.
+  - Link, chave ou token inválido conta à parte: 20 em 10 minutos bloqueiam o IP em todas essas páginas até a janela passar. Apagar o cookie não zera mais a contagem.
+  - Acima do limite, a pessoa vê "Aguarde um pouco" (HTTP 429).
+  - Os limites podem ser trocados em `config/local_define.php` (ver o README).
+- **Tradução completa: inglês incluído** (`en_GB` e `en_US`).
+  - O plugin segue o idioma de cada usuário no GLPI; o link público e os links do e-mail seguem o idioma do navegador.
+  - Os textos montados pelo JavaScript (botões Anterior/Próxima, "Pergunta 1 de 4", aviso de pesquisa obrigatória, confirmações) também são traduzidos.
+  - Nomes dos países do telefone, nome do arquivo exportado e o atributo de idioma das páginas e e-mails também seguem o idioma.
+  - Textos genéricos ("Sim", "Não", "Nome", "Descrição", "Editar"…) passaram a usar os do próprio GLPI.
+  - Ferramenta `tools/locales.py` para extrair, atualizar e compilar as traduções (fora do ZIP). Para outro idioma, basta copiar o `en_GB.po`.
+- **Datas e números no formato das Preferências do GLPI** (Formato de data e Formato dos números), como no resto do GLPI. Antes o plugin fixava 21/10/2026 e vírgula decimal.
+  - Afeta as telas, o aviso de pesquisa obrigatória e o relatório diário por e-mail.
+  - O relatório sai pela ação automática, sem usuário: usa o formato de Configurar › Geral › Valores padrão. Se preferir 21-10-2026 a 2026-10-21, troque o "Formato de data" ali (ou nas preferências de cada usuário).
+- **Correção:** o campo de busca da lista de respostas mostrava `{% if is_ticket %}` no texto de exemplo.
+
 ## v0.64.3 — Clonar no padrão do GLPI e páginas de resposta no celular
 
 - **Clonar no lugar do botão Duplicar.** A pesquisa passou a usar o recurso de clonagem do próprio GLPI (`Glpi\Features\Clonable`).

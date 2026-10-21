@@ -13,9 +13,12 @@ use Session;
  * Cada linha liga a pesquisa a UM destinatário, que pode ser uma
  * entidade, um perfil, um grupo ou um usuário específico. Vários
  * critérios se somam (união): estar em qualquer um deles basta para
- * poder responder. Não há regras de exclusão -- se um dia forem
- * necessárias ("todo o grupo X, exceto fulano"), a estrutura comporta
- * uma coluna adicional sem migração destrutiva.
+ * poder responder.
+ *
+ * Exceções (v0.65.0, coluna is_excluded): "todo o grupo X, exceto
+ * fulano". Quem atende a QUALQUER exceção fica de fora, mesmo estando
+ * nos destinatários ou com "Todos os usuários" marcado. Um mesmo item
+ * não pode ser destinatário e exceção ao mesmo tempo (índice único).
  */
 class Target extends CommonDBChild
 {
@@ -41,15 +44,41 @@ class Target extends CommonDBChild
     }
 
     /**
+     * Como a linha aparece na aba Histórico da pesquisa (v0.65.0):
+     * "Exceção — Usuário: Costa Marina", em vez de "N/A (9)" (a tabela
+     * não tem campo de nome).
+     */
+    public function getHistoryNameForItem(\CommonDBTM $item, $case)
+    {
+        $itemtype = (string) ($this->fields['itemtype'] ?? '');
+        $items_id = (int) ($this->fields['items_id'] ?? 0);
+
+        $nome = '#' . $items_id;
+        if (class_exists($itemtype)) {
+            $alvo = new $itemtype();
+            if ($alvo->getFromDB($items_id)) {
+                $nome = $alvo->getFriendlyName();
+            }
+        }
+
+        return sprintf(
+            '%s — %s: %s',
+            !empty($this->fields['is_excluded']) ? __('Exceção', 'npsphere') : __('Destinatário', 'npsphere'),
+            self::getTargetTypes()[$itemtype] ?? $itemtype,
+            $nome
+        );
+    }
+
+    /**
      * Tipos disponíveis, com rótulo traduzido.
      */
     public static function getTargetTypes(): array
     {
         return [
-            self::TYPE_ENTITY  => __('Entidade'),
-            self::TYPE_PROFILE => __('Perfil'),
-            self::TYPE_GROUP   => __('Grupo'),
-            self::TYPE_USER    => __('Usuário'),
+            self::TYPE_ENTITY  => __('Entity'),
+            self::TYPE_PROFILE => __('Profile'),
+            self::TYPE_GROUP   => __('Group'),
+            self::TYPE_USER    => __('User'),
         ];
     }
 
@@ -58,14 +87,19 @@ class Target extends CommonDBChild
      *
      * @return array<int, array<string, mixed>>
      */
-    public static function getForSurvey(int $surveys_id): array
+    public static function getForSurvey(int $surveys_id, ?bool $excecoes = null): array
     {
         global $DB;
+
+        $where = ['surveys_id' => $surveys_id];
+        if ($excecoes !== null && $DB->fieldExists(self::getTable(), 'is_excluded')) {
+            $where['is_excluded'] = $excecoes ? 1 : 0;
+        }
 
         $out = [];
         foreach ($DB->request([
             'FROM'  => self::getTable(),
-            'WHERE' => ['surveys_id' => $surveys_id],
+            'WHERE' => $where,
             'ORDER' => ['itemtype ASC', 'id ASC'],
         ]) as $row) {
             $out[] = $row;
@@ -83,30 +117,52 @@ class Target extends CommonDBChild
      *     deliberada: uma pesquisa sem público definido não deve vazar
      *     para toda a base. O administrador precisa dizer para quem é
      *     (ou marcar "todos" explicitamente);
-     *  3. Caso contrário, basta o usuário atender a QUALQUER critério.
+     *  3. Caso contrário, basta o usuário atender a QUALQUER critério;
+     *  4. Por último, as exceções: atender a QUALQUER uma tira o usuário,
+     *     inclusive de uma pesquisa para "todos os usuários".
      */
     public static function isUserTargeted(Survey $survey, ?int $users_id = null): bool
     {
-        global $DB;
-
         $users_id = $users_id ?? (int) Session::getLoginUserID();
         if (!$users_id) {
             return false;
         }
 
-        if (!empty($survey->fields['target_all'])) {
-            return true;
-        }
-
-        $targets = self::getForSurvey($survey->getID());
-        if (empty($targets)) {
-            return false;
-        }
-
         // Agrupa por tipo para consultar cada dimensão uma única vez
-        $by_type = [];
-        foreach ($targets as $t) {
-            $by_type[$t['itemtype']][] = (int) $t['items_id'];
+        $incluir = [];
+        $excluir = [];
+        foreach (self::getForSurvey($survey->getID()) as $t) {
+            if (!empty($t['is_excluded'])) {
+                $excluir[$t['itemtype']][] = (int) $t['items_id'];
+            } else {
+                $incluir[$t['itemtype']][] = (int) $t['items_id'];
+            }
+        }
+
+        if (empty($survey->fields['target_all'])) {
+            if (empty($incluir) || !self::atende($users_id, $incluir, false)) {
+                return false;
+            }
+        }
+
+        return !self::atende($users_id, $excluir, true);
+    }
+
+    /**
+     * O usuário atende a algum dos critérios?
+     *
+     * @param array<string, int[]> $by_type itens por tipo
+     * @param bool $excecao na exceção por ENTIDADE vale só quem tem perfil
+     *        na própria entidade ou numa filha dela. Sem isso, excluir uma
+     *        entidade filha tiraria também quem tem perfil recursivo na
+     *        entidade pai -- normalmente a equipe de TI inteira.
+     */
+    private static function atende(int $users_id, array $by_type, bool $excecao): bool
+    {
+        global $DB;
+
+        if (empty($by_type)) {
+            return false;
         }
 
         if (!empty($by_type[self::TYPE_USER])
@@ -137,6 +193,19 @@ class Target extends CommonDBChild
         }
 
         if (!empty($by_type[self::TYPE_ENTITY])) {
+            if ($excecao) {
+                $alcance = [];
+                foreach ($by_type[self::TYPE_ENTITY] as $entidade) {
+                    $alcance = array_merge($alcance, array_map('intval', getSonsOf('glpi_entities', $entidade)));
+                }
+                $count = $DB->request([
+                    'COUNT' => 'cpt',
+                    'FROM'  => Profile_User::getTable(),
+                    'WHERE' => ['users_id' => $users_id, 'entities_id' => array_values(array_unique($alcance))],
+                ])->current()['cpt'];
+                return (int) $count > 0;
+            }
+
             // Entidade: considera as entidades às quais o usuário tem
             // acesso, respeitando a recursividade do GLPI (uma entidade
             // pai alcança as filhas quando is_recursive está marcado).
@@ -215,22 +284,31 @@ class Target extends CommonDBChild
                                                !empty($survey->fields['is_recursive']));
         }
 
+        $fora = [];
         foreach ($alvos as $alvo) {
             $itemtype = $alvo['itemtype'];
             $items_id = (int) $alvo['items_id'];
 
+            $achados = [];
             if ($itemtype === 'Entity') {
-                $ids = array_merge($ids, self::getUsuariosDaEntidade($items_id, true));
+                $achados = self::getUsuariosDaEntidade($items_id, true);
             } elseif ($itemtype === 'Profile') {
-                $ids = array_merge($ids, self::getUsuariosPorVinculo('glpi_profiles_users', 'profiles_id', $items_id));
+                $achados = self::getUsuariosPorVinculo('glpi_profiles_users', 'profiles_id', $items_id);
             } elseif ($itemtype === 'Group') {
-                $ids = array_merge($ids, self::getUsuariosPorVinculo('glpi_groups_users', 'groups_id', $items_id));
+                $achados = self::getUsuariosPorVinculo('glpi_groups_users', 'groups_id', $items_id);
             } elseif ($itemtype === 'User') {
-                $ids[] = $items_id;
+                $achados = [$items_id];
+            }
+
+            // Exceções saem do público no fim, valha a ordem que valer.
+            if (!empty($alvo['is_excluded'])) {
+                $fora = array_merge($fora, $achados);
+            } else {
+                $ids = array_merge($ids, $achados);
             }
         }
 
-        $ids = array_values(array_unique(array_filter($ids)));
+        $ids = array_values(array_diff(array_unique(array_filter($ids)), $fora));
         if (empty($ids)) {
             return [];
         }

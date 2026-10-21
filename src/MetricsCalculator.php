@@ -278,7 +278,7 @@ class MetricsCalculator
             return ['kind' => 'yesno', 'total' => 0];
         }
 
-        $labels = ['yes' => __('Sim'), 'no' => __('Não'), 'dont_know' => __('Não sei', 'npsphere')];
+        $labels = ['yes' => __('Yes'), 'no' => __('No'), 'dont_know' => __('Não sei', 'npsphere')];
         $rows = [];
         foreach ($labels as $key => $label) {
             if (!isset($counts[$key])) {

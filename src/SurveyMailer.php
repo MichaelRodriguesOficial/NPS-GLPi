@@ -1023,8 +1023,8 @@ class SurveyMailer
                 break;
 
             case 'yesno':
-                $opcoes[] = ['yes', htmlspecialchars(__('Sim')), '#2fb344'];
-                $opcoes[] = ['no', htmlspecialchars(__('Não')), '#d63939'];
+                $opcoes[] = ['yes', htmlspecialchars(__('Yes')), '#2fb344'];
+                $opcoes[] = ['no', htmlspecialchars(__('No')), '#d63939'];
                 if (!empty($cfg['allow_dont_know'])) {
                     $opcoes[] = ['dont_know', htmlspecialchars(__('Não sei', 'npsphere')), '#868e96'];
                 }
@@ -1343,7 +1343,7 @@ class SurveyMailer
     private static function documentoHtml(string $fragmento, string $titulo): string
     {
         return "<!DOCTYPE html>\n"
-            . "<html lang=\"pt-BR\">\n"
+            . "<html lang=\"" . JsI18n::langHtml() . "\">\n"
             . "<head>\n"
             . "<meta charset=\"UTF-8\">\n"
             . "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"

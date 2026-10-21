@@ -1,0 +1,3440 @@
+# Tradução do NPSphere: pt_PT.
+msgid ""
+msgstr ""
+"Project-Id-Version: NPSphere\n"
+"Report-Msgid-Bugs-To: https://github.com/MichaelRodriguesOficial/NPS-GLPi/issues\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_PT\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ajax/alert.preview.php:47
+msgid "Prévia com a nota baixa mais recente dos últimos 30 dias."
+msgstr ""
+
+#: ajax/alert.preview.php:48 ajax/report.preview.php:48
+msgid "Assunto:"
+msgstr ""
+
+#: ajax/alert.preview.php:51
+msgid ""
+"Nenhuma resposta com nota baixa nos últimos 30 dias, com a nota de corte escolhida."
+msgstr ""
+
+#: ajax/answer.detail.php:27
+msgid "Resposta não encontrada."
+msgstr ""
+
+#: ajax/answer.oneclick.php:55 front/ticket.php:228 src/TicketLink.php:339
+msgid "Chamado não encontrado."
+msgstr ""
+
+#: ajax/answer.oneclick.php:59 front/ticket.php:234
+msgid "Apenas o requerente do chamado pode responder esta pesquisa."
+msgstr ""
+
+#: ajax/answer.oneclick.php:67 front/ticket.php:243
+msgid "Não há pesquisa de satisfação configurada para este chamado."
+msgstr ""
+
+#: ajax/answer.oneclick.php:76 ajax/answer.submit.php:43 ajax/mail.send.php:27 ajax/recipients.import.php:36
+msgid "Pesquisa não encontrada."
+msgstr ""
+
+#: ajax/answer.oneclick.php:80 ajax/answer.oneclick.php:100 ajax/internal.oneclick.php:46 ajax/public.oneclick.php:72 ajax/ticket.oneclick.php:46 src/QuestionType/AbstractOptionListType.php:116
+msgid "Opção inválida."
+msgstr ""
+
+#: ajax/answer.oneclick.php:84 front/answer.form.php:150 src/Target.php:640 src/Target.php:644
+msgid "Esta pesquisa não está disponível para você."
+msgstr ""
+
+#: ajax/answer.submit.php:33
+msgid "Você não tem permissão para responder pesquisas."
+msgstr ""
+
+#: ajax/dashboard.export.php:27
+msgid "Resumo"
+msgstr ""
+
+#: ajax/dashboard.export.php:28 front/dashboard.php:26 src/DashboardMenu.php:24 src/Profile.php:70
+msgid "Painel de satisfação"
+msgstr ""
+
+#: ajax/dashboard.export.php:29
+msgid "Período"
+msgstr ""
+
+#: ajax/dashboard.export.php:30
+msgid "Gerado em"
+msgstr ""
+
+#: ajax/dashboard.export.php:32
+msgid "Escopo"
+msgstr ""
+
+#: ajax/dashboard.export.php:32
+msgid "Apenas as pesquisas criadas por você"
+msgstr ""
+
+#: ajax/dashboard.export.php:42
+msgid "Indicadores"
+msgstr ""
+
+#: ajax/dashboard.export.php:44
+msgid "Atual"
+msgstr ""
+
+#: ajax/dashboard.export.php:44 ajax/dashboard.export.php:48
+msgid "Período anterior"
+msgstr ""
+
+#: ajax/dashboard.export.php:44
+msgid "Variação"
+msgstr ""
+
+#: ajax/dashboard.export.php:45 ajax/dashboard.export.php:72 ajax/results.export.php:75 src/QuestionType/Nps.php:14 templates/dashboard.html.twig:89 templates/dashboard.html.twig:236
+msgid "NPS"
+msgstr ""
+
+#: ajax/dashboard.export.php:46 ajax/dashboard.export.php:73 ajax/results.export.php:76 templates/dashboard.html.twig:90 templates/dashboard.html.twig:245 templates/results.html.twig:165
+msgid "Nota média"
+msgstr ""
+
+#: ajax/dashboard.export.php:47 ajax/dashboard.export.php:71 ajax/results.export.php:167 templates/dashboard.html.twig:88 templates/dashboard.html.twig:251 templates/results.html.twig:78
+msgid "Respostas"
+msgstr ""
+
+#: ajax/dashboard.export.php:50 templates/dashboard.html.twig:91 templates/dashboard.html.twig:257 templates/dashboard.html.twig:321 templates/results.html.twig:179 templates/results.html.twig:245
+msgid "Promotores"
+msgstr ""
+
+#: ajax/dashboard.export.php:51 templates/dashboard.html.twig:262 templates/dashboard.html.twig:324 templates/results.html.twig:184 templates/results.html.twig:246 templates/results.html.twig:325
+msgid "Neutros"
+msgstr ""
+
+#: ajax/dashboard.export.php:52 templates/dashboard.html.twig:92 templates/dashboard.html.twig:267 templates/dashboard.html.twig:327 templates/results.html.twig:189 templates/results.html.twig:247
+msgid "Detratores"
+msgstr ""
+
+#: ajax/dashboard.export.php:59 templates/dashboard.html.twig:378
+msgid "Por pesquisa"
+msgstr ""
+
+#: ajax/dashboard.export.php:59 ajax/results.export.php:72 front/ticket.php:265 templates/dashboard.html.twig:378
+msgid "Pesquisa"
+msgstr ""
+
+#: ajax/dashboard.export.php:60 templates/dashboard.html.twig:379
+msgid "Por entidade"
+msgstr ""
+
+#: ajax/dashboard.export.php:60 front/ticket.php:266 templates/dashboard.html.twig:379 templates/results.html.twig:350
+msgid "Entidade"
+msgstr ""
+
+#: ajax/dashboard.export.php:61 templates/dashboard.html.twig:380
+msgid "Por requerente"
+msgstr ""
+
+#: ajax/dashboard.export.php:61 templates/dashboard.html.twig:380 templates/template.html.twig:238
+msgid "Requerente"
+msgstr ""
+
+#: ajax/dashboard.export.php:62 templates/dashboard.html.twig:381
+msgid "Por técnico"
+msgstr ""
+
+#: ajax/dashboard.export.php:62 templates/dashboard.html.twig:381
+msgid "Técnico"
+msgstr ""
+
+#: ajax/dashboard.export.php:63 templates/dashboard.html.twig:382
+msgid "Por grupo técnico"
+msgstr ""
+
+#: ajax/dashboard.export.php:63 templates/dashboard.html.twig:382
+msgid "Grupo técnico"
+msgstr ""
+
+#: ajax/dashboard.export.php:64 templates/dashboard.html.twig:383
+msgid "Por categoria"
+msgstr ""
+
+#: ajax/dashboard.export.php:64 templates/dashboard.html.twig:383
+msgid "Categoria"
+msgstr ""
+
+#: ajax/dashboard.export.php:74
+msgid "Promotores %"
+msgstr ""
+
+#: ajax/dashboard.export.php:75
+msgid "Detratores %"
+msgstr ""
+
+#: ajax/dashboard.export.php:79
+msgid "Sem dados no período"
+msgstr ""
+
+#: ajax/dashboard.export.php:95
+msgid "Painel"
+msgstr ""
+
+#: ajax/mail.send.php:34
+msgid ""
+"Pesquisas vinculadas a chamado são enviadas automaticamente no encerramento do chamado."
+msgstr ""
+
+#: ajax/mail.send.php:43
+msgid "Ative a pesquisa antes de enviar os convites."
+msgstr ""
+
+#: ajax/mail.send.php:50
+msgid "%d convite(s) enfileirado(s)."
+msgstr ""
+
+#: ajax/mail.send.php:53
+msgid "%d ignorado(s) por já terem respondido."
+msgstr ""
+
+#: ajax/mail.send.php:56
+msgid "%d falha(s) — ver npsphere.log."
+msgstr ""
+
+#: ajax/mail.send.php:59
+msgid ""
+"Nenhum destinatário encontrado. Verifique o público-alvo ou a lista de e-mails."
+msgstr ""
+
+#: ajax/public.oneclick.php:53
+msgid "Convite inválido."
+msgstr ""
+
+#: ajax/public.oneclick.php:58
+msgid "Esta pesquisa pede identificação."
+msgstr ""
+
+#: ajax/question.reorder.php:80
+msgid "Ordem das perguntas alterada"
+msgstr ""
+
+#: ajax/recipients.import.php:43
+msgid "A lista de e-mails existe apenas na pesquisa externa (link público)."
+msgstr ""
+
+#: ajax/recipients.import.php:57
+msgid "O arquivo é maior do que o limite de upload do servidor."
+msgstr ""
+
+#: ajax/recipients.import.php:58
+msgid "Selecione um arquivo CSV."
+msgstr ""
+
+#: ajax/recipients.import.php:65
+msgid "Não foi possível ler o arquivo."
+msgstr ""
+
+#: ajax/recipients.import.php:109
+msgid ""
+"Nenhum e-mail válido no arquivo (%d linha(s) lida(s)). Use o modelo: email;nome."
+msgstr ""
+
+#: ajax/recipients.import.php:132
+msgid "Não foi possível gravar a lista."
+msgstr ""
+
+#: ajax/recipients.import.php:138
+msgid "%d e-mail(s) adicionado(s)."
+msgstr ""
+
+#: ajax/recipients.import.php:141
+msgid "%d já estava(m) na lista."
+msgstr ""
+
+#: ajax/report.preview.php:34
+msgid "Prévia com as respostas das últimas 24 horas."
+msgstr ""
+
+#: ajax/report.preview.php:43
+msgid ""
+"Nenhuma resposta nas últimas 24 horas: a prévia mostra as dos últimos 30 dias."
+msgstr ""
+
+#: ajax/report.preview.php:51
+msgid ""
+"Nenhuma resposta nos últimos 30 dias. O relatório só é enviado nos dias em que há respostas."
+msgstr ""
+
+#: ajax/results.export.php:71 templates/results.html.twig:74 templates/results.html.twig:120
+msgid "Visão geral"
+msgstr ""
+
+#: ajax/results.export.php:73
+msgid "Total de respostas"
+msgstr ""
+
+#: ajax/results.export.php:77
+msgid "Promotores (%)"
+msgstr ""
+
+#: ajax/results.export.php:78
+msgid "Neutros (%)"
+msgstr ""
+
+#: ajax/results.export.php:79
+msgid "Detratores (%)"
+msgstr ""
+
+#: ajax/results.export.php:85 src/Question.php:48 templates/question/form.html.twig:15 templates/question/list_table.html.twig:15
+msgid "Pergunta"
+msgid_plural "Perguntas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ajax/results.export.php:86 src/Question.php:259 templates/question/list_table.html.twig:16 templates/targets.html.twig:34
+msgid "Tipo"
+msgstr ""
+
+#: ajax/results.export.php:87
+msgid "Responderam"
+msgstr ""
+
+#: ajax/results.export.php:88
+msgid "Resultado"
+msgstr ""
+
+#: ajax/results.export.php:89
+msgid "Detalhe"
+msgstr ""
+
+#: ajax/results.export.php:119
+msgid "comentários"
+msgstr ""
+
+#: ajax/results.export.php:153
+msgid "ID"
+msgstr ""
+
+#: ajax/results.export.php:153 templates/results.html.twig:359
+msgid "Data"
+msgstr ""
+
+#: ajax/results.export.php:157 templates/public/form.html.twig:55 templates/results.html.twig:355 templates/template.html.twig:81 templates/template.html.twig:81 templates/template.html.twig:96
+msgid "Nome"
+msgstr ""
+
+#: ajax/results.export.php:158 templates/public/form.html.twig:61 templates/results.html.twig:356 templates/template.html.twig:83 templates/template.html.twig:83 templates/template.html.twig:97
+msgid "E-mail"
+msgstr ""
+
+#: ajax/results.export.php:159 templates/public/form.html.twig:69 templates/results.html.twig:357
+msgid "Telefone"
+msgstr ""
+
+#: ajax/results.export.php:161 templates/answer_detail.html.twig:27 templates/results.html.twig:321 templates/results.html.twig:358
+msgid "Nota"
+msgstr ""
+
+#: ajax/results.export.php:162
+msgid "Classificação"
+msgstr ""
+
+#: ajax/results.export.php:170 templates/answer_detail.html.twig:30
+msgid "Promotor"
+msgstr ""
+
+#: ajax/results.export.php:170 src/QuestionType/Emoticon.php:34 templates/answer_detail.html.twig:31
+msgid "Neutro"
+msgstr ""
+
+#: ajax/results.export.php:170 templates/answer_detail.html.twig:32
+msgid "Detrator"
+msgstr ""
+
+#: ajax/results.export.php:225
+msgid "resultados"
+msgstr ""
+
+#: ajax/target.save.php:43
+msgid "Destinatário inválido."
+msgstr ""
+
+#: front/internal.answer.php:35 front/public.php:33 front/ticket.answer.php:35 front/ticket.php:58 front/ticket.php:61 public/js/pending-survey.js:495
+msgid "Pesquisa de satisfação"
+msgid_plural "Pesquisas de satisfação"
+msgstr[0] ""
+msgstr[1] ""
+
+#: front/mysurveys.php:45 front/mysurveys.php:86 setup.php:271 setup.php:338 src/MySurveysMenu.php:20 src/Profile.php:82
+msgid "Minhas pesquisas"
+msgstr ""
+
+#: front/mysurveys.php:48
+msgid ""
+"Seu perfil não tem o direito \"Minhas pesquisas\". Peça a um administrador para habilitá-lo em Administração > Perfis > (seu perfil) > Pesquisas de satisfação."
+msgstr ""
+
+#: front/mysurveys.php:71 front/ticket.php:254
+msgid "Diagnóstico"
+msgstr ""
+
+#: front/mysurveys.php:72
+msgid "Perfil"
+msgstr ""
+
+#: front/mysurveys.php:74
+msgid "Valor no banco"
+msgstr ""
+
+#: front/mysurveys.php:75
+msgid "SEM REGISTRO — clique em Atualizar na tela de Plugins"
+msgstr ""
+
+#: front/mysurveys.php:77
+msgid "Valor na sessão"
+msgstr ""
+
+#: front/mysurveys.php:78
+msgid "ausente — encerre e reabra a sessão"
+msgstr ""
+
+#: front/public.php:40
+msgid "Não foi possível abrir a pesquisa"
+msgstr ""
+
+#: front/public.php:63
+msgid "Você já respondeu"
+msgstr ""
+
+#: front/public.php:64
+msgid "Sua resposta para esta pesquisa já foi registrada. Obrigado!"
+msgstr ""
+
+#: front/public.php:95
+msgid ""
+"Já existe uma resposta registrada com este e-mail ou telefone. Esta pesquisa aceita apenas uma resposta por pessoa."
+msgstr ""
+
+#: front/public.php:124 public/js/pending-survey.js:315 public/js/survey-builder.js:1753 templates/answer/form.html.twig:238 templates/answer/thankyou.html.twig:5 templates/public/form.html.twig:377
+msgid "Obrigado pela sua avaliação!"
+msgstr ""
+
+#: front/public.php:125 public/js/pending-survey.js:316 public/js/survey-builder.js:1747 templates/answer/thankyou.html.twig:13
+msgid "Sua resposta foi registrada com sucesso."
+msgstr ""
+
+#: front/question.form.php:92
+msgid "%s (cópia)"
+msgstr ""
+
+#: front/ticket.php:255
+msgid "Entidade do chamado"
+msgstr ""
+
+#: front/ticket.php:257
+msgid "entidades-pai"
+msgstr ""
+
+#: front/ticket.php:262
+msgid "Nenhuma pesquisa do tipo \"Vinculada a chamado\" foi criada ainda."
+msgstr ""
+
+#: front/ticket.php:267
+msgid "Recursiva"
+msgstr ""
+
+#: front/ticket.php:268 src/Question.php:261 src/Survey.php:747 templates/question/form.html.twig:28 templates/question/list_table.html.twig:18
+msgid "Ativa"
+msgstr ""
+
+#: front/ticket.php:269
+msgid "No prazo"
+msgstr ""
+
+#: front/ticket.php:270
+msgid "Serve a este chamado"
+msgstr ""
+
+#: front/ticket.php:275
+msgid "sim"
+msgstr ""
+
+#: front/ticket.php:276
+msgid "não"
+msgstr ""
+
+#: front/ticket.php:288
+msgid "Para a pesquisa valer em entidades-filhas, marque \"Recursiva\" nela."
+msgstr ""
+
+#: public/js/pending-survey.js:104
+msgid ""
+"Hoje é o último dia para responder. É necessário responder para continuar."
+msgstr ""
+
+#: public/js/pending-survey.js:107
+msgid "Você pode responder depois, até %s."
+msgstr ""
+
+#: public/js/pending-survey.js:113 public/js/survey-builder.js:797
+msgid "Carregando…"
+msgstr ""
+
+#: public/js/pending-survey.js:118
+msgid "Responder depois"
+msgstr ""
+
+#: public/js/pending-survey.js:152 public/js/pending-survey.js:173
+msgid "Não foi possível carregar a pesquisa."
+msgstr ""
+
+#: public/js/pending-survey.js:153 public/js/pending-survey.js:174
+msgid "Abrir em outra tela"
+msgstr ""
+
+#: public/js/pending-survey.js:285 public/js/survey-builder.js:1760
+msgid "Não foi possível registrar sua resposta. Tente novamente."
+msgstr ""
+
+#: public/js/pending-survey.js:317
+msgid "Redirecionando em %s…"
+msgstr ""
+
+#: public/js/survey-builder.js:295
+msgid "Não foi possível salvar. Verifique os campos e tente novamente."
+msgstr ""
+
+#: public/js/survey-builder.js:607 src/DailyReport.php:744
+msgid "%d resposta"
+msgid_plural "%d respostas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: public/js/survey-builder.js:607
+msgid "%d respostas"
+msgstr ""
+
+#: public/js/survey-builder.js:608
+msgid "Filtrando %1$d de %2$d"
+msgstr ""
+
+#: public/js/survey-builder.js:650 public/js/survey-builder.js:1036 public/js/survey-builder.js:1165 templates/results.html.twig:14 templates/results.html.twig:28
+msgid "Todas as entidades"
+msgstr ""
+
+#: public/js/survey-builder.js:802 public/js/survey-builder.js:819
+msgid "Não foi possível carregar as respostas."
+msgstr ""
+
+#: public/js/survey-builder.js:1034 templates/dashboard.html.twig:174
+msgid "entidade"
+msgstr ""
+
+#: public/js/survey-builder.js:1035 templates/dashboard.html.twig:174 templates/results.html.twig:18
+msgid "entidades"
+msgstr ""
+
+#: public/js/survey-builder.js:1169
+msgid "1 entidade"
+msgstr ""
+
+#: public/js/survey-builder.js:1171
+msgid "%d entidades"
+msgstr ""
+
+#: public/js/survey-builder.js:1441
+msgid "Anterior"
+msgstr ""
+
+#: public/js/survey-builder.js:1453
+msgid "Próxima"
+msgstr ""
+
+#: public/js/survey-builder.js:1538 templates/public/form.html.twig:48
+msgid "Seus dados"
+msgstr ""
+
+#: public/js/survey-builder.js:1540
+msgid "Pergunta %1$d de %2$d"
+msgstr ""
+
+#: public/js/survey-builder.js:1583
+msgid "Preencha nome, e-mail e telefone para continuar."
+msgstr ""
+
+#: public/js/survey-builder.js:1584 public/js/survey-builder.js:1639
+msgid "Esta pergunta é obrigatória."
+msgstr ""
+
+#: public/js/survey-builder.js:1614
+msgid "Já existe uma resposta com este e-mail ou telefone."
+msgstr ""
+
+#: public/js/survey-builder.js:1615
+msgid "Esta pesquisa aceita apenas uma resposta por pessoa."
+msgstr ""
+
+#: public/js/survey-builder.js:1746
+msgid ""
+"Esta é uma pré-visualização: <strong>nenhuma resposta foi gravada</strong>."
+msgstr ""
+
+#: setup.php:297
+msgid "Este plugin requer PHP >= %s"
+msgstr ""
+
+#: src/Answer.php:22 src/DailyReport.php:757
+msgid "Resposta"
+msgid_plural "Respostas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/AnswerValue.php:20
+msgid "Valor de resposta"
+msgid_plural "Valores de resposta"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Completion.php:27
+msgid "Conclusão"
+msgid_plural "Conclusões"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/ConditionEvaluator.php:36
+msgid "é igual a"
+msgstr ""
+
+#: src/ConditionEvaluator.php:37
+msgid "é diferente de"
+msgstr ""
+
+#: src/ConditionEvaluator.php:38
+msgid "é menor que"
+msgstr ""
+
+#: src/ConditionEvaluator.php:39
+msgid "é menor ou igual a"
+msgstr ""
+
+#: src/ConditionEvaluator.php:40
+msgid "é maior que"
+msgstr ""
+
+#: src/ConditionEvaluator.php:41
+msgid "é maior ou igual a"
+msgstr ""
+
+#: src/DailyReport.php:319
+msgid "%1$s a %2$s"
+msgstr ""
+
+#: src/DailyReport.php:402
+msgid "Resposta anônima"
+msgstr ""
+
+#: src/DailyReport.php:421
+msgid "Sem identificação"
+msgstr ""
+
+#: src/DailyReport.php:442
+msgid "estrelas"
+msgstr ""
+
+#: src/DailyReport.php:526
+msgid ""
+"Relatório diário — {{pesquisa}} — {{data}}: {{total_respostas}} resposta(s), {{total_baixas}} com nota baixa"
+msgstr ""
+
+#: src/DailyReport.php:537 src/SurveyTemplate.php:71 templates/template.html.twig:556 templates/template.html.twig:914
+msgid "Relatório diário"
+msgstr ""
+
+#: src/DailyReport.php:539
+msgid "Respostas de {{periodo}}"
+msgstr ""
+
+#: src/DailyReport.php:543
+msgid ""
+"Você recebe este relatório porque foi escolhido na sub-aba \"Relatório\" desta pesquisa, no NPSphere."
+msgstr ""
+
+#: src/DailyReport.php:551 src/DailyReport.php:603 src/NotificationTargetSurvey.php:66 src/SurveyMailer.php:134
+msgid "Nome da pesquisa"
+msgstr ""
+
+#: src/DailyReport.php:552
+msgid "Período do relatório (de… a…)"
+msgstr ""
+
+#: src/DailyReport.php:553
+msgid "Dia do relatório (dia e mês)"
+msgstr ""
+
+#: src/DailyReport.php:554
+msgid "Quantidade de respostas no período"
+msgstr ""
+
+#: src/DailyReport.php:555
+msgid "Quantidade de respostas com nota baixa"
+msgstr ""
+
+#: src/DailyReport.php:556
+msgid "Nota média do período (0 a 10)"
+msgstr ""
+
+#: src/DailyReport.php:557 src/DailyReport.php:613
+msgid "Nota de corte (nota baixa: até…)"
+msgstr ""
+
+#: src/DailyReport.php:558
+msgid "Quadro com respostas, nota baixa e nota média"
+msgstr ""
+
+#: src/DailyReport.php:559
+msgid "Lista das respostas com nota baixa (vazio se não houver)"
+msgstr ""
+
+#: src/DailyReport.php:560
+msgid "Todas as respostas, separadas por pessoa"
+msgstr ""
+
+#: src/DailyReport.php:561
+msgid "Link \"Abrir os resultados\" (ou o aviso de que a pessoa não tem acesso)"
+msgstr ""
+
+#: src/DailyReport.php:584
+msgid "Nota baixa ({{nota}}) — {{pesquisa}} — {{pessoa}}"
+msgstr ""
+
+#: src/DailyReport.php:590
+msgid "Nota baixa recebida"
+msgstr ""
+
+#: src/DailyReport.php:595
+msgid ""
+"Aviso enviado pelo menos {{espera}} minutos depois da resposta, para dar tempo de a pessoa terminar o comentário. Nota baixa: até {{nota_corte}}, a mesma nota da coluna \"Nota\" da aba Resultados. Esta resposta também entra no relatório diário."
+msgstr ""
+
+#: src/DailyReport.php:604
+msgid "Nota da resposta (0 a 10, a da aba Resultados)"
+msgstr ""
+
+#: src/DailyReport.php:605
+msgid "Quem respondeu (\"Resposta anônima\" na pesquisa anônima)"
+msgstr ""
+
+#: src/DailyReport.php:606
+msgid "E-mail de quem respondeu"
+msgstr ""
+
+#: src/DailyReport.php:607
+msgid "Telefone de quem respondeu"
+msgstr ""
+
+#: src/DailyReport.php:608 src/SurveyMailer.php:290
+msgid "Número do chamado"
+msgstr ""
+
+#: src/DailyReport.php:609 src/SurveyMailer.php:291
+msgid "Título do chamado"
+msgstr ""
+
+#: src/DailyReport.php:610
+msgid "Link do chamado (número e título)"
+msgstr ""
+
+#: src/DailyReport.php:611
+msgid "Data e hora da resposta"
+msgstr ""
+
+#: src/DailyReport.php:612
+msgid "Minutos de espera configurados"
+msgstr ""
+
+#: src/DailyReport.php:614
+msgid "Quadro com a nota, a pessoa, o contato e o chamado"
+msgstr ""
+
+#: src/DailyReport.php:615
+msgid "Tabela com todas as perguntas e respostas"
+msgstr ""
+
+#: src/DailyReport.php:616
+msgid "Botão \"Ver resposta no GLPI\" (some para quem não tem acesso)"
+msgstr ""
+
+#: src/DailyReport.php:680
+msgid "Ver resposta"
+msgstr ""
+
+#: src/DailyReport.php:703 templates/dashboard.html.twig:281 templates/dashboard.html.twig:362
+msgid "respostas"
+msgstr ""
+
+#: src/DailyReport.php:704
+msgid "com nota baixa"
+msgstr ""
+
+#: src/DailyReport.php:707
+msgid "nota média"
+msgstr ""
+
+#: src/DailyReport.php:713
+msgid ""
+"A nota de cada resposta é a mesma da coluna \"Nota\" da aba Resultados (de 0 a 10). Nota baixa: até %d."
+msgstr ""
+
+#: src/DailyReport.php:721
+msgid "Notas baixas"
+msgstr ""
+
+#: src/DailyReport.php:728 src/DailyReport.php:756 src/DailyReport.php:898 templates/results.html.twig:353
+msgid "Chamado"
+msgstr ""
+
+#: src/DailyReport.php:738
+msgid "Todas as respostas, por pessoa"
+msgstr ""
+
+#: src/DailyReport.php:758
+msgid "nota baixa"
+msgstr ""
+
+#: src/DailyReport.php:773
+msgid "Abrir os resultados da pesquisa"
+msgstr ""
+
+#: src/DailyReport.php:774
+msgid ""
+"Os links para os resultados não aparecem porque o seu perfil no GLPI não abre esta pesquisa. Os links dos chamados continuam valendo."
+msgstr ""
+
+#: src/DailyReport.php:894
+msgid "de 10"
+msgstr ""
+
+#: src/DailyReport.php:899
+msgid "Respondida em %s"
+msgstr ""
+
+#: src/DailyReport.php:910
+msgid "Ver resposta no GLPI"
+msgstr ""
+
+#: src/DailyReport.php:912
+msgid ""
+"O link para a resposta não aparece porque o seu perfil no GLPI não abre esta pesquisa."
+msgstr ""
+
+#: src/DailyReport.php:1080
+msgid "%1$d aviso(s) de nota baixa enfileirado(s), %2$d falha(s)."
+msgstr ""
+
+#: src/DailyReport.php:1097
+msgid "NPSphere — relatório diário das respostas para os gestores"
+msgstr ""
+
+#: src/DailyReport.php:1100
+msgid "NPSphere — aviso imediato de nota baixa para os gestores"
+msgstr ""
+
+#: src/DailyReport.php:1181
+msgid "%1$d relatório(s) enfileirado(s), %2$d falha(s)."
+msgstr ""
+
+#: src/DailyReport.php:1212
+msgid ""
+"Envia o relatório diário das respostas (sub-aba \"Relatório\" da aba Template) no horário escolhido em cada pesquisa."
+msgstr ""
+
+#: src/DailyReport.php:1221
+msgid ""
+"Envia o aviso de nota baixa (sub-aba \"Aviso\" da aba Template) alguns minutos depois da resposta."
+msgstr ""
+
+#: src/Delivery.php:59
+msgid "Envio de convite"
+msgid_plural "Envios de convite"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Delivery.php:508
+msgid ""
+"%1$d convite(s) enfileirado(s); %2$d já avaliado(s) no chamado (sem e-mail)."
+msgstr ""
+
+#: src/Delivery.php:553
+msgid "NPSphere — lembrete para quem ainda não respondeu a pesquisa"
+msgstr ""
+
+#: src/Delivery.php:554
+msgid "Máximo de lembretes por execução"
+msgstr ""
+
+#: src/Delivery.php:559
+msgid ""
+"NPSphere — convite do chamado depois da espera (só se o requerente não avaliou no chamado)"
+msgstr ""
+
+#: src/Delivery.php:621
+msgid "%d lembrete(s) enfileirado(s); o restante sai na próxima execução."
+msgstr ""
+
+#: src/Delivery.php:641
+msgid "%1$d lembrete(s) enfileirado(s), %2$d falha(s)."
+msgstr ""
+
+#: src/Delivery.php:681
+msgid ""
+"Envia o lembrete da pesquisa (sub-aba \"Lembrete\" da aba Template) a quem ainda não respondeu."
+msgstr ""
+
+#: src/Delivery.php:690
+msgid ""
+"Envia o convite da pesquisa de chamado depois da espera (sub-aba \"Convite\"), só se o requerente não avaliou no próprio chamado."
+msgstr ""
+
+#: src/Invite.php:30 templates/template.html.twig:26 templates/template.html.twig:836
+msgid "Convite"
+msgid_plural "Convites"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/MetricsCalculator.php:281 src/Question.php:389 src/QuestionType/YesNo.php:47 src/QuestionType/YesNo.php:82 src/SurveyMailer.php:1029
+msgid "Não sei"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:41
+msgid "Convite de pesquisa (NPSphere)"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:42
+msgid "Lembrete de pesquisa (NPSphere)"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:43
+msgid "Relatório diário de pesquisa (NPSphere)"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:44
+msgid "Aviso de nota baixa (NPSphere)"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:67
+msgid ""
+"Assunto do e-mail (convite, lembrete ou relatório), montado na aba Template da pesquisa"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:68
+msgid "Mensagem do e-mail (HTML), montada na aba Template da pesquisa"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:69
+msgid "Mensagem do e-mail em texto puro"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:97
+msgid "NPSphere — Convite de pesquisa"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:98
+msgid ""
+"Usado pelos convites do NPSphere. O assunto e a mensagem são configurados na aba \"Template\" de cada pesquisa; este modelo só repassa o que foi montado lá."
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:101
+msgid "NPSphere — Lembrete de pesquisa"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:102
+msgid ""
+"Usado pelos lembretes do NPSphere. O assunto e a mensagem são configurados na sub-aba \"Lembrete\" da aba Template de cada pesquisa; este modelo só repassa o que foi montado lá."
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:105
+msgid "NPSphere — Relatório diário de pesquisa"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:106
+msgid ""
+"Usado pelo relatório diário das respostas, enviado aos gestores escolhidos na sub-aba \"Relatório\" da aba Template de cada pesquisa. O conteúdo é montado pelo plugin; este modelo só repassa."
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:109
+msgid "NPSphere — Aviso de nota baixa"
+msgstr ""
+
+#: src/NotificationTargetSurvey.php:110
+msgid ""
+"Usado pelo aviso imediato de nota baixa, enviado aos gestores escolhidos na sub-aba \"Relatório\" (configuração do aviso na sub-aba \"Aviso\") da aba Template de cada pesquisa. O conteúdo é montado pelo plugin; este modelo só repassa."
+msgstr ""
+
+#: src/Profile.php:26 src/Profile.php:57 src/Profile.php:133 src/Survey.php:706
+msgid "Pesquisas de satisfação"
+msgstr ""
+
+#: src/Profile.php:126
+msgid ""
+"Este perfil usa a interface simplificada: só é possível conceder o direito de responder pesquisas. A gestão de pesquisas fica em Administração, menu que essa interface não exibe."
+msgstr ""
+
+#: src/PublicAccess.php:40
+msgid "Muitas tentativas inválidas. Tente novamente mais tarde."
+msgstr ""
+
+#: src/PublicAccess.php:49
+msgid "Link inválido."
+msgstr ""
+
+#: src/PublicAccess.php:72 src/Target.php:621 src/TicketLink.php:334
+msgid "Link inválido ou expirado."
+msgstr ""
+
+#: src/Question.php:139
+msgid "Tipo de pergunta desconhecido."
+msgstr ""
+
+#: src/Question.php:193
+msgid "O valor da condição não é uma resposta possível da pergunta escolhida."
+msgstr ""
+
+#: src/Question.php:257
+msgid "Texto da pergunta"
+msgstr ""
+
+#: src/Question.php:260 templates/question/form.html.twig:27 templates/question/list_table.html.twig:17
+msgid "Obrigatória"
+msgstr ""
+
+#: src/Question.php:262
+msgid "Configuração"
+msgstr ""
+
+#: src/Question.php:263 src/Question.php:264 src/Question.php:265
+msgid "Regra condicional"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:14
+msgid "Opção 1"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:14
+msgid "Opção 2"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:38
+msgid "Opções"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:46
+msgid "Adicionar opção"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:48
+msgid "Linhas em branco são removidas ao salvar."
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:61 templates/question/form.html.twig:219
+msgid "Nova opção…"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:62 templates/question/form.html.twig:222 templates/targets.html.twig:56 templates/template.html.twig:1409
+msgid "Remover"
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:105
+msgid "Uma das opções selecionadas é inválida."
+msgstr ""
+
+#: src/QuestionType/AbstractOptionListType.php:113 src/QuestionType/Emoticon.php:140 src/QuestionType/YesNo.php:70
+msgid "Selecione uma opção."
+msgstr ""
+
+#: src/QuestionType/AbstractQuestionType.php:24
+msgid "Tipo de pergunta sem campo de resposta implementado."
+msgstr ""
+
+#: src/QuestionType/AbstractQuestionType.php:31
+msgid "Tipo de pergunta sem validação implementada."
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:14
+msgid "Emoticons"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:32
+msgid "Muito insatisfeito"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:33
+msgid "Insatisfeito"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:35
+msgid "Satisfeito"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:36
+msgid "Muito satisfeito"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:92
+msgid "Quantidade de níveis"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:101
+msgid "Emoji e descrição"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:109
+msgid "Descrição textual (acessibilidade)"
+msgstr ""
+
+#: src/QuestionType/Emoticon.php:113
+msgid ""
+"Cada emoji deve ter uma descrição textual — obrigatório para acessibilidade."
+msgstr ""
+
+#: src/QuestionType/MultipleChoice.php:14
+msgid "Múltiplas opções (várias respostas)"
+msgstr ""
+
+#: src/QuestionType/Nps.php:48
+msgid "Escala"
+msgstr ""
+
+#: src/QuestionType/Nps.php:51
+msgid "0 a 10 (padrão)"
+msgstr ""
+
+#: src/QuestionType/Nps.php:52
+msgid "0 a 5"
+msgstr ""
+
+#: src/QuestionType/Nps.php:55
+msgid ""
+"O NPS \"oficial\" é sempre calculado em 0–10. Escolher 0–5 é uma variação simplificada: a classificação Detrator/Neutro/Promotor é reproporcionada automaticamente para essa escala."
+msgstr ""
+
+#: src/QuestionType/Nps.php:60
+msgid "Apresentação"
+msgstr ""
+
+#: src/QuestionType/Nps.php:63
+msgid "Números (caixas individuais)"
+msgstr ""
+
+#: src/QuestionType/Nps.php:64
+msgid "Escala visual (barra colorida)"
+msgstr ""
+
+#: src/QuestionType/Nps.php:80
+msgid "Nada provável"
+msgstr ""
+
+#: src/QuestionType/Nps.php:81
+msgid "Extremamente provável"
+msgstr ""
+
+#: src/QuestionType/Nps.php:150
+msgid "Selecione uma nota de 0 a %d."
+msgstr ""
+
+#: src/QuestionType/Nps.php:153
+msgid "Nota inválida."
+msgstr ""
+
+#: src/QuestionType/Nps.php:157
+msgid "A nota deve estar entre 0 e %d."
+msgstr ""
+
+#: src/QuestionType/SingleChoice.php:14
+msgid "Múltipla escolha (uma opção)"
+msgstr ""
+
+#: src/QuestionType/Stars.php:14
+msgid "Estrelas"
+msgstr ""
+
+#: src/QuestionType/Stars.php:40
+msgid "Quantidade de estrelas"
+msgstr ""
+
+#: src/QuestionType/Stars.php:75
+msgid "Selecione uma quantidade de estrelas."
+msgstr ""
+
+#: src/QuestionType/Stars.php:78
+msgid "Valor inválido."
+msgstr ""
+
+#: src/QuestionType/Stars.php:82
+msgid "A avaliação deve estar entre 1 e %d estrelas."
+msgstr ""
+
+#: src/QuestionType/Stars.php:92
+msgid "%d estrela"
+msgid_plural "%d estrelas"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/QuestionType/Text.php:14
+msgid "Texto (resposta aberta)"
+msgstr ""
+
+#: src/QuestionType/Text.php:49
+msgid "Tipo de campo"
+msgstr ""
+
+#: src/QuestionType/Text.php:50
+msgid "Texto curto"
+msgstr ""
+
+#: src/QuestionType/Text.php:51
+msgid "Texto longo"
+msgstr ""
+
+#: src/QuestionType/Text.php:55
+msgid "Quantidade máxima de caracteres"
+msgstr ""
+
+#: src/QuestionType/Text.php:84
+msgid "O texto ultrapassa o limite de %d caracteres."
+msgstr ""
+
+#: src/QuestionType/YesNo.php:14
+msgid "Sim / Não"
+msgstr ""
+
+#: src/QuestionType/YesNo.php:37
+msgid "Opções adicionais"
+msgstr ""
+
+#: src/QuestionType/YesNo.php:39
+msgid "Permitir também \"Não sei\""
+msgstr ""
+
+#: src/RateLimit.php:162
+msgid "Muitas tentativas em pouco tempo. Tente novamente em %d minuto."
+msgid_plural "Muitas tentativas em pouco tempo. Tente novamente em %d minutos."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/RateLimit.php:179
+msgid "Aguarde um pouco"
+msgstr ""
+
+#: src/RespondentIdentity.php:64
+msgid "Informe seu nome."
+msgstr ""
+
+#: src/RespondentIdentity.php:66
+msgid "O nome informado é longo demais."
+msgstr ""
+
+#: src/RespondentIdentity.php:71
+msgid "Informe seu e-mail."
+msgstr ""
+
+#: src/RespondentIdentity.php:73
+msgid "O e-mail informado não é válido."
+msgstr ""
+
+#: src/RespondentIdentity.php:85
+msgid "Informe seu telefone."
+msgstr ""
+
+#: src/RespondentIdentity.php:91
+msgid ""
+"O telefone informado não tem a quantidade de dígitos esperada para %s (%s)."
+msgstr ""
+
+#: src/RespondentIdentity.php:93 templates/public/form.html.twig:188
+msgid " ou "
+msgstr ""
+
+#: src/RespondentIdentity.php:160
+msgid "Brasil"
+msgstr ""
+
+#: src/RespondentIdentity.php:161
+msgid "Portugal"
+msgstr ""
+
+#: src/RespondentIdentity.php:162
+msgid "Estados Unidos"
+msgstr ""
+
+#: src/RespondentIdentity.php:163
+msgid "Argentina"
+msgstr ""
+
+#: src/RespondentIdentity.php:164
+msgid "Chile"
+msgstr ""
+
+#: src/RespondentIdentity.php:165
+msgid "Colômbia"
+msgstr ""
+
+#: src/RespondentIdentity.php:166
+msgid "México"
+msgstr ""
+
+#: src/RespondentIdentity.php:167
+msgid "Paraguai"
+msgstr ""
+
+#: src/RespondentIdentity.php:168
+msgid "Uruguai"
+msgstr ""
+
+#: src/RespondentIdentity.php:169
+msgid "Angola"
+msgstr ""
+
+#: src/RespondentIdentity.php:170
+msgid "Canadá"
+msgstr ""
+
+#: src/RespondentIdentity.php:171
+msgid "Alemanha"
+msgstr ""
+
+#: src/RespondentIdentity.php:172
+msgid "Espanha"
+msgstr ""
+
+#: src/RespondentIdentity.php:173
+msgid "França"
+msgstr ""
+
+#: src/RespondentIdentity.php:174
+msgid "Reino Unido"
+msgstr ""
+
+#: src/RespondentIdentity.php:175
+msgid "Itália"
+msgstr ""
+
+#: src/RespondentIdentity.php:176
+msgid "Japão"
+msgstr ""
+
+#: src/RespondentIdentity.php:177
+msgid "Moçambique"
+msgstr ""
+
+#: src/ResponseService.php:28
+msgid "Esta pesquisa não está mais ativa."
+msgstr ""
+
+#: src/ResponseService.php:33
+msgid "Esta pesquisa ainda não está disponível."
+msgstr ""
+
+#: src/ResponseService.php:36
+msgid "O prazo para responder esta pesquisa terminou."
+msgstr ""
+
+#: src/ResponseService.php:53
+msgid "Você já respondeu esta pesquisa."
+msgstr ""
+
+#: src/ResponseService.php:341
+msgid "Este chamado já foi avaliado."
+msgstr ""
+
+#: src/ResponseService.php:355
+msgid "Esta pesquisa ainda não possui perguntas."
+msgstr ""
+
+#: src/ResponseService.php:401
+msgid "\"%s\" é obrigatória."
+msgstr ""
+
+#: src/ResponseService.php:423
+msgid "Nenhuma resposta para gravar."
+msgstr ""
+
+#: src/ResponseService.php:519
+msgid "Não foi possível salvar sua resposta. Tente novamente."
+msgstr ""
+
+#: src/SheetExport.php:308 templates/results.html.twig:64
+msgid "Planilha"
+msgstr ""
+
+#: src/Survey.php:430
+msgid "Interna (usuários do GLPI)"
+msgstr ""
+
+#: src/Survey.php:431
+msgid "Externa (link público)"
+msgstr ""
+
+#: src/Survey.php:432 templates/survey.form.html.twig:73
+msgid "Vinculada a chamado"
+msgstr ""
+
+#: src/Survey.php:531 src/Survey.php:888 src/Survey.php:909
+msgid "Página única"
+msgstr ""
+
+#: src/Survey.php:532 src/Survey.php:889 src/Survey.php:910
+msgid "Uma pergunta por etapa"
+msgstr ""
+
+#: src/Survey.php:725
+msgid "Características"
+msgstr ""
+
+#: src/Survey.php:755 templates/survey.form.html.twig:66
+msgid "Tipo de pesquisa"
+msgstr ""
+
+#: src/Survey.php:764 templates/survey.form.html.twig:97
+msgid "Data de início"
+msgstr ""
+
+#: src/Survey.php:772 templates/survey.form.html.twig:102
+msgid "Data de término"
+msgstr ""
+
+#: src/Survey.php:780
+msgid "Acesso via link público"
+msgstr ""
+
+#: src/Survey.php:832 templates/survey.form.html.twig:121
+msgid "Formato de exibição"
+msgstr ""
+
+#: src/Survey.php:833 templates/survey.form.html.twig:130
+msgid "Permitir múltiplas respostas"
+msgstr ""
+
+#: src/Survey.php:834 templates/survey.form.html.twig:140 templates/survey.form.html.twig:146
+msgid "Resposta obrigatória"
+msgstr ""
+
+#: src/Survey.php:835 templates/survey.form.html.twig:181
+msgid "Pesquisa anônima"
+msgstr ""
+
+#: src/Survey.php:836
+msgid "Exigir identificação"
+msgstr ""
+
+#: src/Survey.php:837 templates/targets.html.twig:80
+msgid "Disponível para todos os usuários"
+msgstr ""
+
+#: src/Survey.php:838
+msgid "Destinatários do convite (externa)"
+msgstr ""
+
+#: src/Survey.php:839
+msgid "Espera do convite do chamado (min)"
+msgstr ""
+
+#: src/Survey.php:840
+msgid "Assunto do convite"
+msgstr ""
+
+#: src/Survey.php:841
+msgid "Mensagem do convite"
+msgstr ""
+
+#: src/Survey.php:842
+msgid "Lembrete ligado"
+msgstr ""
+
+#: src/Survey.php:843
+msgid "Lembrete: a cada (dias)"
+msgstr ""
+
+#: src/Survey.php:844
+msgid "Lembrete: no máximo"
+msgstr ""
+
+#: src/Survey.php:845
+msgid "Assunto do lembrete"
+msgstr ""
+
+#: src/Survey.php:846
+msgid "Mensagem do lembrete"
+msgstr ""
+
+#: src/Survey.php:847
+msgid "Relatório diário ligado"
+msgstr ""
+
+#: src/Survey.php:848
+msgid "Relatório: horário de envio"
+msgstr ""
+
+#: src/Survey.php:849
+msgid "Relatório: nota baixa"
+msgstr ""
+
+#: src/Survey.php:850
+msgid "Relatório: nota baixa (estrelas)"
+msgstr ""
+
+#: src/Survey.php:851
+msgid "Relatório: quem recebe"
+msgstr ""
+
+#: src/Survey.php:852
+msgid "Assunto do relatório"
+msgstr ""
+
+#: src/Survey.php:853
+msgid "Mensagem do relatório"
+msgstr ""
+
+#: src/Survey.php:854
+msgid "Aviso de nota baixa ligado"
+msgstr ""
+
+#: src/Survey.php:855
+msgid "Aviso: enviar depois de (min)"
+msgstr ""
+
+#: src/Survey.php:856
+msgid "Aviso: nota baixa"
+msgstr ""
+
+#: src/Survey.php:857
+msgid "Aviso: quem recebe"
+msgstr ""
+
+#: src/Survey.php:858
+msgid "Assunto do aviso"
+msgstr ""
+
+#: src/Survey.php:859
+msgid "Mensagem do aviso"
+msgstr ""
+
+#: src/Survey.php:865
+msgid "Recursivo"
+msgstr ""
+
+#: src/SurveyMailer.php:31 src/SurveyMailer.php:70
+msgid "Olá {{destinatario}},"
+msgstr ""
+
+#: src/SurveyMailer.php:32
+msgid ""
+"Você foi convidado a responder a pesquisa <strong>{{pesquisa}}</strong>."
+msgstr ""
+
+#: src/SurveyMailer.php:33
+msgid "Leva menos de um minuto."
+msgstr ""
+
+#: src/SurveyMailer.php:37 src/SurveyMailer.php:76
+msgid "Olá {{requerente}},"
+msgstr ""
+
+#: src/SurveyMailer.php:38
+msgid ""
+"Seu chamado <strong>#{{chamado_id}} — {{chamado_titulo}}</strong> foi encerrado."
+msgstr ""
+
+#: src/SurveyMailer.php:39
+msgid ""
+"Sua avaliação leva menos de um minuto e ajuda a melhorar o atendimento."
+msgstr ""
+
+#: src/SurveyMailer.php:54
+msgid "Sua opinião sobre: {{pesquisa}}"
+msgstr ""
+
+#: src/SurveyMailer.php:57
+msgid "Como foi o atendimento do chamado #{{chamado_id}}?"
+msgstr ""
+
+#: src/SurveyMailer.php:71
+msgid ""
+"Há alguns dias convidamos você a responder a pesquisa <strong>{{pesquisa}}</strong> e ainda não recebemos a sua resposta."
+msgstr ""
+
+#: src/SurveyMailer.php:72
+msgid "Leva menos de um minuto — a sua opinião faz diferença."
+msgstr ""
+
+#: src/SurveyMailer.php:77
+msgid ""
+"Ainda não recebemos a sua avaliação do chamado <strong>#{{chamado_id}} — {{chamado_titulo}}</strong>."
+msgstr ""
+
+#: src/SurveyMailer.php:78
+msgid "Leva menos de um minuto e ajuda a melhorar o atendimento."
+msgstr ""
+
+#: src/SurveyMailer.php:93
+msgid "Lembrete: sua opinião sobre {{pesquisa}}"
+msgstr ""
+
+#: src/SurveyMailer.php:96
+msgid "Lembrete: como foi o atendimento do chamado #{{chamado_id}}?"
+msgstr ""
+
+#: src/SurveyMailer.php:135
+msgid "Endereço da pesquisa (texto)"
+msgstr ""
+
+#: src/SurveyMailer.php:136
+msgid "Botão \"Responder a pesquisa\""
+msgstr ""
+
+#: src/SurveyMailer.php:148
+msgid "Pergunta \"%s\", com um link para responder"
+msgstr ""
+
+#: src/SurveyMailer.php:149
+msgid "Pergunta \"%s\", com as opções para clicar"
+msgstr ""
+
+#: src/SurveyMailer.php:158
+msgid "Nome de quem recebe"
+msgstr ""
+
+#: src/SurveyMailer.php:292
+msgid "Nome de quem abriu o chamado"
+msgstr ""
+
+#: src/SurveyMailer.php:293
+msgid "Nome do técnico atribuído"
+msgstr ""
+
+#: src/SurveyMailer.php:327 src/SurveyMailer.php:899
+msgid "equipe de atendimento"
+msgstr ""
+
+#: src/SurveyMailer.php:846
+msgid "[nome do destinatário]"
+msgstr ""
+
+#: src/SurveyMailer.php:896
+msgid "[número do chamado]"
+msgstr ""
+
+#: src/SurveyMailer.php:897
+msgid "[título do chamado]"
+msgstr ""
+
+#: src/SurveyMailer.php:898
+msgid "[nome do requerente]"
+msgstr ""
+
+#: src/SurveyMailer.php:1050
+msgid "Responder esta pergunta"
+msgstr ""
+
+#: src/SurveyMailer.php:1087
+msgid "Responder a pesquisa"
+msgstr ""
+
+#: src/SurveyPreview.php:22 templates/question/list_table.html.twig:52
+msgid "Visualizar"
+msgstr ""
+
+#: src/SurveyResults.php:16
+msgid "Resultados"
+msgstr ""
+
+#: src/SurveyTargets.php:16 src/Target.php:38
+msgid "Público-alvo"
+msgid_plural "Públicos-alvo"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/SurveyTargets.php:100
+msgid "Selecione %s…"
+msgstr ""
+
+#: src/SurveyTemplate.php:24
+msgid "Template"
+msgstr ""
+
+#: src/SurveyTemplate.php:75
+msgid ""
+"Os links \"Ver resposta\" e \"Abrir os resultados\" só aparecem para quem abre a pesquisa no GLPI, qualquer que seja o modelo."
+msgstr ""
+
+#: src/SurveyTemplate.php:78 templates/template.html.twig:676 templates/template.html.twig:930
+msgid "Aviso imediato de nota baixa"
+msgstr ""
+
+#: src/SurveyTemplate.php:82
+msgid ""
+"O botão \"Ver resposta no GLPI\" só aparece para quem abre a pesquisa no GLPI, qualquer que seja o modelo."
+msgstr ""
+
+#: src/SurveyTemplate.php:321
+msgid "O texto da pergunta e um link para responder — veja na prévia"
+msgstr ""
+
+#: src/SurveyTemplate.php:322
+msgid "O texto da pergunta e as opções para clicar — veja na prévia"
+msgstr ""
+
+#: src/SurveyTemplate.php:327
+msgid "(bloco HTML — veja na prévia da mensagem)"
+msgstr ""
+
+#: src/Target.php:66
+msgid "Exceção"
+msgstr ""
+
+#: src/Target.php:66 templates/targets.html.twig:35
+msgid "Destinatário"
+msgstr ""
+
+#: src/Target.php:630 src/TicketLink.php:344
+msgid "Esta pesquisa não está mais disponível."
+msgstr ""
+
+#: templates/answer/embed.html.twig:31 templates/answer/form.html.twig:99 templates/answer/preview_tab.html.twig:89 templates/public/form.html.twig:112
+msgid "Enviar avaliação"
+msgstr ""
+
+#: templates/answer/form.html.twig:16
+msgid "Sua avaliação ajuda a melhorar o atendimento."
+msgstr ""
+
+#: templates/answer/form.html.twig:186 templates/public/form.html.twig:358 templates/public/form.html.twig:397
+msgid ""
+"Não conseguimos registrar sua resposta automaticamente. Confira abaixo e clique em <strong>Enviar avaliação</strong>."
+msgstr ""
+
+#: templates/answer/form.html.twig:189 templates/public/form.html.twig:324
+msgid "Registrando sua resposta…"
+msgstr ""
+
+#: templates/answer/form.html.twig:239 templates/public/form.html.twig:378
+msgid "Sua resposta foi registrada."
+msgstr ""
+
+#: templates/answer/form.html.twig:241 templates/public/form.html.twig:380
+msgid "Sua resposta"
+msgstr ""
+
+#: templates/answer/form.html.twig:245 templates/public/form.html.twig:384
+msgid "Mudou de ideia? É só clicar em outra opção no e-mail."
+msgstr ""
+
+#: templates/answer/form.html.twig:251 templates/public/form.html.twig:390
+msgid ""
+"Sua resposta para <strong>%1$s</strong> foi registrada: <strong>%2$s</strong>."
+msgstr ""
+
+#: templates/answer/form.html.twig:254 templates/public/form.html.twig:393
+msgid ""
+"Responda as demais perguntas e clique em <strong>Enviar avaliação</strong> para concluir."
+msgstr ""
+
+#: templates/answer/preview_tab.html.twig:13
+msgid "Esta pesquisa ainda não possui perguntas ativas."
+msgstr ""
+
+#: templates/answer/preview_tab.html.twig:21
+msgid ""
+"Os campos abaixo são apenas ilustrativos, já que esta pesquisa não pode ser respondida agora."
+msgstr ""
+
+#: templates/answer/preview_tab.html.twig:45
+msgid "Atenção"
+msgstr ""
+
+#: templates/answer/preview_tab.html.twig:47
+msgid "Quem for responder verá esta mensagem no lugar do formulário abaixo."
+msgstr ""
+
+#: templates/answer/thankyou.html.twig:11
+msgid "Sua resposta já havia sido registrada."
+msgstr ""
+
+#: templates/answer_detail.html.twig:5
+msgid "Respondente anônimo"
+msgstr ""
+
+#: templates/answer_detail.html.twig:7
+msgid "Usuário do GLPI"
+msgstr ""
+
+#: templates/answer_detail.html.twig:21
+msgid "preenchida em"
+msgstr ""
+
+#: templates/answer_detail.html.twig:38
+msgid "Fechar"
+msgstr ""
+
+#: templates/answer_detail.html.twig:43
+msgid "Nenhuma resposta registrada."
+msgstr ""
+
+#: templates/dashboard.html.twig:10
+msgid "sem variação"
+msgstr ""
+
+#: templates/dashboard.html.twig:21 templates/dashboard.html.twig:28 templates/dashboard.html.twig:42
+msgid "Todos"
+msgstr ""
+
+#: templates/dashboard.html.twig:48
+msgid "Nenhuma opção no período."
+msgstr ""
+
+#: templates/dashboard.html.twig:113
+msgid "Menos de %d respostas — clique para filtrar o painel por este item"
+msgstr ""
+
+#: templates/dashboard.html.twig:114
+msgid "Clique para filtrar o painel por este item"
+msgstr ""
+
+#: templates/dashboard.html.twig:122
+msgid "Abrir os resultados desta pesquisa"
+msgstr ""
+
+#: templates/dashboard.html.twig:164 templates/results.html.twig:332
+msgid "De"
+msgstr ""
+
+#: templates/dashboard.html.twig:169 templates/results.html.twig:336
+msgid "Até"
+msgstr ""
+
+#: templates/dashboard.html.twig:173
+msgid "Pesquisas"
+msgstr ""
+
+#: templates/dashboard.html.twig:173
+msgid "pesquisa"
+msgstr ""
+
+#: templates/dashboard.html.twig:173
+msgid "pesquisas"
+msgstr ""
+
+#: templates/dashboard.html.twig:174 templates/results.html.twig:8
+msgid "Entidades"
+msgstr ""
+
+#: templates/dashboard.html.twig:175
+msgid "Requerentes"
+msgstr ""
+
+#: templates/dashboard.html.twig:175
+msgid "requerente"
+msgstr ""
+
+#: templates/dashboard.html.twig:175
+msgid "requerentes"
+msgstr ""
+
+#: templates/dashboard.html.twig:176
+msgid "Técnicos"
+msgstr ""
+
+#: templates/dashboard.html.twig:176
+msgid "técnico"
+msgstr ""
+
+#: templates/dashboard.html.twig:176
+msgid "técnicos"
+msgstr ""
+
+#: templates/dashboard.html.twig:177
+msgid "Grupos técnicos"
+msgstr ""
+
+#: templates/dashboard.html.twig:177
+msgid "grupo"
+msgstr ""
+
+#: templates/dashboard.html.twig:177
+msgid "grupos"
+msgstr ""
+
+#: templates/dashboard.html.twig:178
+msgid "Categorias"
+msgstr ""
+
+#: templates/dashboard.html.twig:178
+msgid "categoria"
+msgstr ""
+
+#: templates/dashboard.html.twig:178
+msgid "categorias"
+msgstr ""
+
+#: templates/dashboard.html.twig:183 templates/results.html.twig:58
+msgid "Exportar"
+msgstr ""
+
+#: templates/dashboard.html.twig:188 templates/results.html.twig:66
+msgid "Excel (.xlsx)"
+msgstr ""
+
+#: templates/dashboard.html.twig:191 templates/results.html.twig:69
+msgid "LibreOffice (.ods)"
+msgstr ""
+
+#: templates/dashboard.html.twig:194 templates/results.html.twig:72
+msgid "CSV"
+msgstr ""
+
+#: templates/dashboard.html.twig:197
+msgid "Imprimir"
+msgstr ""
+
+#: templates/dashboard.html.twig:211
+msgid "Você está vendo apenas as pesquisas que criou."
+msgstr ""
+
+#: templates/dashboard.html.twig:218
+msgid "Nenhuma pesquisa criada por você"
+msgstr ""
+
+#: templates/dashboard.html.twig:219
+msgid "O painel mostra os resultados das pesquisas que você criou."
+msgstr ""
+
+#: templates/dashboard.html.twig:224
+msgid "Nenhuma resposta no período"
+msgstr ""
+
+#: templates/dashboard.html.twig:225
+msgid "Ajuste o período ou as pesquisas selecionadas."
+msgstr ""
+
+#: templates/dashboard.html.twig:240
+msgid "pontos"
+msgstr ""
+
+#: templates/dashboard.html.twig:253 templates/results.html.twig:174
+msgid "pesquisas enviadas"
+msgstr ""
+
+#: templates/dashboard.html.twig:259 templates/dashboard.html.twig:264 templates/dashboard.html.twig:269 templates/results.html.twig:181 templates/results.html.twig:186 templates/results.html.twig:191
+msgid "notas"
+msgstr ""
+
+#: templates/dashboard.html.twig:279
+msgid "Variação em relação ao período anterior, de mesma duração:"
+msgstr ""
+
+#: templates/dashboard.html.twig:280
+msgid "a"
+msgstr ""
+
+#: templates/dashboard.html.twig:293
+msgid "Distribuição das notas"
+msgstr ""
+
+#: templates/dashboard.html.twig:294
+msgid "Quantos promotores, neutros e detratores."
+msgstr ""
+
+#: templates/dashboard.html.twig:338
+msgid "Evolução do NPS"
+msgstr ""
+
+#: templates/dashboard.html.twig:339
+msgid "Mês a mês. A linha tracejada marca o zero."
+msgstr ""
+
+#: templates/dashboard.html.twig:344
+msgid "É preciso ao menos dois meses com respostas para mostrar a evolução."
+msgstr ""
+
+#: templates/dashboard.html.twig:353
+msgid "Sem respostas neste mês"
+msgstr ""
+
+#: templates/dashboard.html.twig:378 templates/dashboard.html.twig:379
+msgid "Sem respostas no período."
+msgstr ""
+
+#: templates/dashboard.html.twig:380 templates/dashboard.html.twig:381 templates/dashboard.html.twig:382 templates/dashboard.html.twig:383
+msgid "Disponível apenas para pesquisas vinculadas a chamado."
+msgstr ""
+
+#: templates/mysurveys.html.twig:5
+msgid "Nenhuma pesquisa pendente"
+msgstr ""
+
+#: templates/mysurveys.html.twig:6
+msgid ""
+"Quando houver uma pesquisa aguardando sua resposta, ela aparecerá aqui."
+msgstr ""
+
+#: templates/mysurveys.html.twig:10
+msgid "Estas pesquisas estão aguardando sua resposta:"
+msgstr ""
+
+#: templates/mysurveys.html.twig:24
+msgid "Responda até"
+msgstr ""
+
+#: templates/public/form.html.twig:14
+msgid ""
+"Você já respondeu esta pesquisa. Se quiser, altere as respostas abaixo e envie de novo."
+msgstr ""
+
+#: templates/public/form.html.twig:50
+msgid ""
+"Precisamos destes dados para identificar sua resposta. Todos são obrigatórios."
+msgstr ""
+
+#: templates/public/form.html.twig:121
+msgid "Esta pesquisa é anônima: sua identidade não é registrada."
+msgstr ""
+
+#: templates/public/form.html.twig:188
+msgid "Este país usa %s dígitos."
+msgstr ""
+
+#: templates/public/form.html.twig:214
+msgid "Informe um e-mail completo, como nome@empresa.com.br"
+msgstr ""
+
+#: templates/question/form.html.twig:14
+msgid "Conteúdo"
+msgstr ""
+
+#: templates/question/form.html.twig:16
+msgid "Texto de apoio (opcional)"
+msgstr ""
+
+#: templates/question/form.html.twig:20
+msgid "Comportamento"
+msgstr ""
+
+#: templates/question/form.html.twig:25
+msgid "Tipo de pergunta"
+msgstr ""
+
+#: templates/question/form.html.twig:32
+msgid "Esta pergunta entrará automaticamente no cálculo do NPS da pesquisa."
+msgstr ""
+
+#: templates/question/form.html.twig:55
+msgid "Exibição condicional"
+msgstr ""
+
+#: templates/question/form.html.twig:60
+msgid ""
+"Esta é a primeira pergunta da pesquisa, então não há resposta anterior na qual se basear. Adicione outras perguntas antes desta para poder condicioná-la."
+msgstr ""
+
+#: templates/question/form.html.twig:64
+msgid ""
+"Deixe \"Sempre exibir\" para a pergunta aparecer para todos. Ou escolha uma pergunta anterior para exibi-la só em certas respostas — por exemplo, pedir o motivo apenas quando a nota for baixa."
+msgstr ""
+
+#: templates/question/form.html.twig:67
+msgid "Exibir se"
+msgstr ""
+
+#: templates/question/form.html.twig:69
+msgid "— Sempre exibir —"
+msgstr ""
+
+#: templates/question/form.html.twig:82
+msgid "valor"
+msgstr ""
+
+#: templates/question/form.html.twig:93
+msgid "Visualização"
+msgstr ""
+
+#: templates/question/form.html.twig:98 templates/question/form.html.twig:149
+msgid "Sua pergunta aparecerá aqui"
+msgstr ""
+
+#: templates/question/form.html.twig:101
+msgid ""
+"Preencha os campos acima para ver como a pergunta ficará para o respondente."
+msgstr ""
+
+#: templates/question/form.html.twig:110
+msgid "Você tem permissão apenas para visualizar esta pergunta."
+msgstr ""
+
+#: templates/question/form.html.twig:116
+msgid "Cancelar"
+msgstr ""
+
+#: templates/question/form.html.twig:332
+msgid "Esta pergunta aceita resposta livre — digite o texto exato a comparar."
+msgstr ""
+
+#: templates/question/list_table.html.twig:8
+msgid ""
+"Nenhuma pergunta cadastrada ainda. Use o botão abaixo para adicionar a primeira."
+msgstr ""
+
+#: templates/question/list_table.html.twig:20
+msgid "Ações"
+msgstr ""
+
+#: templates/question/list_table.html.twig:26
+msgid "Arraste para reordenar"
+msgstr ""
+
+#: templates/question/list_table.html.twig:34
+msgid "Esta pergunta só aparece em certas respostas"
+msgstr ""
+
+#: templates/question/list_table.html.twig:42
+msgid "Esta pergunta entra no cálculo do NPS"
+msgstr ""
+
+#: templates/question/list_table.html.twig:66
+msgid "Excluir esta pergunta definitivamente?"
+msgstr ""
+
+#: templates/question/list_table.html.twig:85
+msgid "Adicionar pergunta"
+msgstr ""
+
+#: templates/results.html.twig:42
+msgid "Selecionar uma entidade não inclui as filhas."
+msgstr ""
+
+#: templates/results.html.twig:82
+msgid "PDF"
+msgstr ""
+
+#: templates/results.html.twig:84
+msgid "Imprimir visão geral"
+msgstr ""
+
+#: templates/results.html.twig:98
+msgid "Relatório gerado em"
+msgstr ""
+
+#: templates/results.html.twig:107
+msgid "Ainda não há respostas"
+msgstr ""
+
+#: templates/results.html.twig:108
+msgid "Assim que a primeira resposta chegar, os indicadores aparecem aqui."
+msgstr ""
+
+#: templates/results.html.twig:140
+msgid ""
+"Mostrando apenas as entidades selecionadas — entidades filhas não estão incluídas."
+msgstr ""
+
+#: templates/results.html.twig:151
+msgid "Excelente"
+msgstr ""
+
+#: templates/results.html.twig:152
+msgid "Muito bom"
+msgstr ""
+
+#: templates/results.html.twig:153
+msgid "Razoável"
+msgstr ""
+
+#: templates/results.html.twig:154
+msgid "Crítico"
+msgstr ""
+
+#: templates/results.html.twig:167
+msgid "média de todas as notas"
+msgstr ""
+
+#: templates/results.html.twig:197
+msgid "Distribuição das notas de NPS"
+msgstr ""
+
+#: templates/results.html.twig:205
+msgid ""
+"Esta pesquisa tem %d perguntas do tipo NPS, e o número acima junta as notas de todas — por isso o total de notas não é igual ao total de respostas."
+msgstr ""
+
+#: templates/results.html.twig:206
+msgid ""
+"A metodologia NPS padrão usa UMA única pergunta; para comparar com referências de mercado, use o NPS individual de cada pergunta na seção abaixo."
+msgstr ""
+
+#: templates/results.html.twig:211
+msgid "NPS = % Promotores − % Detratores"
+msgstr ""
+
+#: templates/results.html.twig:214
+msgid "média das notas"
+msgstr ""
+
+#: templates/results.html.twig:218
+msgid "Por pergunta"
+msgstr ""
+
+#: templates/results.html.twig:228
+msgid "condicional"
+msgstr ""
+
+#: templates/results.html.twig:234
+msgid "responderam"
+msgstr ""
+
+#: templates/results.html.twig:239
+msgid "Nenhuma resposta para esta pergunta ainda."
+msgstr ""
+
+#: templates/results.html.twig:244 templates/results.html.twig:252
+msgid "Média"
+msgstr ""
+
+#: templates/results.html.twig:264
+msgid "Respostas \"Sim\""
+msgstr ""
+
+#: templates/results.html.twig:277
+msgid "Mais escolhida"
+msgstr ""
+
+#: templates/results.html.twig:289
+msgid ""
+"Cada pessoa pode marcar várias opções, então a soma dos percentuais passa de 100%."
+msgstr ""
+
+#: templates/results.html.twig:313
+msgid "Buscar por nome, e-mail, telefone, chamado ou entidade…"
+msgstr ""
+
+#: templates/results.html.twig:313
+msgid "Buscar por nome, e-mail, telefone ou entidade…"
+msgstr ""
+
+#: templates/results.html.twig:323
+msgid "Todas"
+msgstr ""
+
+#: templates/results.html.twig:341
+msgid "Limpar"
+msgstr ""
+
+#: templates/results.html.twig:407
+msgid "Ver"
+msgstr ""
+
+#: templates/results.html.twig:411
+msgid "Imprimir / salvar esta resposta em PDF"
+msgstr ""
+
+#: templates/results.html.twig:426
+msgid "Por página"
+msgstr ""
+
+#: templates/survey.form.html.twig:53
+msgid "Sobre a pesquisa"
+msgstr ""
+
+#: templates/survey.form.html.twig:54
+msgid "Identificação e finalidade desta pesquisa."
+msgstr ""
+
+#: templates/survey.form.html.twig:62
+msgid "Explique brevemente o objetivo desta pesquisa…"
+msgstr ""
+
+#: templates/survey.form.html.twig:71
+msgid "Interna"
+msgstr ""
+
+#: templates/survey.form.html.twig:71
+msgid "respondida por usuários que já têm acesso ao GLPI."
+msgstr ""
+
+#: templates/survey.form.html.twig:72
+msgid "Externa"
+msgstr ""
+
+#: templates/survey.form.html.twig:72
+msgid ""
+"respondida por qualquer pessoa através de um link público, sem precisar de conta."
+msgstr ""
+
+#: templates/survey.form.html.twig:73
+msgid "exibida ao requerente quando o chamado é encerrado."
+msgstr ""
+
+#: templates/survey.form.html.twig:90
+msgid "Disponibilidade"
+msgstr ""
+
+#: templates/survey.form.html.twig:91
+msgid "Período em que a pesquisa aceitará respostas."
+msgstr ""
+
+#: templates/survey.form.html.twig:105
+msgid "Deixe em branco para não ter prazo final."
+msgstr ""
+
+#: templates/survey.form.html.twig:114
+msgid "Como será respondida"
+msgstr ""
+
+#: templates/survey.form.html.twig:115
+msgid "Experiência de quem vai responder."
+msgstr ""
+
+#: templates/survey.form.html.twig:132
+msgid "Se \"Não\", cada pessoa responde uma única vez."
+msgstr ""
+
+#: templates/survey.form.html.twig:147
+msgid "a pesquisa aparece para o usuário assim que ele entra no GLPI."
+msgstr ""
+
+#: templates/survey.form.html.twig:148
+msgid ""
+"Ele pode adiar até o penúltimo dia; no último dia da pesquisa, precisa responder para continuar usando o sistema."
+msgstr ""
+
+#: templates/survey.form.html.twig:149
+msgid "Sem data de término, nunca chega a bloquear."
+msgstr ""
+
+#: templates/survey.form.html.twig:155
+msgid ""
+"O NPS é calculado automaticamente a partir das perguntas do tipo \"NPS\" cadastradas na aba \"Pergunta\"."
+msgstr ""
+
+#: templates/survey.form.html.twig:174
+msgid "Privacidade e acesso"
+msgstr ""
+
+#: templates/survey.form.html.twig:175
+msgid "Como a identidade de quem responde pelo link público é tratada."
+msgstr ""
+
+#: templates/survey.form.html.twig:186 templates/targets.html.twig:88
+msgid "Sim"
+msgstr ""
+
+#: templates/survey.form.html.twig:186
+msgid "ninguém é identificado: nenhum dado pessoal é pedido nem gravado."
+msgstr ""
+
+#: templates/survey.form.html.twig:187 templates/targets.html.twig:89
+msgid "Não"
+msgstr ""
+
+#: templates/survey.form.html.twig:187
+msgid ""
+"nome, e-mail e telefone passam a ser obrigatórios para quem responder pelo link."
+msgstr ""
+
+#: templates/survey.form.html.twig:195
+msgid "Link público desta pesquisa"
+msgstr ""
+
+#: templates/survey.form.html.twig:197
+msgid ""
+"Qualquer pessoa com este link pode responder, sem precisar de conta no GLPI. Mude o tipo para \"Interna\" para invalidar o link imediatamente."
+msgstr ""
+
+#: templates/survey.form.html.twig:203
+msgid "O link público aparecerá aqui depois de salvar a pesquisa."
+msgstr ""
+
+#: templates/survey.form.html.twig:215
+msgid "Como esta pesquisa aparece"
+msgstr ""
+
+#: templates/survey.form.html.twig:216
+msgid "Dentro do próprio chamado, na aba \"Pesquisa de satisfação\"."
+msgstr ""
+
+#: templates/survey.form.html.twig:221
+msgid ""
+"Em Administração > Entidades > Assistência, defina \"Configuração das pesquisas\" como Pesquisa externa e cole a URL abaixo."
+msgstr ""
+
+#: templates/survey.form.html.twig:222
+msgid ""
+"O GLPI passa a criar a pesquisa no encerramento do chamado, respeitando o atraso e o percentual configurados ali."
+msgstr ""
+
+#: templates/survey.form.html.twig:223
+msgid ""
+"No chamado, em vez do link, aparece a pesquisa — respondida na própria tela."
+msgstr ""
+
+#: templates/survey.form.html.twig:224
+msgid ""
+"O requerente responde ali mesmo; técnicos e observadores veem a avaliação depois de enviada."
+msgstr ""
+
+#: templates/survey.form.html.twig:225
+msgid "Cada chamado aceita uma única avaliação."
+msgstr ""
+
+#: templates/survey.form.html.twig:231
+msgid "Convivência com a pesquisa nativa"
+msgstr ""
+
+#: templates/survey.form.html.twig:232
+msgid ""
+"se a entidade estiver configurada para gerar a pesquisa de satisfação do GLPI, as duas vão coexistir. Para usar apenas esta, defina \"Configuração das pesquisas\" como desativada em Administração > Entidades > Assistência."
+msgstr ""
+
+#: templates/survey.form.html.twig:242
+msgid ""
+"A URL já inclui o identificador desta pesquisa — é o que permite ter mais de uma pesquisa vinculada a chamado, cada entidade apontando para a sua."
+msgstr ""
+
+#: templates/survey.form.html.twig:248
+msgid "Salve a pesquisa para a URL incluir o identificador dela."
+msgstr ""
+
+#: templates/survey.form.html.twig:256
+msgid ""
+"Pesquisas vinculadas a chamado serão exibidas no próprio chamado após a solução, no lugar da pesquisa nativa do GLPI. Integração em desenvolvimento."
+msgstr ""
+
+#: templates/survey.form.html.twig:265
+msgid "Informações do registro"
+msgstr ""
+
+#: templates/survey.form.html.twig:266
+msgid "Autoria e histórico desta pesquisa."
+msgstr ""
+
+#: templates/survey.form.html.twig:273
+msgid "Criada por"
+msgstr ""
+
+#: templates/survey.form.html.twig:279
+msgid "Criada em"
+msgstr ""
+
+#: templates/survey.form.html.twig:285
+msgid "Última atualização em"
+msgstr ""
+
+#: templates/targets.html.twig:25
+msgid "Adicionar exceção"
+msgstr ""
+
+#: templates/targets.html.twig:25
+msgid "Adicionar"
+msgstr ""
+
+#: templates/targets.html.twig:47
+msgid "Item removido do GLPI"
+msgstr ""
+
+#: templates/targets.html.twig:73
+msgid "Quem pode responder"
+msgstr ""
+
+#: templates/targets.html.twig:74
+msgid ""
+"Defina o público desta pesquisa interna. Quem não estiver na lista não a verá."
+msgstr ""
+
+#: templates/targets.html.twig:88
+msgid ""
+"qualquer usuário autenticado do GLPI poderá responder, menos as exceções."
+msgstr ""
+
+#: templates/targets.html.twig:89
+msgid ""
+"apenas quem estiver na lista abaixo (entidades, perfis, grupos ou usuários)."
+msgstr ""
+
+#: templates/targets.html.twig:98 templates/template.html.twig:58
+msgid "Destinatários"
+msgstr ""
+
+#: templates/targets.html.twig:99
+msgid "Os critérios se somam: basta estar em um deles para poder responder."
+msgstr ""
+
+#: templates/targets.html.twig:110
+msgid ""
+"Nenhum destinatário definido — no momento, ninguém consegue responder esta pesquisa."
+msgstr ""
+
+#: templates/targets.html.twig:123
+msgid "Exceções"
+msgstr ""
+
+#: templates/targets.html.twig:124
+msgid ""
+"Quem estiver aqui não responde e não recebe convite, mesmo estando nos destinatários ou com \"todos os usuários\". Ex.: o grupo Financeiro, exceto o gestor."
+msgstr ""
+
+#: templates/targets.html.twig:133
+msgid "Nenhuma exceção."
+msgstr ""
+
+#: templates/targets.html.twig:160
+msgid "Não foi possível salvar. Recarregue a página e tente novamente."
+msgstr ""
+
+#: templates/targets.html.twig:164
+msgid "Não foi possível salvar. Verifique sua conexão."
+msgstr ""
+
+#: templates/targets.html.twig:210
+msgid "Selecione um destinatário antes de adicionar."
+msgstr ""
+
+#: templates/targets.html.twig:217
+msgid "Este item já está nas exceções."
+msgstr ""
+
+#: templates/targets.html.twig:218
+msgid "Este item já está nos destinatários."
+msgstr ""
+
+#: templates/template.html.twig:29 templates/template.html.twig:891
+msgid "Lembrete"
+msgstr ""
+
+#: templates/template.html.twig:30 templates/template.html.twig:34 templates/template.html.twig:38
+msgid "ligado"
+msgstr ""
+
+#: templates/template.html.twig:33
+msgid "Relatório"
+msgstr ""
+
+#: templates/template.html.twig:37
+msgid "Aviso"
+msgstr ""
+
+#: templates/template.html.twig:41
+msgid "Ajuda"
+msgstr ""
+
+#: templates/template.html.twig:59
+msgid "Adicione um a um ou importe um CSV."
+msgstr ""
+
+#: templates/template.html.twig:63
+msgid "Baixar modelo CSV"
+msgstr ""
+
+#: templates/template.html.twig:67
+msgid "Importar CSV"
+msgstr ""
+
+#: templates/template.html.twig:85 templates/template.html.twig:85
+msgid "Adicionar destinatário"
+msgstr ""
+
+#: templates/template.html.twig:104
+msgid ""
+"Nenhum destinatário ainda. Preencha nome e e-mail acima e clique em + — ou importe um CSV."
+msgstr ""
+
+#: templates/template.html.twig:112
+msgid ""
+"CSV separado por ponto e vírgula (;), colunas email e nome. Os importados são somados aos da lista; e-mails repetidos são ignorados."
+msgstr ""
+
+#: templates/template.html.twig:126
+msgid "Quem recebe o convite"
+msgstr ""
+
+#: templates/template.html.twig:127
+msgid "Os usuários do Público-alvo com e-mail no GLPI."
+msgstr ""
+
+#: templates/template.html.twig:131
+msgid "Editar público-alvo"
+msgstr ""
+
+#: templates/template.html.twig:139
+msgid "vão receber"
+msgstr ""
+
+#: templates/template.html.twig:144
+msgid "já responderam (ficam de fora)"
+msgstr ""
+
+#: templates/template.html.twig:149
+msgid "sem e-mail no cadastro"
+msgstr ""
+
+#: templates/template.html.twig:155
+msgid ""
+"Ninguém no público-alvo ainda. Defina quem deve responder na aba Público-alvo."
+msgstr ""
+
+#: templates/template.html.twig:164
+msgid "Situação"
+msgstr ""
+
+#: templates/template.html.twig:174
+msgid "Vai receber"
+msgstr ""
+
+#: templates/template.html.twig:176
+msgid "Já respondeu"
+msgstr ""
+
+#: templates/template.html.twig:178
+msgid "Sem e-mail"
+msgstr ""
+
+#: templates/template.html.twig:198
+msgid "Quando o convite sai"
+msgstr ""
+
+#: templates/template.html.twig:200
+msgid "Automático, no encerramento do chamado."
+msgstr ""
+
+#: templates/template.html.twig:201
+msgid "Entidade:"
+msgstr ""
+
+#: templates/template.html.twig:207
+msgid "Configurar na entidade"
+msgstr ""
+
+#: templates/template.html.twig:216
+msgid ""
+"Não foi possível ler a configuração de pesquisa de satisfação da entidade."
+msgstr ""
+
+#: templates/template.html.twig:222
+msgid ""
+"Este convite NÃO sai: a entidade está com \"Pesquisa interna\" do GLPI. Configure \"Pesquisa externa\" apontando para o NPSphere (Entidade › Assistência)."
+msgstr ""
+
+#: templates/template.html.twig:230
+msgid "Os chamados desta entidade usam outra pesquisa:"
+msgstr ""
+
+#: templates/template.html.twig:232
+msgid ""
+"O convite DESTA pesquisa não sai. Para usar esta, aponte a URL da entidade para ela (&surveys_id="
+msgstr ""
+
+#: templates/template.html.twig:239
+msgid "do chamado recebe o convite"
+msgstr ""
+
+#: templates/template.html.twig:244
+msgid "dia"
+msgstr ""
+
+#: templates/template.html.twig:244
+msgid "dias"
+msgstr ""
+
+#: templates/template.html.twig:246 templates/template.html.twig:262
+msgid "Na hora"
+msgstr ""
+
+#: templates/template.html.twig:251
+msgid "depois do encerramento, a pesquisa aparece no chamado"
+msgstr ""
+
+#: templates/template.html.twig:253
+msgid "do encerramento, a pesquisa aparece no chamado"
+msgstr ""
+
+#: templates/template.html.twig:260
+msgid "min"
+msgstr ""
+
+#: templates/template.html.twig:265
+msgid "o e-mail sai, se ainda não avaliou"
+msgstr ""
+
+#: templates/template.html.twig:269
+msgid "dos chamados encerrados recebem"
+msgstr ""
+
+#: templates/template.html.twig:276
+msgid "Esperar a avaliação no chamado antes de mandar o e-mail"
+msgstr ""
+
+#: templates/template.html.twig:277
+msgid ""
+"A pesquisa já aparece na tela do chamado. Se o requerente avaliar ali dentro desse tempo, o e-mail não sai (nem os lembretes)."
+msgstr ""
+
+#: templates/template.html.twig:282
+msgid "Não esperar (enviar na hora)"
+msgstr ""
+
+#: templates/template.html.twig:282 templates/template.html.twig:705
+msgid "minutos"
+msgstr ""
+
+#: templates/template.html.twig:282 templates/template.html.twig:705
+msgid "padrão"
+msgstr ""
+
+#: templates/template.html.twig:291
+msgid ""
+"A ação automática do convite com espera não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la."
+msgstr ""
+
+#: templates/template.html.twig:297
+msgid ""
+"A ação automática \"npsphereConvite\" está DESATIVADA: com espera, nenhum convite de chamado sai enquanto ela não for ativada."
+msgstr ""
+
+#: templates/template.html.twig:298 templates/template.html.twig:500 templates/template.html.twig:617 templates/template.html.twig:737
+msgid "Ativar"
+msgstr ""
+
+#: templates/template.html.twig:311
+msgid "E-mail do convite"
+msgstr ""
+
+#: templates/template.html.twig:314
+msgid "Sai no lugar da notificação de satisfação do GLPI."
+msgstr ""
+
+#: templates/template.html.twig:316
+msgid "Sai quando você clicar em \"Enviar convites\"."
+msgstr ""
+
+#: templates/template.html.twig:323 templates/template.html.twig:518 templates/template.html.twig:637 templates/template.html.twig:751
+msgid "Assunto"
+msgstr ""
+
+#: templates/template.html.twig:323 templates/template.html.twig:518 templates/template.html.twig:637 templates/template.html.twig:751
+msgid "Em branco, usa o assunto padrão (o texto em cinza)."
+msgstr ""
+
+#: templates/template.html.twig:332
+msgid "Prévia com o chamado"
+msgstr ""
+
+#: templates/template.html.twig:335
+msgid ""
+"Nenhum chamado encerrado ainda: a prévia mostra os campos entre colchetes."
+msgstr ""
+
+#: templates/template.html.twig:338
+msgid "Prévia com o primeiro destinatário da lista."
+msgstr ""
+
+#: templates/template.html.twig:359
+msgid ""
+"Esta pesquisa tem %d perguntas e a mensagem mostra pergunta no e-mail: muita gente responde só a primeira. Prefira o {{botao}}."
+msgstr ""
+
+#: templates/template.html.twig:360
+msgid "Por quê?"
+msgstr ""
+
+#: templates/template.html.twig:370 templates/template.html.twig:539 templates/template.html.twig:660 templates/template.html.twig:773
+msgid "Salvar"
+msgstr ""
+
+#: templates/template.html.twig:377
+msgid "Enviar convites"
+msgstr ""
+
+#: templates/template.html.twig:379
+msgid ""
+"Salve antes de enviar: o e-mail usa o texto gravado. Os convites entram na fila de e-mails do GLPI."
+msgstr ""
+
+#: templates/template.html.twig:397
+msgid "Lembrete automático"
+msgstr ""
+
+#: templates/template.html.twig:398
+msgid "Um novo e-mail para quem recebeu o convite e ainda não respondeu."
+msgstr ""
+
+#: templates/template.html.twig:403 templates/template.html.twig:562 templates/template.html.twig:682 templates/template.html.twig:968
+msgid "Ação automática"
+msgstr ""
+
+#: templates/template.html.twig:414
+msgid ""
+"Pesquisa anônima não tem lembrete: todos recebem o mesmo link, então não há como saber quem já respondeu."
+msgstr ""
+
+#: templates/template.html.twig:423
+msgid "Enviar lembrete para quem não respondeu"
+msgstr ""
+
+#: templates/template.html.twig:429
+msgid "Enviar a cada"
+msgstr ""
+
+#: templates/template.html.twig:429
+msgid "Contados a partir do convite e, depois, do último lembrete."
+msgstr ""
+
+#: templates/template.html.twig:433
+msgid "dias sem resposta"
+msgstr ""
+
+#: templates/template.html.twig:437
+msgid "No máximo"
+msgstr ""
+
+#: templates/template.html.twig:437
+msgid "Depois disso a pessoa não é mais cobrada."
+msgstr ""
+
+#: templates/template.html.twig:441
+msgid "lembrete(s) por pessoa"
+msgstr ""
+
+#: templates/template.html.twig:452
+msgid "Prazo do GLPI: %d dia(s)."
+msgstr ""
+
+#: templates/template.html.twig:455 templates/template.html.twig:1310
+msgid "Nenhum lembrete cabe nesse prazo — diminua o intervalo."
+msgstr ""
+
+#: templates/template.html.twig:457 templates/template.html.twig:1311
+msgid "Cabem até %d lembrete(s)."
+msgstr ""
+
+#: templates/template.html.twig:461
+msgid "Prazo do GLPI: sem limite."
+msgstr ""
+
+#: templates/template.html.twig:466
+msgid ""
+"É a \"Duração da pesquisa\" da entidade (Assistência › Pesquisa de satisfação). Depois dela o GLPI considera a pesquisa expirada e o lembrete para."
+msgstr ""
+
+#: templates/template.html.twig:474
+msgid "convites registrados"
+msgstr ""
+
+#: templates/template.html.twig:478
+msgid "já responderam"
+msgstr ""
+
+#: templates/template.html.twig:482
+msgid "aguardando (podem receber lembrete)"
+msgstr ""
+
+#: templates/template.html.twig:486
+msgid "lembretes enviados"
+msgstr ""
+
+#: templates/template.html.twig:493
+msgid ""
+"A ação automática do lembrete não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la."
+msgstr ""
+
+#: templates/template.html.twig:499
+msgid ""
+"A ação automática \"npsphereLembrete\" está DESATIVADA: nenhum lembrete sai enquanto ela não for ativada."
+msgstr ""
+
+#: templates/template.html.twig:512
+msgid "E-mail do lembrete"
+msgstr ""
+
+#: templates/template.html.twig:513
+msgid "Mesmas variáveis e mesmo link do convite."
+msgstr ""
+
+#: templates/template.html.twig:557
+msgid "Um e-mail por dia para os gestores, com as respostas do dia."
+msgstr ""
+
+#: templates/template.html.twig:573
+msgid "Enviar o relatório diário"
+msgstr ""
+
+#: templates/template.html.twig:582
+msgid "Horário de envio"
+msgstr ""
+
+#: templates/template.html.twig:582
+msgid "Sai na primeira execução da ação automática depois desse horário."
+msgstr ""
+
+#: templates/template.html.twig:590 templates/template.html.twig:710
+msgid "Nota baixa"
+msgstr ""
+
+#: templates/template.html.twig:590
+msgid ""
+"A mesma nota da coluna \"Nota\" da aba Resultados (0 a 10). As respostas até este valor vêm em destaque."
+msgstr ""
+
+#: templates/template.html.twig:593 templates/template.html.twig:713
+msgid "até %d"
+msgstr ""
+
+#: templates/template.html.twig:593 templates/template.html.twig:713
+msgid "detratores (padrão)"
+msgstr ""
+
+#: templates/template.html.twig:599
+msgid ""
+"Recebe os links \"Ver resposta\" e \"Abrir os resultados\" quem pode abrir esta pesquisa no GLPI. Os outros recebem o relatório completo, só sem esses links."
+msgstr ""
+
+#: templates/template.html.twig:604
+msgid ""
+"Ninguém vai receber: escolha usuários ou grupos (com e-mail no cadastro) e salve."
+msgstr ""
+
+#: templates/template.html.twig:610
+msgid ""
+"A ação automática do relatório não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la."
+msgstr ""
+
+#: templates/template.html.twig:616
+msgid ""
+"A ação automática \"npsphereRelatorio\" está DESATIVADA: nenhum relatório sai enquanto ela não for ativada."
+msgstr ""
+
+#: templates/template.html.twig:624
+msgid "Pesquisa anônima: as respostas aparecem sem o nome de quem respondeu."
+msgstr ""
+
+#: templates/template.html.twig:632
+msgid "E-mail do relatório"
+msgstr ""
+
+#: templates/template.html.twig:677
+msgid "Um e-mail curto, logo depois da resposta com nota baixa."
+msgstr ""
+
+#: templates/template.html.twig:693
+msgid "Avisar na hora quando chegar uma nota baixa"
+msgstr ""
+
+#: templates/template.html.twig:702
+msgid "Enviar depois de"
+msgstr ""
+
+#: templates/template.html.twig:702
+msgid ""
+"Espera a pessoa terminar o comentário, para o aviso sair com a resposta completa."
+msgstr ""
+
+#: templates/template.html.twig:710
+msgid ""
+"Só respostas com nota até este valor geram aviso (nota da coluna \"Nota\" da aba Resultados). Independente da nota baixa do relatório."
+msgstr ""
+
+#: templates/template.html.twig:719
+msgid ""
+"Recebe o botão \"Ver resposta no GLPI\" quem pode abrir esta pesquisa no GLPI. Os outros recebem o aviso completo, só sem o botão."
+msgstr ""
+
+#: templates/template.html.twig:724
+msgid ""
+"Ninguém vai receber: escolha usuários ou grupos acima (com e-mail no cadastro) e salve."
+msgstr ""
+
+#: templates/template.html.twig:730
+msgid ""
+"A ação automática do aviso não foi encontrada. Atualize o plugin em Configurar › Plugins para criá-la."
+msgstr ""
+
+#: templates/template.html.twig:736
+msgid ""
+"A ação automática \"npsphereAviso\" está DESATIVADA: nenhum aviso sai enquanto ela não for ativada."
+msgstr ""
+
+#: templates/template.html.twig:746
+msgid "E-mail do aviso"
+msgstr ""
+
+#: templates/template.html.twig:792
+msgid "Variável"
+msgstr ""
+
+#: templates/template.html.twig:793
+msgid "Significado"
+msgstr ""
+
+#: templates/template.html.twig:805
+msgid "Só na mensagem (bloco pronto)"
+msgstr ""
+
+#: templates/template.html.twig:807
+msgid "Assunto e mensagem"
+msgstr ""
+
+#: templates/template.html.twig:827 templates/template.html.twig:1704
+msgid "Como funciona"
+msgstr ""
+
+#: templates/template.html.twig:828
+msgid "As regras de cada e-mail. Clique num assunto para abrir."
+msgstr ""
+
+#: templates/template.html.twig:840
+msgid ""
+"O convite sai sozinho quando o chamado é encerrado — não há botão de envio. Recebe o requerente do chamado, que responde direto do e-mail, sem login."
+msgstr ""
+
+#: templates/template.html.twig:841
+msgid ""
+"O atraso, a porcentagem de chamados que recebem e a duração da pesquisa vêm da entidade (Entidade › Assistência › Pesquisa de satisfação). A entidade precisa estar com \"Pesquisa externa\" apontando para o NPSphere; com \"Pesquisa interna\", quem envia é o próprio GLPI e este convite não sai."
+msgstr ""
+
+#: templates/template.html.twig:842
+msgid ""
+"A pesquisa aparece na tela do chamado. O e-mail espera o tempo de \"Esperar a avaliação no chamado\": se o requerente avaliar ali, o e-mail não sai (nem os lembretes). Se não avaliar, o convite sai normalmente, no lugar da notificação de satisfação do GLPI."
+msgstr ""
+
+#: templates/template.html.twig:843
+msgid ""
+"Com espera, quem envia é a ação automática \"npsphereConvite\", a cada minuto. Sem espera, o e-mail entra na fila na hora do encerramento."
+msgstr ""
+
+#: templates/template.html.twig:844
+msgid ""
+"Prévia: usa o último chamado encerrado. Os links da prévia abrem a aba Visualizar e não registram avaliação."
+msgstr ""
+
+#: templates/template.html.twig:846
+msgid ""
+"Recebem os usuários do Público-alvo com e-mail no cadastro do GLPI. Para incluir alguém sem e-mail, cadastre o e-mail no usuário."
+msgstr ""
+
+#: templates/template.html.twig:848
+msgid ""
+"Esta pesquisa aceita várias respostas por pessoa: todos com e-mail recebem, inclusive quem já respondeu."
+msgstr ""
+
+#: templates/template.html.twig:850
+msgid "Quem já respondeu não recebe de novo."
+msgstr ""
+
+#: templates/template.html.twig:852
+msgid ""
+"Cada pessoa recebe o próprio link: clicar numa opção do e-mail registra a resposta em nome dela, sem entrar no GLPI. Clicar de novo troca a resposta, sem duplicar."
+msgstr ""
+
+#: templates/template.html.twig:853
+msgid "Prévia: usa a primeira pessoa que vai receber."
+msgstr ""
+
+#: templates/template.html.twig:855
+msgid ""
+"Adicione os destinatários um a um ou importe um CSV separado por ponto e vírgula (;), com as colunas email e nome. Os importados são somados aos da lista; e-mails repetidos são ignorados."
+msgstr ""
+
+#: templates/template.html.twig:857
+msgid ""
+"Pesquisa anônima: todos recebem o mesmo link. O clique numa opção abre a pesquisa com a opção já marcada, e a pessoa confirma no botão Enviar."
+msgstr ""
+
+#: templates/template.html.twig:859
+msgid ""
+"Cada destinatário recebe o próprio link: o clique numa opção já registra a resposta e mostra a confirmação. Clicar de novo troca a resposta, sem duplicar. Se a pesquisa pede identificação (nome, e-mail e telefone), o clique abre o formulário para a pessoa preencher os dados."
+msgstr ""
+
+#: templates/template.html.twig:861
+msgid ""
+"Prévia: usa o primeiro nome da lista. Os links da prévia abrem a pesquisa de verdade."
+msgstr ""
+
+#: templates/template.html.twig:864
+msgid ""
+"Os convites saem quando você clica em \"Enviar convites\". Salve antes: o e-mail usa o texto gravado."
+msgstr ""
+
+#: templates/template.html.twig:866
+msgid ""
+"Todos os e-mails do NPSphere usam a fila de e-mails do GLPI (Configurar › Notificações › Fila de notificações) e o servidor de e-mail configurado nele: saem na próxima execução da ação automática \"queuednotification\"."
+msgstr ""
+
+#: templates/template.html.twig:874
+msgid "Perguntas dentro do e-mail"
+msgstr ""
+
+#: templates/template.html.twig:877
+msgid ""
+"Cada pergunta da pesquisa tem uma variável com o nome dela (veja em Variáveis, abaixo). No e-mail, ela mostra a pergunta com as opções para clicar."
+msgstr ""
+
+#: templates/template.html.twig:878
+msgid "Use assim só quando a pesquisa tem uma única pergunta."
+msgstr ""
+
+#: templates/template.html.twig:878
+msgid ""
+"Cada clique no e-mail leva UMA resposta: com várias perguntas no e-mail, a pessoa clica na primeira, a página abre e as outras ficam para responder lá. Muita gente fecha a página achando que já respondeu tudo."
+msgstr ""
+
+#: templates/template.html.twig:880
+msgid ""
+"Com mais de uma pergunta, prefira o {{botao}}, que leva a pessoa direto para a pesquisa completa."
+msgstr ""
+
+#: templates/template.html.twig:881
+msgid "Esta pesquisa tem %d perguntas."
+msgstr ""
+
+#: templates/template.html.twig:883
+msgid ""
+"As variáveis de pergunta são criadas sozinhas, com o texto da pergunta sem acentos e sem espaços. Se o texto mudar, o nome da variável muda junto: confira a prévia depois de editar as perguntas."
+msgstr ""
+
+#: templates/template.html.twig:895
+msgid ""
+"Pesquisa anônima não tem lembrete: todos recebem o mesmo link, então o plugin não tem como saber quem já respondeu — e descobrir isso quebraria o anonimato prometido a quem responde."
+msgstr ""
+
+#: templates/template.html.twig:897
+msgid ""
+"Vai para quem recebeu o convite e ainda não respondeu, a cada \"N dias sem resposta\" (contados do convite e, depois, do último lembrete), até o máximo de lembretes por pessoa."
+msgstr ""
+
+#: templates/template.html.twig:899
+msgid ""
+"Recebe o requerente do chamado, enquanto não avaliar e a pesquisa não expirar."
+msgstr ""
+
+#: templates/template.html.twig:900
+msgid ""
+"O GLPI não tem lembrete próprio de pesquisa de satisfação: o que ele define é a \"Duração da pesquisa\" da entidade. Depois dela o GLPI considera a pesquisa do chamado expirada, e o lembrete para junto. Com \"0\" (sem limite), valem só o intervalo e o máximo."
+msgstr ""
+
+#: templates/template.html.twig:902
+msgid ""
+"Recebe quem ganhou o convite pelo botão \"Enviar convites\". Enviar os convites de novo recomeça a contagem."
+msgstr ""
+
+#: templates/template.html.twig:904
+msgid ""
+"O lembrete usa as mesmas variáveis e o mesmo link do convite: clicar numa opção do lembrete já registra a resposta."
+msgstr ""
+
+#: templates/template.html.twig:905
+msgid ""
+"Quem envia é a ação automática \"npsphereLembrete\", de hora em hora, das %dh às %dh."
+msgstr ""
+
+#: templates/template.html.twig:905
+msgid "Só entram os convites enviados a partir da versão 0.58.0."
+msgstr ""
+
+#: templates/template.html.twig:917
+msgid ""
+"Um e-mail por dia para os gestores: primeiro as respostas com nota baixa, depois todas as respostas, separadas por pessoa."
+msgstr ""
+
+#: templates/template.html.twig:918
+msgid ""
+"Sai na primeira execução da ação automática \"npsphereRelatorio\" (de hora em hora) depois do horário escolhido. Cada relatório traz as respostas desde o anterior (o primeiro, as últimas 24 horas). Dia sem resposta, nada é enviado e o \"último envio\" não muda."
+msgstr ""
+
+#: templates/template.html.twig:919
+msgid ""
+"A nota de cada resposta é a mesma da coluna \"Nota\" da aba Resultados: de 0 a 10, a média das perguntas com nota (NPS, estrelas e emoji convertidos para 0 a 10). \"Nota baixa\" é a resposta com nota até o valor escolhido."
+msgstr ""
+
+#: templates/template.html.twig:920
+msgid ""
+"Cada resposta tem o link para abri-la no GLPI e, na pesquisa de chamado, o link do chamado."
+msgstr ""
+
+#: templates/template.html.twig:921
+msgid ""
+"Pesquisa anônima: o relatório traz as respostas, mas nunca quem respondeu — cada uma aparece como \"Resposta anônima\"."
+msgstr ""
+
+#: templates/template.html.twig:922
+msgid ""
+"Prévia: usa as respostas reais das últimas 24 horas (sem nenhuma, as dos últimos 30 dias)."
+msgstr ""
+
+#: templates/template.html.twig:933
+msgid ""
+"Um e-mail por resposta com nota baixa, logo depois da resposta, para o gestor falar com o cliente no mesmo dia. Quem recebe e a nota baixa do aviso são próprios dele, independentes do relatório."
+msgstr ""
+
+#: templates/template.html.twig:934
+msgid ""
+"Espera o tempo de \"Enviar depois de\": quem clica a nota no e-mail costuma escrever o comentário logo depois, e o aviso sai com a resposta completa."
+msgstr ""
+
+#: templates/template.html.twig:935
+msgid ""
+"Quem envia é a ação automática \"npsphereAviso\", a cada 5 minutos: o aviso chega entre a espera escolhida e 5 minutos depois dela."
+msgstr ""
+
+#: templates/template.html.twig:936
+msgid ""
+"Um aviso por resposta. Se a pessoa mudar a nota para baixa depois, o aviso sai nessa hora. Só valem as respostas a partir do momento em que o aviso foi ligado. A resposta também entra no relatório diário."
+msgstr ""
+
+#: templates/template.html.twig:937
+msgid "Prévia: usa a nota baixa mais recente dos últimos 30 dias."
+msgstr ""
+
+#: templates/template.html.twig:945
+msgid "Quem recebe o relatório e o aviso, e quem recebe os links"
+msgstr ""
+
+#: templates/template.html.twig:948
+msgid ""
+"Recebem os usuários e os grupos escolhidos em cada e-mail (do grupo, todos os membros), desde que estejam ativos e tenham e-mail no cadastro."
+msgstr ""
+
+#: templates/template.html.twig:949
+msgid ""
+"Os links \"Ver resposta\" e \"Abrir os resultados\" (e o botão \"Ver resposta no GLPI\" do aviso) só vão para quem abre a pesquisa no GLPI: um perfil da interface padrão com acesso à entidade da pesquisa, leitura em \"Pesquisas de satisfação\" e ser quem criou a pesquisa ou administrador geral — a mesma regra do GLPI ao abrir a pesquisa."
+msgstr ""
+
+#: templates/template.html.twig:950
+msgid ""
+"Quem não abre recebe o e-mail completo, só sem esses links, qualquer que seja o modelo."
+msgstr ""
+
+#: templates/template.html.twig:951
+msgid ""
+"O link do chamado vai para todos: quem abre o chamado é decidido pelo próprio GLPI."
+msgstr ""
+
+#: templates/template.html.twig:959
+msgid "Ações automáticas"
+msgstr ""
+
+#: templates/template.html.twig:969
+msgid "O que faz"
+msgstr ""
+
+#: templates/template.html.twig:970
+msgid "Quando roda"
+msgstr ""
+
+#: templates/template.html.twig:976
+msgid "Envia o convite do chamado depois da espera"
+msgstr ""
+
+#: templates/template.html.twig:976
+msgid "A cada minuto"
+msgstr ""
+
+#: templates/template.html.twig:979
+msgid "Envia os lembretes"
+msgstr ""
+
+#: templates/template.html.twig:979
+msgid "De hora em hora, das %dh às %dh"
+msgstr ""
+
+#: templates/template.html.twig:980
+msgid "Envia o relatório diário"
+msgstr ""
+
+#: templates/template.html.twig:980
+msgid "De hora em hora"
+msgstr ""
+
+#: templates/template.html.twig:981
+msgid "Envia o aviso de nota baixa"
+msgstr ""
+
+#: templates/template.html.twig:981
+msgid "A cada 5 minutos"
+msgstr ""
+
+#: templates/template.html.twig:989
+msgid "ativa"
+msgstr ""
+
+#: templates/template.html.twig:991
+msgid "desativada"
+msgstr ""
+
+#: templates/template.html.twig:995
+msgid "não encontrada"
+msgstr ""
+
+#: templates/template.html.twig:1004
+msgid "Manda a fila de e-mails (todos os e-mails acima passam por ela)"
+msgstr ""
+
+#: templates/template.html.twig:1005
+msgid "Configurada no GLPI"
+msgstr ""
+
+#: templates/template.html.twig:1011
+msgid ""
+"Ficam em Configurar › Ações automáticas. Uma ação \"não encontrada\" é criada ao atualizar o plugin em Configurar › Plugins."
+msgstr ""
+
+#: templates/template.html.twig:1012
+msgid ""
+"Para os horários serem cumpridos mesmo sem ninguém usando o GLPI, deixe as ações automáticas no modo \"CLI\" (cron do servidor)."
+msgstr ""
+
+#: templates/template.html.twig:1022
+msgid "Variáveis"
+msgstr ""
+
+#: templates/template.html.twig:1023
+msgid ""
+"Escreva a variável no assunto ou na mensagem: no envio ela é trocada pelo valor de cada destinatário. Cada e-mail tem as suas — uma variável escrita no e-mail errado sai como texto."
+msgstr ""
+
+#: templates/template.html.twig:1030
+msgid "Convite e lembrete"
+msgstr ""
+
+#: templates/template.html.twig:1031 templates/template.html.twig:1051
+msgid "variáveis"
+msgstr ""
+
+#: templates/template.html.twig:1034
+msgid "Exemplo nesta pesquisa"
+msgstr ""
+
+#: templates/template.html.twig:1037
+msgid ""
+"As variáveis de pergunta são uma por pergunta ativa (veja \"Perguntas dentro do e-mail\", acima)."
+msgstr ""
+
+#: templates/template.html.twig:1039
+msgid ""
+"{{destinatario}} é o nome da segunda coluna do CSV (email;nome). Sem nome, usa o início do e-mail (a parte antes do @)."
+msgstr ""
+
+#: templates/template.html.twig:1041
+msgid ""
+"{{destinatario}} é o nome do usuário no GLPI (nome e sobrenome do cadastro; sem eles, o login)."
+msgstr ""
+
+#: templates/template.html.twig:1054
+msgid "Onde usar"
+msgstr ""
+
+#: templates/template.html.twig:1057
+msgid ""
+"As variáveis \"bloco pronto\" (%s) trazem uma parte inteira do e-mail já formatada (tabelas, cores, links): dá para mudar a ordem, tirar ou escrever texto entre elas. No assunto elas não são trocadas. O botão de restaurar do editor volta ao modelo padrão."
+msgstr ""
+
+#: templates/template.html.twig:1167
+msgid "Não foi possível montar a prévia."
+msgstr ""
+
+#: templates/template.html.twig:1188
+msgid "Substituir a mensagem atual pelo modelo padrão?"
+msgstr ""
+
+#: templates/template.html.twig:1347
+msgid "%d e-mail na lista."
+msgstr ""
+
+#: templates/template.html.twig:1347
+msgid "%d e-mails na lista."
+msgstr ""
+
+#: templates/template.html.twig:1448
+msgid "Informe um e-mail válido."
+msgstr ""
+
+#: templates/template.html.twig:1454
+msgid "Este e-mail já está na lista."
+msgstr ""
+
+#: templates/template.html.twig:1517
+msgid "Não foi possível importar."
+msgstr ""
+
+#: templates/template.html.twig:1521 templates/template.html.twig:1565
+msgid "Falha de conexão."
+msgstr ""
+
+#: templates/template.html.twig:1540
+msgid "Ninguém para receber: confira o público-alvo."
+msgstr ""
+
+#: templates/template.html.twig:1557
+msgid "Não foi possível enviar."
+msgstr ""
+
+#: templates/template.html.twig:1582
+msgid "Mensagem"
+msgstr ""
+
+#: templates/template.html.twig:1585 templates/template.html.twig:1586
+msgid "Restaurar o modelo padrão"
+msgstr ""
+
+#: templates/template.html.twig:1597
+msgid "HTML5 — como a pessoa recebe"
+msgstr ""
+
+#: templates/template.html.twig:1605
+msgid "Prévia da mensagem"
+msgstr ""
+
+#: templates/template.html.twig:1615
+msgid "Código"
+msgstr ""
+
+#: templates/template.html.twig:1621
+msgid "Marcadores disponíveis"
+msgstr ""
+
+#: templates/template.html.twig:1622
+msgid ""
+"Clique para inserir na posição do cursor. Passe o mouse num marcador para ver o que ele traz; a lista completa está na aba Ajuda."
+msgstr ""
+
+#: templates/template.html.twig:1641
+msgid "Usuários que recebem"
+msgstr ""
+
+#: templates/template.html.twig:1646
+msgid "Grupos que recebem"
+msgstr ""
+
+#: templates/template.html.twig:1646
+msgid "Todos os membros do grupo recebem."
+msgstr ""
+
+#: templates/template.html.twig:1656
+msgid "pessoa(s) recebem (ativas, com e-mail)"
+msgstr ""
+
+#: templates/template.html.twig:1660
+msgid "abrem os resultados no GLPI"
+msgstr ""
+
+#: templates/template.html.twig:1664
+msgid "último envio"
+msgstr ""
+
+#: templates/template.html.twig:1675
+msgid "Links para os resultados"
+msgstr ""
+
+#: templates/template.html.twig:1685
+msgid "Recebe os links"
+msgstr ""
+
+#: templates/template.html.twig:1687
+msgid "Sem os links (sem acesso)"
+msgstr ""

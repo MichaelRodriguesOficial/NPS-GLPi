@@ -16,7 +16,7 @@
             {% endif %}
             <p class="text-muted small">
                 <i class="ti ti-clock"></i>
-                {{ answer.fields['date_creation']|date('d/m/Y H:i') }}
+                {{ answer.fields['date_creation']|date('Y-m-d H:i:s')|formatted_datetime }}
                 {% if answer.fields['duration'] %}
                     · {{ __('preenchida em', 'npsphere') }} {{ answer.fields['duration'] }}s
                 {% endif %}

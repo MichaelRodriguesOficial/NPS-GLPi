@@ -1,5 +1,69 @@
 {% import "components/form/fields_macros.html.twig" as fields %}
 
+{% macro adicionar(lista, types, dropdowns) %}
+    <div class="npsphere-target-add" data-lista="{{ lista }}">
+        <select class="form-select npsphere-target-type">
+            {% for value, label in types %}
+                <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+        {# Um dropdown nativo do GLPI por tipo, exibido conforme a
+           escolha. Usar o componente do próprio GLPI traz de
+           graça a caixa de pesquisa com resultados (select2),
+           o respeito às entidades do usuário e a paginação --
+           coisas que minha busca própria não fazia. #}
+        <div class="npsphere-target-search">
+            {% for value, html in dropdowns %}
+                <div class="npsphere-target-dropdown" data-for-type="{{ value }}"
+                     style="{{ loop.first ? '' : 'display:none' }}">
+                    {{ html|raw }}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-primary npsphere-target-add-btn">
+            <i class="ti {{ lista == 'excluir' ? 'ti-user-minus' : 'ti-plus' }}"></i>
+            <span>{{ lista == 'excluir' ? __('Adicionar exceção', 'npsphere') : __('Adicionar', 'npsphere') }}</span>
+        </button>
+    </div>
+{% endmacro %}
+
+{% macro tabela(linhas, can_edit) %}
+    <table class="table card-table npsphere-target-table">
+        <thead>
+            <tr>
+                <th>{{ __('Tipo', 'npsphere') }}</th>
+                <th>{{ __('Destinatário', 'npsphere') }}</th>
+                {% if can_edit %}<th class="text-end"></th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in linhas %}
+                <tr data-target-id="{{ t.id }}">
+                    <td><span class="npsphere-target-type">{{ t.type_label }}</span></td>
+                    <td>
+                        {% if t.missing %}
+                            <span class="text-danger">
+                                <i class="ti ti-alert-circle"></i>
+                                {{ __('Item removido do GLPI', 'npsphere') }} (#{{ t.items_id }})
+                            </span>
+                        {% else %}
+                            {{ t.name }}
+                        {% endif %}
+                    </td>
+                    {% if can_edit %}
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-danger npsphere-target-remove"
+                                    data-target-id="{{ t.id }}" title="{{ __('Remover', 'npsphere') }}">
+                                <i class="ti ti-x"></i>
+                            </button>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
 <div class="npsphere-targets" data-surveys-id="{{ survey.getID() }}" data-save-url="{{ save_url }}">
 
     <section class="npsphere-card">
@@ -15,13 +79,13 @@
             <div class="npsphere-field">
                 <label>{{ __('Disponível para todos os usuários', 'npsphere') }}</label>
                 <select class="form-select" id="npsphere-target-all" {{ can_edit ? '' : 'disabled' }}>
-                    <option value="0"{{ target_all ? '' : ' selected' }}>{{ __('Não') }}</option>
-                    <option value="1"{{ target_all ? ' selected' : '' }}>{{ __('Sim') }}</option>
+                    <option value="0"{{ target_all ? '' : ' selected' }}>{{ __('No') }}</option>
+                    <option value="1"{{ target_all ? ' selected' : '' }}>{{ __('Yes') }}</option>
                 </select>
             </div>
 
             <aside class="npsphere-info">
-                <p><strong>{{ __('Sim', 'npsphere') }}</strong> — {{ __('qualquer usuário autenticado do GLPI poderá responder.', 'npsphere') }}</p>
+                <p><strong>{{ __('Sim', 'npsphere') }}</strong> — {{ __('qualquer usuário autenticado do GLPI poderá responder, menos as exceções.', 'npsphere') }}</p>
                 <p class="mb-0"><strong>{{ __('Não', 'npsphere') }}</strong> — {{ __('apenas quem estiver na lista abaixo (entidades, perfis, grupos ou usuários).', 'npsphere') }}</p>
             </aside>
         </div>
@@ -37,29 +101,7 @@
         </header>
 
         {% if can_edit %}
-            <div class="npsphere-target-add">
-                <select class="form-select" id="npsphere-target-type">
-                    {% for value, label in types %}
-                        <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-                {# Um dropdown nativo do GLPI por tipo, exibido conforme a
-                   escolha. Usar o componente do próprio GLPI traz de
-                   graça a caixa de pesquisa com resultados (select2),
-                   o respeito às entidades do usuário e a paginação --
-                   coisas que minha busca própria não fazia. #}
-                <div class="npsphere-target-search">
-                    {% for value, html in dropdowns %}
-                        <div class="npsphere-target-dropdown" data-for-type="{{ value }}"
-                             style="{{ loop.first ? '' : 'display:none' }}">
-                            {{ html|raw }}
-                        </div>
-                    {% endfor %}
-                </div>
-                <button type="button" class="btn btn-primary" id="npsphere-target-add">
-                    <i class="ti ti-plus"></i> <span>{{ __('Adicionar', 'npsphere') }}</span>
-                </button>
-            </div>
+            {{ _self.adicionar('incluir', types, dropdowns.incluir) }}
         {% endif %}
 
         {% if targets is empty %}
@@ -68,40 +110,29 @@
                 <span>{{ __('Nenhum destinatário definido — no momento, ninguém consegue responder esta pesquisa.', 'npsphere') }}</span>
             </div>
         {% else %}
-            <table class="table card-table npsphere-target-table">
-                <thead>
-                    <tr>
-                        <th>{{ __('Tipo', 'npsphere') }}</th>
-                        <th>{{ __('Destinatário', 'npsphere') }}</th>
-                        {% if can_edit %}<th class="text-end"></th>{% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for t in targets %}
-                        <tr data-target-id="{{ t.id }}">
-                            <td><span class="npsphere-target-type">{{ t.type_label }}</span></td>
-                            <td>
-                                {% if t.missing %}
-                                    <span class="text-danger">
-                                        <i class="ti ti-alert-circle"></i>
-                                        {{ __('Item removido do GLPI', 'npsphere') }} (#{{ t.items_id }})
-                                    </span>
-                                {% else %}
-                                    {{ t.name }}
-                                {% endif %}
-                            </td>
-                            {% if can_edit %}
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-danger npsphere-target-remove"
-                                            data-target-id="{{ t.id }}" title="{{ __('Remover', 'npsphere') }}">
-                                        <i class="ti ti-x"></i>
-                                    </button>
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {{ _self.tabela(targets, can_edit) }}
+        {% endif %}
+    </section>
+
+    {# Exceções valem também para "todos os usuários" -- por isso este
+       quadro não some junto com a lista de destinatários. #}
+    <section class="npsphere-card" id="npsphere-target-except-card">
+        <header class="npsphere-card-head">
+            <span class="npsphere-card-icon"><i class="ti ti-user-minus"></i></span>
+            <div>
+                <h3>{{ __('Exceções', 'npsphere') }}</h3>
+                <p>{{ __('Quem estiver aqui não responde e não recebe convite, mesmo estando nos destinatários ou com "todos os usuários". Ex.: o grupo Financeiro, exceto o gestor.', 'npsphere') }}</p>
+            </div>
+        </header>
+
+        {% if can_edit %}
+            {{ _self.adicionar('excluir', types, dropdowns.excluir) }}
+        {% endif %}
+
+        {% if excecoes is empty %}
+            <p class="text-muted mb-0" id="npsphere-except-empty">{{ __('Nenhuma exceção.', 'npsphere') }}</p>
+        {% else %}
+            {{ _self.tabela(excecoes, can_edit) }}
         {% endif %}
     </section>
 </div>
@@ -126,11 +157,11 @@
                 if (res && res.success) {
                     if (typeof done === 'function') { done(res); }
                 } else {
-                    alert('Não foi possível salvar. Recarregue a página e tente novamente.');
+                    alert({{ __('Não foi possível salvar. Recarregue a página e tente novamente.', 'npsphere')|json_encode|raw }});
                 }
             })
             .catch(function () {
-                alert('Não foi possível salvar. Verifique sua conexão.');
+                alert({{ __('Não foi possível salvar. Verifique sua conexão.', 'npsphere')|json_encode|raw }});
             });
     }
 
@@ -148,47 +179,49 @@
         });
     }
 
-    // Adicionar destinatário, usando o dropdown nativo do GLPI
-    var addBtn = document.getElementById('npsphere-target-add');
-    var typeSelect = document.getElementById('npsphere-target-type');
+    // Adicionar destinatário ou exceção, usando o dropdown nativo do
+    // GLPI. Cada lista tem o seu seletor de tipo e os seus dropdowns.
+    root.querySelectorAll('.npsphere-target-add').forEach(function (bloco) {
+        var typeSelect = bloco.querySelector('.npsphere-target-type');
+        var addBtn = bloco.querySelector('.npsphere-target-add-btn');
+        var excecao = bloco.dataset.lista === 'excluir';
 
-    function visibleDropdown() {
-        var wrapper = root.querySelector(
-            '.npsphere-target-dropdown[data-for-type="' + typeSelect.value + '"]'
-        );
-        return wrapper ? wrapper.querySelector('select') : null;
-    }
+        function visibleDropdown() {
+            var wrapper = bloco.querySelector(
+                '.npsphere-target-dropdown[data-for-type="' + typeSelect.value + '"]'
+            );
+            return wrapper ? wrapper.querySelector('select') : null;
+        }
 
-    function showDropdownForType() {
-        root.querySelectorAll('.npsphere-target-dropdown').forEach(function (el) {
-            el.style.display = (el.dataset.forType === typeSelect.value) ? '' : 'none';
-        });
-    }
+        function showDropdownForType() {
+            bloco.querySelectorAll('.npsphere-target-dropdown').forEach(function (el) {
+                el.style.display = (el.dataset.forType === typeSelect.value) ? '' : 'none';
+            });
+        }
 
-    if (typeSelect) {
         typeSelect.addEventListener('change', showDropdownForType);
         showDropdownForType();
-    }
 
-    if (addBtn) {
         addBtn.addEventListener('click', function () {
             var select = visibleDropdown();
             var itemsId = select ? parseInt(select.value, 10) : 0;
 
             if (!itemsId || itemsId < 1) {
-                alert('Selecione um destinatário antes de adicionar.');
+                alert({{ __('Selecione um destinatário antes de adicionar.', 'npsphere')|json_encode|raw }});
                 return;
             }
 
-            call({ action: 'add', itemtype: typeSelect.value, items_id: itemsId }, function (res) {
+            call({ action: 'add', itemtype: typeSelect.value, items_id: itemsId, excluded: excecao ? 1 : 0 }, function (res) {
                 if (res.duplicate) {
-                    alert('Este destinatário já está na lista.');
+                    alert(res.em === 'excecoes'
+                        ? {{ __('Este item já está nas exceções.', 'npsphere')|json_encode|raw }}
+                        : {{ __('Este item já está nos destinatários.', 'npsphere')|json_encode|raw }});
                     return;
                 }
                 window.location.reload();
             });
         });
-    }
+    });
 
     // Remover destinatário
     root.addEventListener('click', function (event) {

@@ -13,7 +13,7 @@
  * arquivo vai ser lido de volta por este mesmo plugin, e um separador
  * combinado dos dois lados vale mais do que um configurável.
  *
- * Vive em ajax/ junto de export.csv.php: é o lugar onde os downloads
+ * Vive em ajax/ junto de results.export.php: é o lugar onde os downloads
  * gerados pelo plugin já estavam.
  */
 

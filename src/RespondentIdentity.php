@@ -85,6 +85,7 @@ class RespondentIdentity
             $errors[] = __('Informe seu telefone.', 'npsphere');
         } else {
             [$flag, $dial, $label, $lengths] = self::COUNTRIES[$country];
+            $label = self::nomePais($country);
             if (!in_array(strlen($digits), $lengths, true)) {
                 $errors[] = sprintf(
                     __('O telefone informado não tem a quantidade de dígitos esperada para %s (%s).', 'npsphere'),
@@ -152,6 +153,32 @@ class RespondentIdentity
         return (bool) preg_match('/^[a-zA-Z]{2,}$/', $tld);
     }
 
+    /** Nome do país no idioma do usuário (v0.65.0). */
+    public static function nomePais(string $iso): string
+    {
+        return match ($iso) {
+            'BR' => __('Brasil', 'npsphere'),
+            'PT' => __('Portugal', 'npsphere'),
+            'US' => __('Estados Unidos', 'npsphere'),
+            'AR' => __('Argentina', 'npsphere'),
+            'CL' => __('Chile', 'npsphere'),
+            'CO' => __('Colômbia', 'npsphere'),
+            'MX' => __('México', 'npsphere'),
+            'PY' => __('Paraguai', 'npsphere'),
+            'UY' => __('Uruguai', 'npsphere'),
+            'AO' => __('Angola', 'npsphere'),
+            'CA' => __('Canadá', 'npsphere'),
+            'DE' => __('Alemanha', 'npsphere'),
+            'ES' => __('Espanha', 'npsphere'),
+            'FR' => __('França', 'npsphere'),
+            'GB' => __('Reino Unido', 'npsphere'),
+            'IT' => __('Itália', 'npsphere'),
+            'JP' => __('Japão', 'npsphere'),
+            'MZ' => __('Moçambique', 'npsphere'),
+            default => (string) (self::COUNTRIES[$iso][2] ?? $iso),
+        };
+    }
+
     /**
      * Lista de países no formato usado pelo formulário/JS.
      */
@@ -163,7 +190,7 @@ class RespondentIdentity
                 'iso'     => $iso,
                 'flag'    => $flag,
                 'dial'    => $dial,
-                'label'   => $label,
+                'label'   => self::nomePais($iso),
                 'lengths' => $lengths,
             ];
         }

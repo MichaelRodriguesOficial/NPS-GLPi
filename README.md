@@ -13,7 +13,7 @@
   <a href="https://github.com/MichaelRodriguesOficial/NPS-GLPi/releases/latest"><img src="https://img.shields.io/github/v/release/MichaelRodriguesOficial/NPS-GLPi?label=release&color=1f93ff" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/GLPI-11.x-2c9e6f" alt="GLPI 11.x">
   <img src="https://img.shields.io/badge/PHP-8.1%2B-777bb4" alt="PHP 8.1+">
-  <img src="https://img.shields.io/badge/UI-pt__BR-informational" alt="Interface language">
+  <img src="https://img.shields.io/badge/UI-pt__BR%20%7C%20en__GB-informational" alt="Interface languages">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv3%2B-blue" alt="License"></a>
   <a href="https://github.com/sponsors/MichaelRodriguesOficial"><img src="https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2?logo=githubsponsors" alt="Sponsor"></a>
 </p>
@@ -61,7 +61,8 @@ instead of duplicating it. Reminders go to whoever hasn't answered yet.
 <td width="50%" valign="top">
 
 ### 👥 Staff and customers too
-**Internal** surveys for GLPI users (by entity, profile, group, user or everyone), shown in
+**Internal** surveys for GLPI users (by entity, profile, group, user or everyone, with
+**exceptions** such as "the Finance group, except its manager"), shown in
 **My surveys** and, optionally, as a **mandatory** pop-up after login. **External** surveys for people
 without an account, by public link or by an email list (CSV import).
 
@@ -70,8 +71,8 @@ without an account, by public link or by an email list (CSV import).
 
 ### 📊 Results that lead to action
 NPS, average score, monthly trend and breakdowns by survey, entity, requester, technician, group and
-category. Managers get a **daily report** and an **immediate low-score alert**, so they can call the
-customer the same day.
+category, exported to **Excel, LibreOffice or CSV**. Managers get a **daily report** and an
+**immediate low-score alert**, so they can call the customer the same day.
 
 </td>
 </tr>
@@ -98,8 +99,8 @@ GLPI's own mail queue.
 
 ## 📸 Screenshots
 
-> The plugin's interface is currently in **Brazilian Portuguese**. The screenshots come from a demo
-> GLPI 11.0.11 with made-up data.
+> The screenshots show the **Brazilian Portuguese** interface; **English** is included too and follows
+> each user's language in GLPI. They come from a demo GLPI 11.0.11 with made-up data.
 
 ### Building a survey
 
@@ -298,6 +299,25 @@ settings.
 
 </details>
 
+<details>
+<summary><b>Rate limits on the pages without login</b></summary>
+
+Per IP address, with a sliding window. The defaults are generous, because a whole company often
+answers from the same IP right after a mass invitation. To change them, add to GLPI's
+`config/local_define.php`:
+
+```php
+define('NPSPHERE_LIMITE_PAGINA', 240); // opening a survey, per minute
+define('NPSPHERE_LIMITE_ENVIO', 120);  // saving an answer (form or email click), per minute
+define('NPSPHERE_LIMITE_FALHA', 20);   // invalid links/keys/tokens, per 10 minutes
+```
+
+`0` turns that limit off. Over the limit, the visitor sees "Please wait a moment" (HTTP 429). Behind
+a reverse proxy, every visitor shares the proxy's IP: raise the limits, or have the web server pass
+the real client IP in `REMOTE_ADDR`.
+
+</details>
+
 ## 📖 User guide & FAQ
 
 Step-by-step instructions for every task live in **[docs/FAQ.md](docs/FAQ.md)**, including:
@@ -316,7 +336,9 @@ Step-by-step instructions for every task live in **[docs/FAQ.md](docs/FAQ.md)**,
 |---|---|
 | **Who manages what** | Each person sees and edits only the surveys they created (listing, form, questions, results, exports, previews). General administrators see all of them. |
 | **Answering without login** | Every email link is personal and **signed** (survey + person or ticket). A tampered link is rejected. Opening a link records nothing: the answer is saved by a script in the respondent's browser, so email security scanners that open links don't create fake answers. |
-| **Public link** | 256-bit token, compared in constant time, with a limit on invalid attempts. |
+| **Public link** | 256-bit token, compared in constant time. |
+| **Rate limiting** | Every page that opens without login (public link and email links) has a per-IP limit, using the same Symfony RateLimiter GLPI uses for two-factor codes, stored in GLPI's cache. Invalid links, keys or tokens count separately: after 20 in 10 minutes the IP is blocked on all those pages until the window passes. Clearing cookies doesn't reset it. Limits can be changed in `config/local_define.php` (see [Configuration](#configuration)). |
+| **History** | Survey, question and target audience changes are recorded in GLPI's own **Historical** tab. |
 | **CSRF** | Every POST carries a fresh GLPI CSRF token, including the session-less answer pages. |
 | **Anonymous surveys** | No identity is stored, and there are no reminders (finding out who answered would break anonymity). |
 | **Links to results** | In reports and alerts, "View answer" and "Open results" go only to recipients who can open the survey in GLPI. Everyone else gets the same email without those links. |
@@ -402,7 +424,8 @@ npsphere/
 ├── ajax/               Previews, sending, exports, one-click answers
 ├── templates/          Twig
 ├── public/             CSS and JavaScript
-├── locales/            Translations (.pot)
+├── locales/            Translations (.pot, .po, .mo)
+├── tools/              locales.py: extract, update and compile translations (not in the release zip)
 ├── vendor/             Composer autoload (no external dependencies)
 ├── docs/               User guide, project status, Pix QR code
 └── screenshots/        Images used in this README (not in the release zip)
@@ -415,8 +438,27 @@ Database tables: `glpi_plugin_npsphere_surveys`, `_questions`, `_answers`, `_ans
 </details>
 
 The project status, decisions and roadmap are in [docs/NPSPHERE-STATUS.md](docs/NPSPHERE-STATUS.md)
-(in Portuguese). Next on the roadmap: ODS/XLSX export, exclusions in the target audience, an audit
-history, rate limiting on the public link and a full translation.
+(in Portuguese).
+
+<details>
+<summary><b>Translations</b></summary>
+
+The source texts are in Brazilian Portuguese, and English (`en_GB`, `en_US`) is included. GLPI picks
+the language from each user's preferences; the public link follows the visitor's browser.
+
+To add a language, copy `locales/en_GB.po` to `locales/<code>.po` (for example `es_ES.po`), translate
+the `msgstr` lines and compile:
+
+```bash
+python3 tools/locales.py extract   # refresh locales/npsphere.pot from the code
+python3 tools/locales.py update    # add new texts to every .po
+python3 tools/locales.py compile   # build the .mo files GLPI reads
+```
+
+`pt_BR.po` and `pt_PT.po` stay untranslated on purpose: the code already is the Portuguese text, and
+the files only exist so GLPI doesn't fall back to English for Portuguese users.
+
+</details>
 
 <a id="support"></a>
 

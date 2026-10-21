@@ -1,7 +1,7 @@
 # NPSphere — Status do Projeto
 
 **Plugin de pesquisas de satisfação para GLPI 11**
-Versão: **0.64.3** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
+Versão: **0.65.0** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 
 ---
 
@@ -56,6 +56,7 @@ Versão: **0.64.3** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | Filtros por data, nota e **entidade** | 🟢 |
 | Ordenação, paginação, resposta individual com os widgets reais | 🟢 |
 | Exportação **CSV** respeitando o filtro ativo | 🟢 |
+| Exportação **Excel (.xlsx)** e **LibreOffice (.ods)** — abas Visão geral e Respostas *(0.65.0)* | 🟡 *aguardando validação* |
 | Impressão/PDF com escopo e cabeçalho | 🟢 |
 | Exportação ODS / XLSX | ⚪ |
 
@@ -74,7 +75,8 @@ Versão: **0.64.3** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 |---|---|
 | Acesso anônimo por token (`STRATEGY_NO_CHECK`) | 🟢 |
 | Token de 256 bits, comparação em tempo constante | 🟢 |
-| Bloqueio após 10 tentativas inválidas | 🟢 |
+| Bloqueio após 10 tentativas inválidas (por sessão) | 🟢 |
+| **Limite por IP** nas rotas sem login (Symfony RateLimiter + cache do GLPI); falhas bloqueiam o IP por 10 min *(0.65.0)* | 🟡 *aguardando validação* |
 | Identificação (nome, e-mail, telefone internacional) | 🟢 |
 | Validação de e-mail rigorosa (navegador + servidor) | 🟢 |
 | Anti-duplicidade por e-mail/telefone | 🟢 |
@@ -84,6 +86,7 @@ Versão: **0.64.3** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | Item | |
 |---|---|
 | Público-alvo: entidade, perfil, grupo, usuário, "todos" | 🟢 |
+| **Exceções** no público-alvo ("grupo X exceto fulano"), valem também para o convite e o aviso obrigatório *(0.65.0)* | 🟡 *aguardando validação* |
 | Recursividade de entidades respeitada | 🟢 |
 | Tela **Minhas pesquisas** (pendentes + respondidas) | 🟢 |
 | Direito próprio **"Minhas pesquisas"** | 🟢 |
@@ -127,6 +130,7 @@ Versão: **0.64.3** · atualizado em 21/10/2026 · Autor: Michael Rodrigues
 | **Clicar na linha** filtra o painel por ela | 🟢 |
 | "Por pesquisa" abre a pesquisa **direto na aba Resultados** | 🟢 |
 | **Exportação CSV** e impressão, com os mesmos filtros | 🟢 |
+| Exportação **Excel / ODS** (uma aba por quadro) *(0.65.0)* | 🟡 *aguardando validação* |
 | Escopo: cada pessoa vê as pesquisas que criou | 🟢 |
 
 ### Decisões de cálculo registradas
@@ -158,9 +162,9 @@ criou a pesquisa.
 
 ---
 
-## FASE 9 — Notificações e convites por e-mail 🟡 **EM ANDAMENTO**
+## FASE 9 — Notificações e convites por e-mail 🟢 **CONCLUÍDA**
 
-Entregue de 0.51.3 a 0.54.0.
+Entregue de 0.51.3 a 0.64.3; validada pelo Michael em 21/10/2026.
 
 ### Aba Template (e-mail do convite)
 
@@ -237,15 +241,18 @@ resposta, sem duplicar.
 | `{{link}}` completo na prévia/Variáveis da pesquisa de chamado — 0.61.1 | 🟢 *validado em 14/10* |
 | URL completa da pesquisa de chamado na aba Pesquisa de satisfação (regressão da 0.51.0) — 0.59.2 | 🟢 *validado em 14/10* |
 
-## FASE 11 — Acabamentos ⚪
+## FASE 11 — Acabamentos 🟡 **ENTREGUE (0.65.0), AGUARDANDO VALIDAÇÃO**
 
 | Item | |
 |---|---|
-| Exportação ODS / XLSX | ⚪ |
-| Regras de exclusão no público-alvo ("grupo X exceto fulano") | ⚪ |
-| Auditoria / histórico de alterações | ⚪ |
-| Limite de requisições por tempo no link público | 🟡 |
-| Tradução completa (`.mo` compilado) | 🟡 |
+| Exportação ODS / XLSX (Resultados e Painel), com os filtros da tela | 🟡 *testado aqui; falta o Michael* |
+| Exceções no público-alvo ("grupo X exceto fulano"): coluna `targets.is_excluded`, quadro próprio na aba | 🟡 *testado aqui; falta o Michael* |
+| Histórico de alterações na aba Histórico do GLPI (pesquisa, modelos, perguntas, ordem, público-alvo) | 🟡 *testado aqui; falta o Michael* |
+| Limite de requisições por IP nas rotas sem login (`NPSPHERE_LIMITE_PAGINA/ENVIO/FALHA`) | 🟡 *testado aqui; falta o Michael* |
+| Tradução completa: `.pot` com 816 textos, `en_GB`/`en_US` traduzidos, `pt_BR`/`pt_PT` de origem, JS traduzido via `<meta name="npsphere-i18n">` | 🟡 *testado aqui; falta o Michael* |
+| Datas e números no formato das Preferências do GLPI | 🟡 *testado aqui; falta o Michael* |
+
+Ideias registradas para depois: relatório agrupado por técnico; comparação com a média dos últimos 30 dias; e-mails no idioma de cada destinatário; outros idiomas (ex.: `es_ES`).
 
 ---
 
@@ -261,11 +268,11 @@ resposta, sem duplicar.
 | 6. Pesquisa externa | 🟢 |
 | 7. Pesquisa interna | 🟢 |
 | 8. Vinculada a chamado | 🟢 |
-| 9. Notificações e convites | 🟡 **em andamento** |
+| 9. Notificações e convites | 🟢 |
 | **10. Painel consolidado** | **🟢** |
-| 11. Acabamentos | ⚪ |
+| 11. Acabamentos | 🟡 **entregue, aguardando validação** |
 
-**9 de 11 fases finalizadas; a 9 está em andamento.**
+**10 de 11 fases finalizadas; a 11 foi entregue na 0.65.0 e aguarda validação.**
 
 ---
 
@@ -275,13 +282,13 @@ resposta, sem duplicar.
 `targets`, `completions`, **`invites`** *(0.52.0)*, **`deliveries`** *(0.58.0 — convites enviados, para o lembrete)*
 *(além da gravação em `glpi_ticketsatisfactions`, que pertence ao GLPI)*
 
-**Classes (27):** Survey, Question, Answer, AnswerValue, Target,
+**Classes (31):** Survey, Question, Answer, AnswerValue, Target,
 Completion, TicketLink, GlpiSatisfaction, ResponseService,
 MetricsCalculator, Dashboard, DashboardMenu, ConditionEvaluator,
 PublicAccess, RespondentIdentity, QuestionTypeManager, Profile,
 MySurveysMenu, SurveyPreview, SurveyResults, SurveyTargets,
 **SurveyTemplate**, **SurveyMailer**, **MailPolicy**,
-**NotificationTargetSurvey**, **Invite**, **LinkSigner**, **Delivery** *(lembrete)*, **DailyReport** *(relatório e aviso)*
+**NotificationTargetSurvey**, **Invite**, **LinkSigner**, **Delivery** *(lembrete)*, **DailyReport** *(relatório e aviso)*, **SheetExport** *(xlsx/ods/csv)*, **RateLimit**, **JsI18n** *(tradução dos JS)*
 
 **Ações automáticas (4):** `npsphereConvite` (a cada minuto), `npsphereLembrete` (de hora em hora, 8h–18h), `npsphereRelatorio` (de hora em hora), `npsphereAviso` (a cada 5 min)
 
@@ -339,7 +346,7 @@ Cada um custou várias rodadas:
 
 ## Onde estamos agora
 
-**Fase 9: entregue e testada de ponta a ponta (0.64.1; 0.64.2 com o botão Duplicar e o README com telas).** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
+**Fase 9 concluída (validada em 21/10). Fase 11 entregue na 0.65.0, aguardando validação.** Repositório público: https://github.com/MichaelRodriguesOficial/NPS-GLPi
 
 ### Teste completo de 21/10 — GLPI 11.0.11 + MariaDB 10.11 + PHP 8.3
 
@@ -406,12 +413,10 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
 - 🔁 **Duplicar** (0.64.2) funcionou, mas o Michael pediu o padrão do GLPI → **0.64.3**: Clonar pela ação em massa (lista e Ações da pesquisa); botão removido.
 - 🔁 **Celular:** o telefone ficou certo, mas as outras páginas não estavam boas → **0.64.3**: revisão a 390 px de todas as páginas de resposta e dos 4 e-mails.
 - 🔁 **Botão "Enviar avaliação"** ainda fora do padrão no celular → ajustado na **própria 0.64.3** (sem release nova): tamanho e alinhamento dos botões do GLPI, e o texto de todos os botões do plugin num `<span>` depois do ícone. A automação de release passou a atualizar a release existente quando a versão não muda.
+- ✅ **0.64.3 validada** (Clonar, celular e botão "Enviar avaliação") → **Fase 9 concluída**.
 
 ### Falta testar no ambiente real
 
-- **Template limpo (0.64.0/0.64.1):** conferir visualmente no seu GLPI.
-- **Clonar (0.64.3):** Ações › Clonar na lista e dentro da pesquisa; cópia inativa, com perguntas e sem público-alvo.
-- **Celular (0.64.3):** abrir no celular um convite, a resposta pelo link, a pesquisa pública e o aviso de pesquisa obrigatória.
 - Relatório com muitas respostas (acima de ~60/dia o Gmail corta o e-mail) e ações automáticas no modo CLI.
 
 ### Pontos encontrados na revisão — corrigidos na 0.62.1 (validados em 21/10)
@@ -421,7 +426,19 @@ Feito num GLPI montado só para o teste, com navegador automatizado e envio real
 - Duplicar pesquisa zera as datas de envio na cópia (e o aviso conta a partir da criação da cópia).
 - Ainda válido: relatório com muitas respostas (acima de ~60/dia o Gmail corta) e ações automáticas no modo CLI.
 
-### Fase 11 — acabamentos
+### Fase 11 — 0.65.0 (21/10)
 
-Exportação ODS/XLSX; regras de exclusão no público-alvo; auditoria/histórico; limite de requisições no link público (parcial); tradução `.mo` (parcial).
-Ideias registradas: relatório agrupado por técnico; comparação com a média dos últimos 30 dias.
+Testado aqui no GLPI 11.0.11:
+- **Exportação:** xlsx, ods e csv dos Resultados (com filtro de entidade) e do Painel; abrem no LibreOffice; notas como número, datas como data.
+- **Exceções:** grupo com exceção de uma pessoa, "todos" com exceção de um grupo, exceção por entidade (com filhas); aviso de item repetido.
+- **Histórico:** campos da pesquisa e dos modelos, perguntas (criar, alterar, excluir, reordenar) e público-alvo aparecem na aba Histórico com nomes legíveis.
+- **Limite:** 25 links falsos com cookie novo a cada vez → a 21ª tentativa já recebe 429, e o link válido também fica bloqueado até a janela passar; página "Aguarde um pouco" no celular.
+- **Tradução:** passeio por todas as abas, painel, pergunta, chamado (iframe), aviso obrigatório, Minhas pesquisas e página pública com usuário/navegador em inglês — só sobra o que é dado digitado (nomes, perguntas). Em português nada muda e a `<meta>` nem é gerada.
+- **Banco:** instalação nova = atualização da 0.64.3 (esquema idêntico); desinstala e reinstala limpo; as 4 ações automáticas rodam sem erro.
+
+Decisões:
+- Textos genéricos (Sim, Não, Nome, Descrição, Editar, Duplicar, Excluir…) passam a usar o domínio do próprio GLPI; os que têm concordância própria ("Ativa", "Recursivo") ficam no domínio do plugin.
+- Os e-mails com o modelo padrão saem no idioma de quem monta o envio (ação automática = idioma padrão do GLPI). E-mail no idioma de cada destinatário ficou como ideia.
+- Datas seguem Configurar › Geral › Valores padrão (ou as preferências do usuário). Com o padrão do GLPI (AAAA-MM-DD), o relatório passa a mostrar 2026-10-21 em vez de 21/10.
+
+Falta o Michael validar: exportar xlsx/ods; criar uma exceção; abrir a aba Histórico; trocar o idioma do usuário para English e passear; conferir o formato das datas.

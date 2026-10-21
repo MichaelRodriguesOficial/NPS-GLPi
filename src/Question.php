@@ -236,6 +236,50 @@ class Question extends CommonDBChild
      *
      * @return array<int, string> questions_id => nome
      */
+    /**
+     * Histórico da pesquisa (v0.65.0): uma linha por campo alterado da
+     * pergunta, com o nome da pergunta e o campo em português -- em vez
+     * do valor cru (o JSON da configuração, por exemplo).
+     *
+     * Os três campos da regra condicional mudam juntos; viram uma linha só.
+     */
+    private array $historicoRegistrado = [];
+
+    public function pre_updateInDB()
+    {
+        $this->historicoRegistrado = [];
+        parent::pre_updateInDB();
+    }
+
+    public function getHistoryChangeWhenUpdateField($field)
+    {
+        $rotulos = [
+            'name'                   => __('Texto da pergunta', 'npsphere'),
+            'description'            => __('Description'),
+            'type'                   => __('Tipo', 'npsphere'),
+            'is_required'            => __('Obrigatória', 'npsphere'),
+            'is_active'              => __('Ativa', 'npsphere'),
+            'configuration'          => __('Configuração', 'npsphere'),
+            'condition_questions_id' => __('Regra condicional', 'npsphere'),
+            'condition_operator'     => __('Regra condicional', 'npsphere'),
+            'condition_value'        => __('Regra condicional', 'npsphere'),
+        ];
+
+        if (!isset($rotulos[$field]) || in_array($rotulos[$field], $this->historicoRegistrado, true)) {
+            return false;
+        }
+        $this->historicoRegistrado[] = $rotulos[$field];
+
+        $nome = (string) ($this->fields['name'] ?? '');
+        if ($field === 'name') {
+            $texto = sprintf('%s: "%s" → "%s"', $rotulos[$field], (string) ($this->oldvalues['name'] ?? ''), $nome);
+        } else {
+            $texto = sprintf('%s — %s', $nome, $rotulos[$field]);
+        }
+
+        return ['0', '', mb_substr($texto, 0, 250)];
+    }
+
     public static function getTriggerCandidates(int $surveys_id, ?int $exclude_id = null, ?int $before_position = null): array
     {
         global $DB;
@@ -340,8 +384,8 @@ class Question extends CommonDBChild
         switch ((string) ($question['type'] ?? '')) {
             case 'yesno':
                 return [
-                    'yes'       => __('Sim'),
-                    'no'        => __('Não'),
+                    'yes'       => __('Yes'),
+                    'no'        => __('No'),
                     'dont_know' => __('Não sei', 'npsphere'),
                 ][$texto] ?? $texto;
 

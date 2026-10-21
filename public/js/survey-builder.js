@@ -8,6 +8,39 @@
 (function () {
     'use strict';
 
+    // v0.65.0: tradução dos textos deste arquivo. O dicionário vem do
+    // servidor numa <meta name="npsphere-i18n"> (ver src/JsI18n.php),
+    // só quando o idioma do usuário não é o português; sem ele, o texto
+    // original (pt-BR) é usado. Dentro do iframe do chamado, procura na
+    // página que o embute.
+    var NPSPHERE_I18N = null;
+    function t(texto) {
+        if (NPSPHERE_I18N === null) {
+            NPSPHERE_I18N = {};
+            var docs = [document];
+            try {
+                if (window.parent && window.parent !== window) {
+                    docs.push(window.parent.document);
+                }
+            } catch (e) { /* outra origem */ }
+            for (var i = 0; i < docs.length; i++) {
+                var meta = docs[i].querySelector('meta[name="npsphere-i18n"]');
+                if (meta) {
+                    try { NPSPHERE_I18N = JSON.parse(meta.getAttribute('content')) || {}; } catch (e) { /* ignora */ }
+                    break;
+                }
+            }
+        }
+        var traduzido = Object.prototype.hasOwnProperty.call(NPSPHERE_I18N, texto) ? NPSPHERE_I18N[texto] : texto;
+        // %s, %1$s, %d...: preenchidos com os argumentos seguintes.
+        var args = Array.prototype.slice.call(arguments, 1);
+        var proximo = 0;
+        return traduzido.replace(/%(?:(\d+)\$)?[sd]/g, function (m, pos) {
+            var v = pos ? args[parseInt(pos, 10) - 1] : args[proximo++];
+            return v === undefined ? m : String(v);
+        });
+    }
+
     // Marcador de carregamento. A interface simplificada
     // (autoatendimento) não inclui os mesmos assets que a interface
     // padrão, e sem este arquivo a pesquisa aparecia sempre em página
@@ -259,7 +292,7 @@
                         if (errorsBox) {
                             var messages = (data && data.errors && data.errors.length)
                                 ? data.errors
-                                : ['Não foi possível salvar. Verifique os campos e tente novamente.'];
+                                : [t('Não foi possível salvar. Verifique os campos e tente novamente.')];
                             errorsBox.style.display = '';
                             errorsBox.innerHTML = '<div class="alert alert-danger"><ul class="mb-0">' +
                                 messages.map(function (m) { return '<li>' + m + '</li>'; }).join('') +
@@ -571,8 +604,8 @@
             if (count) {
                 var total = rows.length;
                 count.textContent = (matched.length === total)
-                    ? (total + (total === 1 ? ' resposta' : ' respostas'))
-                    : ('Filtrando ' + matched.length + ' de ' + total);
+                    ? (total === 1 ? t('%d resposta', total) : t('%d respostas', total))
+                    : t('Filtrando %1$d de %2$d', matched.length, total);
             }
             if (pageInfo) {
                 pageInfo.textContent = page + ' / ' + pages;
@@ -614,7 +647,7 @@
                     var todas = entityPicker.querySelector('[data-all]');
                     if (todas) { todas.checked = true; }
                     var rotulo = entityPicker.querySelector('.npsphere-picker-label');
-                    if (rotulo) { rotulo.textContent = 'Todas as entidades'; }
+                    if (rotulo) { rotulo.textContent = t('Todas as entidades'); }
                     entityPicker.classList.remove('npsphere-picker-ativo');
                 }
 
@@ -761,12 +794,12 @@
 
         function loadDetail(answerId, done) {
             panel.style.display = '';
-            panel.innerHTML = '<p class="text-muted mb-0">Carregando…</p>';
+            panel.innerHTML = '<p class="text-muted mb-0">' + t('Carregando…') + '</p>';
 
             fetch(detailUrl + '?answers_id=' + encodeURIComponent(answerId), { method: 'GET' })
                 .then(function (r) { return r.ok ? r.text() : null; })
                 .then(function (html) {
-                    panel.innerHTML = html || '<p class="text-danger mb-0">Não foi possível carregar as respostas.</p>';
+                    panel.innerHTML = html || '<p class="text-danger mb-0">' + t('Não foi possível carregar as respostas.') + '</p>';
 
                     // Desabilita de fato os campos exibidos: o
                     // pointer-events do CSS impede o clique, mas não a
@@ -783,7 +816,7 @@
                     }
                 })
                 .catch(function () {
-                    panel.innerHTML = '<p class="text-danger mb-0">Não foi possível carregar as respostas.</p>';
+                    panel.innerHTML = '<p class="text-danger mb-0">' + t('Não foi possível carregar as respostas.') + '</p>';
                 });
         }
 
@@ -998,9 +1031,9 @@
                 // técnicos, categorias e requerentes. Os textos vêm do
                 // próprio seletor (data-singular/plural/todas); sem
                 // eles, cai no texto das entidades dos Resultados.
-                var singular = picker.dataset.singular || 'entidade';
-                var plural = picker.dataset.plural || 'entidades';
-                var todasTexto = picker.dataset.todas || 'Todas as entidades';
+                var singular = picker.dataset.singular || t('entidade');
+                var plural = picker.dataset.plural || t('entidades');
+                var todasTexto = picker.dataset.todas || t('Todas as entidades');
 
                 if (marcadas.length === 0) {
                     rotulo.textContent = todasTexto;
@@ -1129,13 +1162,13 @@
             var rotulo = outro.querySelector('.npsphere-picker-label');
             if (rotulo) {
                 if (valores.length === 0) {
-                    rotulo.textContent = 'Todas as entidades';
+                    rotulo.textContent = t('Todas as entidades');
                 } else if (valores.length === 1) {
                     var marcado = outro.querySelector('.npsphere-picker-entity:checked');
                     var texto = marcado ? marcado.parentElement.querySelector('span') : null;
-                    rotulo.textContent = texto ? texto.textContent.trim() : '1 entidade';
+                    rotulo.textContent = texto ? texto.textContent.trim() : t('1 entidade');
                 } else {
-                    rotulo.textContent = valores.length + ' entidades';
+                    rotulo.textContent = t('%d entidades', valores.length);
                 }
             }
 
@@ -1405,7 +1438,7 @@
         var prevBtn = document.createElement('button');
         prevBtn.type = 'button';
         prevBtn.className = 'btn btn-outline-secondary';
-        prevBtn.innerHTML = '<i class="ti ti-chevron-left"></i><span>Anterior</span>';
+        prevBtn.innerHTML = '<i class="ti ti-chevron-left"></i><span>' + t('Anterior') + '</span>';
 
         var prevSlot = document.createElement('div');
         prevSlot.className = 'npsphere-step-prev-slot';
@@ -1417,7 +1450,7 @@
         var nextBtn = document.createElement('button');
         nextBtn.type = 'button';
         nextBtn.className = 'btn btn-primary npsphere-step-next';
-        nextBtn.innerHTML = '<span>Próxima</span><i class="ti ti-chevron-right ms-1"></i>';
+        nextBtn.innerHTML = '<span>' + t('Próxima') + '</span><i class="ti ti-chevron-right ms-1"></i>';
 
         var error = document.createElement('div');
         error.className = 'npsphere-step-error alert alert-danger';
@@ -1502,10 +1535,10 @@
                 return st.dataset.requireAll === '1';
             }).length;
             if (steps[current].dataset.requireAll === '1') {
-                progress.textContent = 'Seus dados';
+                progress.textContent = t('Seus dados');
             } else {
-                progress.textContent = 'Pergunta ' + (position - identitySteps)
-                    + ' de ' + (visibleSteps.length - identitySteps);
+                progress.textContent = t('Pergunta %1$d de %2$d', position - identitySteps,
+                    visibleSteps.length - identitySteps);
             }
             // visibility (não display) preserva o espaço no layout -- é
             // isso que mantém "Pergunta X de Y" sempre centralizado,
@@ -1547,8 +1580,8 @@
                 && !isSkipped(steps[current])
                 && !isStepFilled(steps[current])) {
                 error.textContent = (steps[current].dataset.requireAll === '1')
-                    ? 'Preencha nome, e-mail e telefone para continuar.'
-                    : 'Esta pergunta é obrigatória.';
+                    ? t('Preencha nome, e-mail e telefone para continuar.')
+                    : t('Esta pergunta é obrigatória.');
                 error.style.display = '';
                 return;
             }
@@ -1578,8 +1611,8 @@
                     .then(function (res) {
                         nextBtn.disabled = false;
                         if (res && res.already_answered) {
-                            error.textContent = 'Já existe uma resposta com este e-mail ou telefone. '
-                                + 'Esta pesquisa aceita apenas uma resposta por pessoa.';
+                            error.textContent = t('Já existe uma resposta com este e-mail ou telefone.') + ' '
+                                + t('Esta pesquisa aceita apenas uma resposta por pessoa.');
                             error.style.display = '';
                             return;
                         }
@@ -1603,7 +1636,7 @@
             submitBtn.addEventListener('click', function (event) {
                 if (steps[current].dataset.required === '1' && !isStepFilled(steps[current])) {
                     event.preventDefault();
-                    error.textContent = 'Esta pergunta é obrigatória.';
+                    error.textContent = t('Esta pergunta é obrigatória.');
                     error.style.display = '';
                 }
             });
@@ -1710,21 +1743,21 @@
                         // ficaria em dúvida se acabou de sujar os
                         // próprios números.
                         var registrada = data.preview
-                            ? 'Esta é uma pré-visualização: <strong>nenhuma resposta foi gravada</strong>.'
-                            : 'Sua resposta foi registrada com sucesso.';
+                            ? t('Esta é uma pré-visualização: <strong>nenhuma resposta foi gravada</strong>.')
+                            : t('Sua resposta foi registrada com sucesso.');
 
                         container.innerHTML =
                             '<div class="text-center">' +
                             '<i class="ti ' + (data.preview ? 'ti-eye-check text-primary' : 'ti-circle-check text-success') +
                             '" style="font-size: 3rem;"></i>' +
-                            '<h2>Obrigado pela sua avaliação!</h2>' +
+                            '<h2>' + t('Obrigado pela sua avaliação!') + '</h2>' +
                             '<p class="text-muted">' + registrada + '</p>' +
                             '</div>';
                         return;
                     }
                     showErrors((data && data.errors && data.errors.length)
                         ? data.errors
-                        : ['Não foi possível registrar sua resposta. Tente novamente.']);
+                        : [t('Não foi possível registrar sua resposta. Tente novamente.')]);
                 })
                 .catch(function () {
                     if (isRetry) {

@@ -17,7 +17,7 @@ if (!defined('GLPI_ROOT')) {
     die('Sorry. You can not access directly to this file');
 }
 
-define('PLUGIN_NPSPHERE_VERSION', '0.64.3');
+define('PLUGIN_NPSPHERE_VERSION', '0.65.0');
 
 // Versão mínima do GLPI suportada (inclusive)
 define('PLUGIN_NPSPHERE_MIN_GLPI_VERSION', '11.0.0');
@@ -235,6 +235,19 @@ function plugin_init_npsphere()
     if (strpos($_SERVER['REQUEST_URI'] ?? '', 'npsphere/') !== false) {
         $PLUGIN_HOOKS[\Glpi\Plugin\Hooks::ADD_JAVASCRIPT]['npsphere'][] = 'js/survey-builder.js';
     }
+
+    // v0.65.0: textos dos JS traduzidos (ver src/JsI18n.php). Fica no
+    // post_init porque as traduções do plugin só são carregadas depois
+    // desta função.
+    $PLUGIN_HOOKS[\Glpi\Plugin\Hooks::POST_INIT]['npsphere'] = 'plugin_npsphere_post_init';
+}
+
+/**
+ * Depois de iniciar todos os plugins (traduções já carregadas).
+ */
+function plugin_npsphere_post_init(): void
+{
+    \GlpiPlugin\Npsphere\JsI18n::registrarCabecalho();
 }
 
 /**
@@ -281,7 +294,7 @@ function plugin_version_npsphere()
 function plugin_npsphere_check_prerequisites()
 {
     if (version_compare(PHP_VERSION, '8.1.0', '<')) {
-        echo 'Este plugin requer PHP >= 8.1';
+        echo sprintf(__('Este plugin requer PHP >= %s', 'npsphere'), '8.1');
         return false;
     }
     return true;

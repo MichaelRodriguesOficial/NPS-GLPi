@@ -14,8 +14,9 @@ namespace GlpiPlugin\Npsphere;
  *  - só abre pesquisas que estão ativas, dentro do prazo E com o acesso
  *    público explicitamente habilitado -- desabilitar a opção fecha o
  *    link imediatamente, sem precisar trocar o token;
- *  - há limite de tentativas por sessão, para dificultar varredura de
- *    tokens por força bruta.
+ *  - há limite de tentativas por sessão e, desde a v0.65.0, por IP
+ *    (RateLimit), para dificultar varredura de tokens por força bruta --
+ *    o da sessão sozinho caía apagando o cookie.
  */
 class PublicAccess
 {
@@ -98,6 +99,8 @@ class PublicAccess
 
     private static function registerFailedAttempt(): void
     {
+        RateLimit::registrarFalha();
+
         $attempts = (int) ($_SESSION['npsphere_public_attempts'] ?? 0) + 1;
         $_SESSION['npsphere_public_attempts'] = $attempts;
 

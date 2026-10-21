@@ -44,6 +44,10 @@ $dados['export_url'] = Plugin::getWebDir('npsphere', true) . '/ajax/dashboard.ex
         'surveys', 'entities', 'requerentes', 'tecnicos', 'grupos', 'categorias', 'date_from', 'date_to',
     ])));
 
+// v0.65.0: separador decimal das Preferências do usuário (Formato dos
+// números), como no restante do GLPI.
+$dados['sep_decimal'] = in_array((int) ($_SESSION['glpinumber_format'] ?? 0), [2, 4], true) ? ',' : '.';
+
 TemplateRenderer::getInstance()->display('@npsphere/dashboard.html.twig', $dados);
 
 Html::footer();

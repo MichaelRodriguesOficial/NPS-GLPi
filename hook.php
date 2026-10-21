@@ -286,6 +286,7 @@ function plugin_npsphere_install()
             `surveys_id`    int unsigned NOT NULL DEFAULT '0',
             `itemtype`      varchar(64) NOT NULL DEFAULT '',
             `items_id`      int unsigned NOT NULL DEFAULT '0',
+            `is_excluded`   tinyint NOT NULL DEFAULT '0',
             `date_creation` timestamp NULL DEFAULT NULL,
             PRIMARY KEY (`id`),
             KEY `surveys_id` (`surveys_id`),
@@ -477,6 +478,11 @@ function plugin_npsphere_install()
     // uma linha por usuário da base, então vira uma marcação na pesquisa.
     if ($DB->tableExists($table) && !$DB->fieldExists($table, 'target_all')) {
         $migration->addField($table, 'target_all', 'bool', ['value' => 0]);
+    }
+
+    // v0.65.0: exceções no público-alvo ("grupo X, exceto fulano").
+    if ($DB->tableExists($targets_table) && !$DB->fieldExists($targets_table, 'is_excluded')) {
+        $migration->addField($targets_table, 'is_excluded', 'bool', ['value' => 0, 'after' => 'items_id']);
     }
 
     // IMPORTANTE: executeMigration() precisa ser a ÚLTIMA chamada depois

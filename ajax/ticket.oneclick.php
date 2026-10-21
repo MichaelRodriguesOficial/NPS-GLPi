@@ -17,6 +17,9 @@ use GlpiPlugin\Npsphere\Question;
 use GlpiPlugin\Npsphere\ResponseService;
 use GlpiPlugin\Npsphere\TicketLink;
 
+// v0.65.0: limite de requisições por IP nas rotas sem login.
+\GlpiPlugin\Npsphere\RateLimit::proteger(\GlpiPlugin\Npsphere\RateLimit::ENVIO, true);
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 

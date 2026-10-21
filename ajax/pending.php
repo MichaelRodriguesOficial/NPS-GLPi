@@ -31,6 +31,10 @@ foreach (Target::getPendingMandatory() as $item) {
         'description' => $survey->fields['description'] ?? '',
         'blocking'    => (bool) $item['blocking'],
         'deadline'    => $survey->fields['date_end'] ?? null,
+        // v0.65.0: já no formato de data do usuário (Preferências).
+        'deadline_txt' => !empty($survey->fields['date_end'])
+            ? Html::convDate(substr((string) $survey->fields['date_end'], 0, 10))
+            : '',
         'url'         => $answer_url . '?surveys_id=' . $survey->getID(),
     ];
 }

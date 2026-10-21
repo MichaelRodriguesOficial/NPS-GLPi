@@ -183,11 +183,10 @@
 
     function falhou() {
         mostrar('alert-warning',
-            '<i class="ti ti-alert-triangle"></i> Não conseguimos registrar sua resposta automaticamente. '
-            + 'Confira abaixo e clique em <strong>Enviar avaliação</strong>.');
+            '<i class="ti ti-alert-triangle"></i> ' + {{ __('Não conseguimos registrar sua resposta automaticamente. Confira abaixo e clique em <strong>Enviar avaliação</strong>.', 'npsphere')|json_encode|raw }});
     }
 
-    mostrar('alert-secondary', '<i class="ti ti-loader-2"></i> Registrando sua resposta…');
+    mostrar('alert-secondary', '<i class="ti ti-loader-2"></i> ' + {{ __('Registrando sua resposta…', 'npsphere')|json_encode|raw }});
 
     fetch(dados.csrf_url, { method: 'GET', credentials: 'same-origin' })
         .then(function (r) { return r.ok ? r.text() : ''; })
@@ -236,22 +235,23 @@
                     '<div class="npsphere-obrigado">'
                     + '<span class="npsphere-obrigado-pesquisa">' + texto(NOME) + '</span>'
                     + '<div class="npsphere-obrigado-icone"><i class="ti ti-check"></i></div>'
-                    + '<h2>Obrigado pela sua avaliação!</h2>'
-                    + '<p class="npsphere-obrigado-sub">Sua resposta foi registrada.</p>'
+                    + '<h2>' + {{ __('Obrigado pela sua avaliação!', 'npsphere')|json_encode|raw }} + '</h2>'
+                    + '<p class="npsphere-obrigado-sub">' + {{ __('Sua resposta foi registrada.', 'npsphere')|json_encode|raw }} + '</p>'
                     + '<div class="npsphere-obrigado-resposta">'
-                    +   '<span class="npsphere-obrigado-pergunta">' + texto(res.pergunta || 'Sua resposta') + '</span>'
+                    +   '<span class="npsphere-obrigado-pergunta">' + texto(res.pergunta || {{ __('Sua resposta', 'npsphere')|json_encode|raw }}) + '</span>'
                     +   '<span class="npsphere-obrigado-valor">' + texto(res.rotulo) + '</span>'
                     + '</div>'
                     + '<p class="npsphere-obrigado-dica"><i class="ti ti-refresh"></i> '
-                    + 'Mudou de ideia? É só clicar em outra opção no e-mail.</p>'
+                    + {{ __('Mudou de ideia? É só clicar em outra opção no e-mail.', 'npsphere')|json_encode|raw }} + '</p>'
                     + '</div>');
                 return;
             }
 
             mostrar('alert-success',
-                '<i class="ti ti-circle-check"></i> Sua resposta para <strong>' + texto(res.pergunta)
-                + '</strong> foi registrada: <strong>' + texto(res.rotulo) + '</strong>. '
-                + 'Responda as demais perguntas e clique em <strong>Enviar avaliação</strong> para concluir.');
+                '<i class="ti ti-circle-check"></i> ' + {{ __('Sua resposta para <strong>%1$s</strong> foi registrada: <strong>%2$s</strong>.', 'npsphere')|json_encode|raw }}
+                    .replace('%1$s', function () { return texto(res.pergunta); })
+                    .replace('%2$s', function () { return texto(res.rotulo); })
+                + ' ' + {{ __('Responda as demais perguntas e clique em <strong>Enviar avaliação</strong> para concluir.', 'npsphere')|json_encode|raw }});
         })
         .catch(falhou);
 })();

@@ -40,7 +40,8 @@ $is_helpdesk = (Session::getCurrentInterface() === 'helpdesk');
 
 $abrir_pagina = static function () use ($is_helpdesk, $is_embed): void {
     if ($is_embed) {
-        echo '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">'
+        echo '<!DOCTYPE html><html lang="' . \GlpiPlugin\Npsphere\JsI18n::langHtml() . '"><head><meta charset="utf-8">'
+            . \GlpiPlugin\Npsphere\JsI18n::metaHtml()
             . '<meta name="viewport" content="width=device-width, initial-scale=1">'
             . '<link rel="stylesheet" href="'
             . Plugin::getWebDir('npsphere', true) . '/css/npsphere.css">'

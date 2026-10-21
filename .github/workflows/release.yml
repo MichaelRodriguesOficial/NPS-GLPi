@@ -8,7 +8,7 @@ name: Release
 on:
   push:
     branches: [main]
-    paths: ['setup.php', '.github/workflows/release.yml', '.github/release-notes/**', 'src/**', 'front/**', 'ajax/**', 'templates/**', 'public/**', 'hook.php']
+    paths: ['setup.php', '.github/workflows/release.yml', '.github/release-notes/**', 'src/**', 'front/**', 'ajax/**', 'templates/**', 'public/**', 'locales/**', 'hook.php']
   workflow_dispatch:
 
 permissions:
@@ -43,7 +43,7 @@ jobs:
         run: |
           VERSAO="${{ steps.versao.outputs.versao }}"
           mkdir -p /tmp/pacote/npsphere
-          rsync -a --exclude '.git' --exclude '.github' --exclude 'docs' --exclude 'screenshots' ./ /tmp/pacote/npsphere/
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'docs' --exclude 'screenshots' --exclude 'tools' ./ /tmp/pacote/npsphere/
           (cd /tmp/pacote && zip -qr "$GITHUB_WORKSPACE/npsphere-${VERSAO}.zip" npsphere)
           unzip -l "npsphere-${VERSAO}.zip" | tail -1
 

@@ -15,6 +15,39 @@
 (function () {
     'use strict';
 
+    // v0.65.0: tradução dos textos deste arquivo. O dicionário vem do
+    // servidor numa <meta name="npsphere-i18n"> (ver src/JsI18n.php),
+    // só quando o idioma do usuário não é o português; sem ele, o texto
+    // original (pt-BR) é usado. Dentro do iframe do chamado, procura na
+    // página que o embute.
+    var NPSPHERE_I18N = null;
+    function t(texto) {
+        if (NPSPHERE_I18N === null) {
+            NPSPHERE_I18N = {};
+            var docs = [document];
+            try {
+                if (window.parent && window.parent !== window) {
+                    docs.push(window.parent.document);
+                }
+            } catch (e) { /* outra origem */ }
+            for (var i = 0; i < docs.length; i++) {
+                var meta = docs[i].querySelector('meta[name="npsphere-i18n"]');
+                if (meta) {
+                    try { NPSPHERE_I18N = JSON.parse(meta.getAttribute('content')) || {}; } catch (e) { /* ignora */ }
+                    break;
+                }
+            }
+        }
+        var traduzido = Object.prototype.hasOwnProperty.call(NPSPHERE_I18N, texto) ? NPSPHERE_I18N[texto] : texto;
+        // %s, %1$s, %d...: preenchidos com os argumentos seguintes.
+        var args = Array.prototype.slice.call(arguments, 1);
+        var proximo = 0;
+        return traduzido.replace(/%(?:(\d+)\$)?[sd]/g, function (m, pos) {
+            var v = pos ? args[parseInt(pos, 10) - 1] : args[proximo++];
+            return v === undefined ? m : String(v);
+        });
+    }
+
     var DISMISS_KEY = 'npsphere_dismissed_surveys';
 
     function dismissed() {
@@ -49,7 +82,9 @@
         overlay.className = 'npsphere-gate' + (survey.blocking ? ' npsphere-gate-blocking' : '');
 
         var deadline = '';
-        if (survey.deadline) {
+        if (survey.deadline_txt) {
+            deadline = survey.deadline_txt;
+        } else if (survey.deadline) {
             var d = String(survey.deadline).substring(0, 10).split('-');
             deadline = d[2] + '/' + d[1] + '/' + d[0];
         }
@@ -66,21 +101,21 @@
         if (survey.blocking) {
             html += '<p class="npsphere-gate-warning">' +
                 '<i class="ti ti-alert-triangle"></i> ' +
-                'Hoje é o último dia para responder. É necessário responder para continuar.' +
+                t('Hoje é o último dia para responder. É necessário responder para continuar.') +
                 '</p>';
         } else if (deadline) {
-            html += '<p class="npsphere-gate-desc">Você pode responder depois, até ' + deadline + '.</p>';
+            html += '<p class="npsphere-gate-desc">' + t('Você pode responder depois, até %s.', deadline) + '</p>';
         }
 
         // A pesquisa é respondida AQUI mesmo, sem tirar a pessoa da
         // tela em que ela estava.
         html += '<div class="npsphere-gate-body">' +
-                '<p class="text-muted">Carregando…</p>' +
+                '<p class="text-muted">' + t('Carregando…') + '</p>' +
                 '</div>';
 
         if (!survey.blocking) {
             html += '<div class="npsphere-gate-actions">' +
-                    '<button type="button" class="btn btn-link text-secondary npsphere-gate-later">Responder depois</button>' +
+                    '<button type="button" class="btn btn-link text-secondary npsphere-gate-later">' + t('Responder depois') + '</button>' +
                     '</div>';
         }
         html += '</div>';
@@ -114,8 +149,8 @@
             .then(function (r) { return r.ok ? r.text() : null; })
             .then(function (formHtml) {
                 if (!formHtml) {
-                    body.innerHTML = '<p class="text-danger">Não foi possível carregar a pesquisa. ' +
-                        '<a href="' + survey.url + '">Abrir em outra tela</a>.</p>';
+                    body.innerHTML = '<p class="text-danger">' + t('Não foi possível carregar a pesquisa.') + ' ' +
+                        '<a href="' + survey.url + '">' + t('Abrir em outra tela') + '</a>.</p>';
                     return;
                 }
 
@@ -135,8 +170,8 @@
                 }
             })
             .catch(function () {
-                body.innerHTML = '<p class="text-danger">Não foi possível carregar a pesquisa. ' +
-                    '<a href="' + survey.url + '">Abrir em outra tela</a>.</p>';
+                body.innerHTML = '<p class="text-danger">' + t('Não foi possível carregar a pesquisa.') + ' ' +
+                    '<a href="' + survey.url + '">' + t('Abrir em outra tela') + '</a>.</p>';
             });
     }
 
@@ -247,7 +282,7 @@
 
                     var msgs = (res && res.errors && res.errors.length)
                         ? res.errors
-                        : ['Não foi possível registrar sua resposta. Tente novamente.'];
+                        : [t('Não foi possível registrar sua resposta. Tente novamente.')];
                     if (errors) {
                         errors.style.display = '';
                         errors.innerHTML = '<div class="alert alert-danger"><ul class="mb-0">' +
@@ -277,9 +312,9 @@
 
         box.innerHTML =
             '<div class="npsphere-gate-icon npsphere-gate-icon-success"><i class="ti ti-circle-check"></i></div>' +
-            '<h2>Obrigado pela sua avaliação!</h2>' +
-            '<p class="npsphere-gate-desc">Sua resposta foi registrada com sucesso.</p>' +
-            '<p class="npsphere-gate-countdown">Redirecionando em <strong>3</strong>…</p>';
+            '<h2>' + t('Obrigado pela sua avaliação!') + '</h2>' +
+            '<p class="npsphere-gate-desc">' + t('Sua resposta foi registrada com sucesso.') + '</p>' +
+            '<p class="npsphere-gate-countdown">' + t('Redirecionando em %s…', '<strong>3</strong>') + '</p>';
 
         var seconds = 3;
         var label = box.querySelector('.npsphere-gate-countdown strong');
@@ -457,7 +492,7 @@
             + (surveys_id ? '&surveys_id=' + encodeURIComponent(surveys_id) : '')
             + '&embed=1';
         iframe.className = 'npsphere-ticket-frame';
-        iframe.setAttribute('title', 'Pesquisa de satisfação');
+        iframe.setAttribute('title', t('Pesquisa de satisfação'));
         iframe.setAttribute('scrolling', 'no');
         iframe.style.width = '100%';
         iframe.style.border = '0';

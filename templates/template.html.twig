@@ -1164,7 +1164,7 @@
                     if (meu !== ed.pedido) { return; }
                     ed.sujo = true;
                     iframe.srcdoc = '<!DOCTYPE html><html><body style="font-family:sans-serif;color:#d63939;padding:1rem">'
-                        + 'Não foi possível montar a prévia.</body></html>';
+                        + {{ __('Não foi possível montar a prévia.', 'npsphere')|json_encode|raw }} + '</body></html>';
                 })
                 .then(function () { if (meu === ed.pedido) { caixa.classList.remove('is-loading'); } });
         };
@@ -1185,7 +1185,7 @@
         var restaurar = bloco.querySelector('.npsphere-msg-restaurar');
         restaurar.addEventListener('click', function () {
             if (campo.value.trim() !== '' && campo.value !== restaurar.dataset.padrao
-                && !window.confirm('Substituir a mensagem atual pelo modelo padrão?')) {
+                && !window.confirm({{ __('Substituir a mensagem atual pelo modelo padrão?', 'npsphere')|json_encode|raw }})) {
                 return;
             }
             campo.value = restaurar.dataset.padrao;
@@ -1307,8 +1307,8 @@
             var max = Math.max(1, parseInt(maxLembrete.value, 10) || 1);
             var n = Math.floor(Math.max(0, duracao - 1) / dias);
             cabem.textContent = n === 0
-                ? 'Nenhum lembrete cabe nesse prazo — diminua o intervalo.'
-                : 'Cabem até ' + Math.min(n, max) + ' lembrete(s).';
+                ? {{ __('Nenhum lembrete cabe nesse prazo — diminua o intervalo.', 'npsphere')|json_encode|raw }}
+                : {{ __('Cabem até %d lembrete(s).', 'npsphere')|json_encode|raw }}.replace('%d', Math.min(n, max));
             var nota = cabem.closest('.npsphere-lembrete-prazo');
             if (nota) { nota.classList.toggle('npsphere-note-aviso', n === 0); }
         };
@@ -1344,7 +1344,7 @@
         linhas().forEach(function (tr) {
             if (emailValido(tr.querySelector('.npsphere-dest-e').value.trim())) { n++; }
         });
-        total.textContent = n + (n === 1 ? ' e-mail na lista. ' : ' e-mails na lista. ');
+        total.textContent = (n === 1 ? {{ __('%d e-mail na lista.', 'npsphere')|json_encode|raw }} : {{ __('%d e-mails na lista.', 'npsphere')|json_encode|raw }}).replace('%d', n) + ' ';
     }
 
     // Tabela -> campo oculto (email;nome por linha) e contagem.
@@ -1390,7 +1390,7 @@
         inNome.type = 'text';
         inNome.className = 'form-control form-control-sm npsphere-dest-nm';
         inNome.value = nome || '';
-        inNome.setAttribute('aria-label', 'Nome');
+        inNome.setAttribute('aria-label', {{ __('Nome', 'npsphere')|json_encode|raw }});
         tdNome.appendChild(inNome);
 
         var tdEmail = document.createElement('td');
@@ -1398,7 +1398,7 @@
         inEmail.type = 'email';
         inEmail.className = 'form-control form-control-sm npsphere-dest-e';
         inEmail.value = email || '';
-        inEmail.setAttribute('aria-label', 'E-mail');
+        inEmail.setAttribute('aria-label', {{ __('E-mail', 'npsphere')|json_encode|raw }});
         tdEmail.appendChild(inEmail);
 
         var tdAcao = document.createElement('td');
@@ -1406,8 +1406,8 @@
         var remover = document.createElement('button');
         remover.type = 'button';
         remover.className = 'btn btn-sm btn-ghost-danger npsphere-dest-remover';
-        remover.title = 'Remover';
-        remover.setAttribute('aria-label', 'Remover');
+        remover.title = {{ __('Remover', 'npsphere')|json_encode|raw }};
+        remover.setAttribute('aria-label', remover.title);
         remover.innerHTML = '<i class="ti ti-trash"></i>';
         tdAcao.appendChild(remover);
 
@@ -1445,13 +1445,13 @@
         var email = novoEmail.value.trim();
 
         if (!emailValido(email)) {
-            avisar('Informe um e-mail válido.');
+            avisar({{ __('Informe um e-mail válido.', 'npsphere')|json_encode|raw }});
             novoEmail.classList.add('is-invalid');
             novoEmail.focus();
             return;
         }
         if (jaExiste(email, null)) {
-            avisar('Este e-mail já está na lista.');
+            avisar({{ __('Este e-mail já está na lista.', 'npsphere')|json_encode|raw }});
             novoEmail.classList.add('is-invalid');
             novoEmail.focus();
             return;
@@ -1514,11 +1514,11 @@
                     if (res && res.success) {
                         preencher(res.registros || []);
                     }
-                    saida.textContent = res && res.message ? res.message : 'Não foi possível importar.';
+                    saida.textContent = res && res.message ? res.message : {{ __('Não foi possível importar.', 'npsphere')|json_encode|raw }};
                     saida.className = 'npsphere-csv-resultado ' + (res && res.success ? 'text-success' : 'text-danger');
                 })
                 .catch(function () {
-                    saida.textContent = 'Falha de conexão.';
+                    saida.textContent = {{ __('Falha de conexão.', 'npsphere')|json_encode|raw }};
                     saida.className = 'npsphere-csv-resultado text-danger';
                 })
                 .then(function () {
@@ -1537,7 +1537,7 @@
             if (botaoEnviar.dataset.total !== undefined && (parseInt(botaoEnviar.dataset.total, 10) || 0) === 0) {
                 var vazio = raiz.querySelector('.npsphere-mail-resultado');
                 if (vazio) {
-                    vazio.textContent = 'Ninguém para receber: confira o público-alvo.';
+                    vazio.textContent = {{ __('Ninguém para receber: confira o público-alvo.', 'npsphere')|json_encode|raw }};
                     vazio.className = 'npsphere-mail-resultado text-danger';
                 }
                 return;
@@ -1554,7 +1554,7 @@
                 .then(function (res) {
                     botaoEnviar.disabled = false;
                     if (saida) {
-                        saida.textContent = res && res.message ? res.message : 'Não foi possível enviar.';
+                        saida.textContent = res && res.message ? res.message : {{ __('Não foi possível enviar.', 'npsphere')|json_encode|raw }};
                         saida.className = 'npsphere-mail-resultado '
                             + (res && res.success ? 'text-success' : 'text-danger');
                     }
@@ -1562,7 +1562,7 @@
                 .catch(function () {
                     botaoEnviar.disabled = false;
                     if (saida) {
-                        saida.textContent = 'Falha de conexão.';
+                        saida.textContent = {{ __('Falha de conexão.', 'npsphere')|json_encode|raw }};
                         saida.className = 'npsphere-mail-resultado text-danger';
                     }
                 });

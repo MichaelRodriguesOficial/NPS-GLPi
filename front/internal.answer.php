@@ -25,6 +25,9 @@ use GlpiPlugin\Npsphere\Question;
 use GlpiPlugin\Npsphere\ResponseService;
 use GlpiPlugin\Npsphere\Target;
 
+// v0.65.0: limite de requisições por IP nas rotas sem login.
+\GlpiPlugin\Npsphere\RateLimit::proteger($_SERVER['REQUEST_METHOD'] === 'POST' ? \GlpiPlugin\Npsphere\RateLimit::ENVIO : \GlpiPlugin\Npsphere\RateLimit::PAGINA, false);
+
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 

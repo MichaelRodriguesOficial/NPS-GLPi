@@ -315,7 +315,7 @@ class DailyReport
 
         $texto = [
             '{{pesquisa}}'        => (string) $survey->fields['name'],
-            '{{data}}'            => self::data($fim, 'd/m'),
+            '{{data}}'            => self::data($fim, 'dia'),
             '{{periodo}}'         => sprintf(__('%1$s a %2$s', 'npsphere'), self::data($inicio), self::data($fim)),
             '{{total_respostas}}' => (string) $total,
             '{{total_baixas}}'    => (string) count($baixas),
@@ -470,11 +470,32 @@ class DailyReport
         ];
     }
 
-    private static function data(string $quando, string $formato = 'd/m/Y H:i'): string
+    /**
+     * Data no formato das Preferências do GLPI (v0.65.0); 'dia' é só dia e
+     * mês, na ordem desse mesmo formato.
+     */
+    private static function data(string $quando, string $formato = 'completa'): string
     {
         $ts = strtotime($quando);
+        if (!$ts) {
+            return $quando;
+        }
 
-        return $ts ? date($formato, $ts) : $quando;
+        global $CFG_GLPI;
+
+        // Como as notificações do GLPI: o formato do usuário e, na ação
+        // automática (sem usuário), o da configuração geral.
+        $formato_glpi = (int) ($_SESSION['glpidate_format'] ?? $CFG_GLPI['date_format'] ?? 0);
+
+        if ($formato === 'dia') {
+            return match ($formato_glpi) {
+                1       => date('d/m', $ts),
+                2       => date('m/d', $ts),
+                default => date('Y-m-d', $ts),
+            };
+        }
+
+        return (string) \Html::convDateTime(date('Y-m-d H:i:s', $ts), $formato_glpi);
     }
 
     /** Mesmas cores da coluna "Nota" da aba Resultados. */
@@ -487,7 +508,13 @@ class DailyReport
 
     private static function formatarNota(float $nota): string
     {
-        return rtrim(rtrim(number_format($nota, 1, ',', ''), '0'), ',');
+        global $CFG_GLPI;
+
+        // Separador decimal das Preferências (Formato dos números).
+        $fmt = (int) ($_SESSION['glpinumber_format'] ?? $CFG_GLPI['number_format'] ?? 0);
+        $sep = in_array($fmt, [2, 4], true) ? ',' : '.';
+
+        return rtrim(rtrim(number_format($nota, 1, $sep, ''), '0'), $sep);
     }
 
     // ------------------------------------------------------------------
@@ -523,7 +550,7 @@ class DailyReport
         return [
             '{{pesquisa}}'             => __('Nome da pesquisa', 'npsphere'),
             '{{periodo}}'              => __('Período do relatório (de… a…)', 'npsphere'),
-            '{{data}}'                 => __('Dia do relatório (dd/mm)', 'npsphere'),
+            '{{data}}'                 => __('Dia do relatório (dia e mês)', 'npsphere'),
             '{{total_respostas}}'      => __('Quantidade de respostas no período', 'npsphere'),
             '{{total_baixas}}'         => __('Quantidade de respostas com nota baixa', 'npsphere'),
             '{{nota_media}}'           => __('Nota média do período (0 a 10)', 'npsphere'),

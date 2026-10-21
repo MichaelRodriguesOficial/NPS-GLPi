@@ -25,7 +25,7 @@
                 __('Tipo de pergunta', 'npsphere')
             ) }}
             {{ fields.dropdownYesNo('is_required', item.fields['is_required'], __('Obrigatória', 'npsphere')) }}
-            {{ fields.dropdownYesNo('is_active', item.fields['is_active'], __('Ativa')) }}
+            {{ fields.dropdownYesNo('is_active', item.fields['is_active'], __('Ativa', 'npsphere')) }}
 
             <div class="form-text mb-0" id="npsphere-nps-hint" style="{{ item.fields['type'] == 'nps' ? '' : 'display:none' }}">
                 <i class="ti ti-gauge"></i>
@@ -329,7 +329,7 @@
             slot.innerHTML = '<input type="text" name="condition_value" class="form-control" value="' +
                              String(currentValue).replace(/"/g, '&quot;') + '">';
             if (hint) {
-                hint.textContent = 'Esta pergunta aceita resposta livre — digite o texto exato a comparar.';
+                hint.textContent = {{ __('Esta pergunta aceita resposta livre — digite o texto exato a comparar.', 'npsphere')|json_encode|raw }};
             }
         }
     }
